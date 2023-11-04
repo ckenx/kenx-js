@@ -1,6 +1,6 @@
 {
-  "watch": [".setup", "src"],
+  "watch": [".setup", "src", "demos"],
   "ext": ".ts,.js,.json,.yml",
   "ignore": [],
-  "exec": "ts-node --files ./src/index.ts"
+  "exec": "ts-node --files ./src/index.ts && tsc-alias"
 }

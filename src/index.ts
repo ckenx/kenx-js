@@ -14,28 +14,18 @@ if( nodeVersionMajor < 16 ) {
  * Start initialization
  * 
  */
-import type { BackendConfig } from './types'
-import { Manager, autoload } from './core'
+import { autoload, run } from '#core/index'
 
-/**
- * Load backend setup configuration
- * 
- */
-const Backend = Manager.loadSetup('backend') as BackendConfig
-if( !Backend ) process.exit(1)
+( async () => {
+  /**
+   * Autoload Chenx services
+   * 
+   */
+  await autoload()
 
-/**
- * Load Environment Variabales
- * 
- */
-import dotenv from 'dotenv'
-
-Backend.env?.dev === true ?
-      dotenv.config({ path: './.env.dev' }) // Load development specific environment variables
-      : dotenv.config() // Load default .env variables
-
-/**
- * Auto-load Ckenx backend services
- * 
- */
-autoload( Backend )
+  /**
+   * Initialize & run the project
+   * 
+   */
+  await run()
+})()

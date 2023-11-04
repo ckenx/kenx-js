@@ -1,6 +1,6 @@
 
-import type { Ckenx } from '../../../types/service'
-import type { HTTPServerConfig } from '../../../types'
+import type { Ckenx } from '#types/service'
+import type { HTTPServerConfig } from '#types/index'
 import http from 'http'
 
 export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> {

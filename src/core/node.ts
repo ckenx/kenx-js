@@ -1,7 +1,8 @@
-import fs from 'fs'
-import yaml from 'yaml'
+import Yaml from 'yaml'
+import Fs from 'node:fs'
+import Path from 'node:path'
 
-import type { SetupTarget } from '../types'
+import type { DirectoryConfig, SetupTarget } from '#types/index'
 
 /**
  * Load setup configurations
@@ -11,7 +12,7 @@ import type { SetupTarget } from '../types'
  * 
  */
 export const loadSetup = ( target: SetupTarget ) => {
-  try { return yaml.parse( fs.readFileSync(`./.setup/${target}.yml`, 'utf-8') ) }
+  try { return Yaml.parse( Fs.readFileSync(`./.setup/${target}.yml`, 'utf-8') ) }
   catch( error ){
     console.log('Failed parsing .setup <backend.yml> file: ', error )
     return null
@@ -37,4 +38,17 @@ export const importPlugin = async ( reference: string ) => {
     console.error( error )
     throw new Error(`Failed importing <${reference}> plugin`)
   }
+}
+
+/**
+ * Return project directory root
+ * 
+ * @type {string} path
+ * @return {string} root
+ * 
+ */
+export const getRoot = ( path?: string ) => {
+  if( !path ) return process.cwd()
+
+  return Path.resolve( process.cwd(), path )
 }

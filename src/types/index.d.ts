@@ -32,25 +32,52 @@ export type SetupTarget = 'backend' | 'frontend' | 'native'
 export type ServerType = 'http' | 'socket.io' | 'websocket'
 export type ServerConfig = {
   type: ServerType
-  sid?: string
+  key?: string
   bindTo?: string
+}
+
+export type ApplicationSessionEnv = 'in-memory' | {
+
+}
+export type ApplicationSessionConfig = {
+  development?: ApplicationSessionEnv
+  production?: ApplicationSessionEnv
+  config: {
+    name: string
+    secret: string
+    saveUninitialized?: boolean
+    resave?: boolean
+    cookie?: {
+      path?: string
+      httpOnly: boolean
+      secure: boolean
+      maxAge?: number
+    }
+  }
+}
+export type ApplicationConfig = {
+  framework: string
+  session?: ApplicationSessionConfig
 }
 export type HTTPServerConfig = ServerConfig & {
   HOST: string
   PORT: number
-  application?: {
-    framework: string
-  }
+  application?: ApplicationConfig
 }
 export type AuxiliaryServerConfig = ServerConfig & {
   PORT?: number
   options?: IO.ServerOptions
 }
 
+export type DirectoryConfig = {
+  root?: string
+  pattern?: string
+}
 export type BackendConfig = {
-  typscript?: boolean
+  typescript?: boolean
   env?: {
     dev?: boolean
   }
+  directory: DirectoryConfig
   servers?: (HTTPServerConfig | AuxiliaryServerConfig)[]
 }

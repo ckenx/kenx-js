@@ -1,6 +1,6 @@
 import type { Server } from 'http'
-import type { HTTPServerConfig } from '.'
-import * as KManager from '../core/node'
+import type { HTTPServerConfig } from '#types/index'
+import * as KManager from '#core/node'
 
 declare namespace Ckenx {
   export interface Manager extends KManager {

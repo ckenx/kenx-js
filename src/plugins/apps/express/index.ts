@@ -1,5 +1,5 @@
-import type { HTTPServerConfig } from '../../../types'
-import type { Ckenx } from '../../../types/service'
+import type { HTTPServerConfig } from '#types/index'
+import type { Ckenx } from '#types/service'
 import express, { Express, NextFunction, Request, Response } from 'express'
 import cors from 'cors'
 import logger from 'morgan'
@@ -70,6 +70,10 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
 
     this.KManager = kxm
     this.app = _init_( this.PORT )
+    
+    // Create application session
+    // httpServerConfig.application?.session 
+    // && createSession( this.app, httpServerConfig.application.session )
   }
 
   use( fn: any ){

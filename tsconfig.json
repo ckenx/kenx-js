@@ -1,24 +1,27 @@
 {
-  "ts-node": {
-    "files": true
-  },
-  "files": [
-    "src/index.ts",
-    "src/types/index.d.ts"
-  ],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "resolveJsonModule": true,
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
+    "allowJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "allowJs": true,
-    "typeRoots": ["./src/types"]
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "paths": {
+      "#plugins/*": ["plugins/*"],
+      "#setup/*": [".setup/*"],
+      "#types/*": ["types/*"],
+      "#core/*": ["core/*"],
+      "#root/*": ["*"]
+    }
   },
-  "include": ["/.setup", "/src/**/*", "/test/*"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "exclude": ["/src/views/**/*"]
 }

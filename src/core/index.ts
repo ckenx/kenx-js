@@ -1,13 +1,19 @@
-
-import type IO from 'socket.io'
-import type { Ckenx } from '../types/service'
-import type { BackendConfig, HTTPServerConfig, AuxiliaryServerConfig } from '../types'
-import * as kxm from './node'
+import type { Ckenx } from '#types/service'
+import type { BackendConfig, HTTPServerConfig, AuxiliaryServerConfig } from '#types/index'
+import dotenv from 'dotenv'
+import * as kxm from '#core/node'
 
 export const Manager = kxm
 
 /**
+ * Ckenx backend setup configuration
+ * 
+ */
+let Backend: BackendConfig
+
+/**
  * Auto-loaded features 
+ * 
  */
 const CORE_INTERFACE: Ckenx.CoreInterface = {}
 
@@ -69,7 +75,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
     /**
      * Bind server
      * 
-     * - To HTTP Server with a given `sid` or default
+     * - To HTTP Server with a given `key` or default
      * - To PORT
      */
     const binder = config.bindTo && CORE_INTERFACE.servers ? CORE_INTERFACE.servers[`http:${bindTo}`]?.server : config.PORT
@@ -85,17 +91,42 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
   }
 }
 
-export const autoload = async ({ servers }: BackendConfig ): Promise<Ckenx.CoreInterface> => {
+export const autoload = async (): Promise<void> => {
+  /**
+   * Load backend setup configuration
+   * 
+   */
+  Backend = Manager.loadSetup('backend')
+  if( !Backend ) process.exit(1)
+
+  /**
+   * Load Environment Variabales
+   * 
+   */
+  Backend.env?.dev === true ?
+        dotenv.config({ path: './.env.dev' }) // Load development specific environment variables
+        : dotenv.config() // Load default .env variables
+
+  /**
+   * Define project directory structure 
+   * and pattern
+   * 
+   */
+  Backend.directory = Backend.directory || {}
+  
+  Backend.directory.root = Manager.getRoot( Backend.directory.root )
+  Backend.directory.pattern = Backend.directory.pattern || '-'
+
   /**
    * Load configured servers
    * 
    */
-  if( Array.isArray( servers ) ){
+  if( Array.isArray( Backend.servers ) ){
     if( !CORE_INTERFACE.servers )
       CORE_INTERFACE.servers = {}
     
-    for await ( const config of servers ){
-      const { type, sid } = config
+    for await ( const config of Backend.servers ){
+      const { type, key } = config
       let server
 
       switch( type ){
@@ -106,7 +137,7 @@ export const autoload = async ({ servers }: BackendConfig ): Promise<Ckenx.CoreI
       if( !server )
         throw new Error(`[${type.toUpperCase()} SERVER] - Unsupported`)
 
-      const ref = sid ? `${type}:${sid}` : type
+      const ref = key ? `${type}:${key}` : type
       CORE_INTERFACE.servers[ ref ] = server
 
       //
@@ -116,11 +147,55 @@ export const autoload = async ({ servers }: BackendConfig ): Promise<Ckenx.CoreI
       console.log(`\n[${type.toUpperCase()} SERVER] - running \n\tPORT=${info.port}`)
     }
   }
+}
 
-  /**
-   * Server NodeJS application 
-   * 
-   */
+/**
+ * Initialize and run project
+ * 
+ * @type {object} config
+ * @return {module} Defined setup `object` or `null` if not found
+ * 
+ */
+export const run = async () => {
+  // Assumed `autoload` method has resolved
+  if( !Backend ) process.exit(1)
+  
+  const { typescript, directory } = Backend
+  switch( directory.pattern ){
+    /**
+     * MVC entrypoints project structure
+     * 
+     * path: 
+     *  - models: `root/models`
+     *  - views: `root/views`
+     *  - controllers: `root/controllers`
+     */
+    case 'mvc': break
 
-  return CORE_INTERFACE
+    /**
+     * Single entrypoint project structure
+     * 
+     * path: `root/index.ts` or .js 
+     */
+    default: try {
+      const
+      filename = `index.${typescript ? 'ts' : 'js'}`,
+      entrypoint = await import(`${directory.root}/index`)
+      if( !entrypoint )
+        throw new Error(`Invalid root directory or file - ${directory.root}/${filename}`)
+      
+      // Run plain script
+      if( typeof entrypoint.default !== 'function' ) return
+      
+      /**
+       * Give access to all loaded services
+       *  - Apps
+       *  - Servers
+       *  - Databases,
+       *  - ... 
+       */
+      entrypoint.default( CORE_INTERFACE )
+    }
+    catch( error ){ console.log('[PROJECT ENTRYPOINT] -', error ) }
+  }
 }

@@ -1,5 +1,5 @@
 
-import type { Ckenx } from '../../../types/service'
+import type { Ckenx } from '#types/service'
 import { Server, ServerOptions } from 'socket.io'
 
 export default class SocketIOServer implements Ckenx.ServerPlugin<Server> {
