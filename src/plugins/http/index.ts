@@ -1,0 +1,59 @@
+
+import type { Ckenx } from '../../types/service'
+import http from 'http'
+
+export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> {
+  private server: Ckenx.HTTPServer
+
+  constructor(){
+    this.server = http.createServer()
+  
+    /**
+     * Event listener for HTTPS server event.
+     */
+    process.on('uncaughtException', ({ stack, message }: Error ) => console.error( 'Uncaught Exception at: %s - message: %s', stack, message ) )
+    process.on('unhandledRejection', ({ stack, message }: Error ) => console.error( 'Unhandled Rejection at: %s - message: %s', stack, message ) )
+
+    /* Listen on provided port, on all network interfaces. */
+    this.server
+    .on('error', ( error: any ) => {
+      // handle specific listen errors with friendly messages
+      switch( error.code ){
+        case 'EACCES': console.error('Requires elevated privileges'); break
+        case 'EADDRINUSE': console.error('Server PORT is already in use'); break
+        default: console.error( error )
+      }
+    } )
+  }
+
+  listen( port: number, host?: string ): Promise<Ckenx.ActiveServerInfo | null> {
+    return new Promise( ( resolve, reject ) => {
+      if( !this.server )
+        return reject('No HTTP Server')
+    
+      this.server.listen( port, host || '0.0.0.0', () => resolve( this.getInfo() ) )
+    } )
+  }
+
+  close(){
+    return new Promise( ( resolve, reject ) => {
+      if( !this.server )
+        return reject('No HTTP Server')
+    
+      this.server.close( ( error?: Error ) => error ? reject( error ) : resolve( true ) )
+    } )
+  }
+
+  getInfo(): Ckenx.ActiveServerInfo | null {
+    if( !this.server )
+      throw new Error('No HTTP Server')
+
+    const info = this.server.address()
+    if( typeof info == 'string' ) return null
+
+    return {
+      type: 'express',
+      ...info
+    }
+  }
+}

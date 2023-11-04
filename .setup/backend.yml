@@ -1,0 +1,12 @@
+typscript: true
+
+env:
+  dev: true
+
+server:
+  http:
+    HOST: 0.0.0.0
+    PORT: 8008
+    application:
+      framework: 'express'
+  # socket: 'socket.io'

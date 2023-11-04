@@ -1,0 +1,6 @@
+{
+  "watch": [".setup", "src"],
+  "ext": ".ts,.js,.json,.yml",
+  "ignore": [],
+  "exec": "ts-node --files ./src/index.ts"
+}
