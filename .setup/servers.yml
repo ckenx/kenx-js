@@ -1,0 +1,17 @@
+# Application servers configuration
+servers:
+  # HTTP server configurations
+  - type: 'http'
+    key: 'default' # Optional value
+    HOST: 0.0.0.0
+    PORT: 8008
+    application: '[applications]:default'
+  
+  # Socket.io server configurations
+  - type: 'socketio'
+    bindTo: 'http:default'
+    options:
+      cookie: false
+      allowEIO3: true
+      serveClient: true
+      connectTimeout: 15000

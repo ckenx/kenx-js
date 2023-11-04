@@ -1,0 +1,49 @@
+# Application session configuration
+sessions:
+  # Development environment
+  #
+  # Using `in-memory` storage
+  - type: 'in-memory'
+    key: 'default'
+    env: 'development'
+    # Session configuration depending assigned application
+    # framework specifications.
+    config:
+      name: '<session-dev-name>'
+      # Recommand storing this information in .env file
+      secret: '<session-dev-secret>'
+      saveUninitialized: true
+      resave: false
+      cookie:
+        path: '/path/to'
+        httpOnly: true
+        secure: false
+        maxAge: <timestamp>
+
+  # Production environment
+  #
+  # Using deployed `database` store
+  - type: 'store'
+    key: 'default' # Optional value
+    env: 'production'
+    store:
+      # Store library provider: Use to establish
+      # the client connection to the store.
+      provider: 'redis-store'
+      # Set database connection configuration in `databases.yml` 
+      # file with a unique `key`, then provide that key here as
+      # a reference
+      db: '[databases]:redis-store-db'
+    # Session configuration depending assigned application
+    # framework specifications.
+    config:
+      name: '<session-prod-name>'
+      # Recommand storing this information in .env file
+      secret: '<session-prod-secret>'
+      saveUninitialized: true
+      resave: true
+      cookie:
+        path: '/path/to'
+        httpOnly: true
+        secure: true
+        maxAge: <timestamp>

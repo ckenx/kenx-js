@@ -1,0 +1,22 @@
+# Databases configuration
+databases:
+  # Use on a connection string
+  - type: 'mongodb'
+    key: 'default'
+    connectionString: 'mongodb://127.0.0.1:27017/TestDB'
+
+  # Or user connection parameters
+  - type: 'mysql'
+    host: 'mysql://localhost:3306'
+    db: 'TestDB'
+    # Authentication credentials: It's strongly 
+    # recommended to keep this information in 
+    # the .env file
+    auth: 
+      user: 'root'
+      password: 'password'
+    
+  # Use on a connection string
+  - type: 'redis'
+    key: 'redis-store-db'
+    connectionString: 'rediss://121.0.0.1:25061'

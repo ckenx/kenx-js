@@ -27,7 +27,7 @@ Array.prototype.pmap = async function( fn ){
   return output
 }
 
-export type SetupTarget = 'backend' | 'frontend' | 'native'
+export type SetupTarget = 'index' | 'frontend' | 'native'
 
 export type ServerType = 'http' | 'socket.io' | 'websocket'
 export type ServerConfig = {
@@ -36,12 +36,14 @@ export type ServerConfig = {
   bindTo?: string
 }
 
-export type ApplicationSessionEnv = 'in-memory' | {
-
+export type ApplicationSessionStore = {
+  provider: string
+  db: string
 }
 export type ApplicationSessionConfig = {
-  development?: ApplicationSessionEnv
-  production?: ApplicationSessionEnv
+  type: 'in-memory' | 'store'
+  env?: 'development' | 'production'
+  store?: ApplicationSessionStore
   config: {
     name: string
     secret: string
@@ -73,7 +75,7 @@ export type DirectoryConfig = {
   root?: string
   pattern?: string
 }
-export type BackendConfig = {
+export type SetupConfig = {
   typescript?: boolean
   env?: {
     dev?: boolean

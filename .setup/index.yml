@@ -1,0 +1,26 @@
+# Enable typescript
+typescript: true
+
+# Environment variables
+env:
+  dev: true
+
+# Project directory
+directory:
+  root: './demos/simple'
+  # Directory structure patterns (Optional)
+  #
+  # Default pattern: Developer have full control over the directory
+  # - `-`
+  #
+  # Defined patterns: The application auto-load this directories 
+  # - `mvc`: Model View Controller
+  pattern: '-'
+
+# Additional configurations
+__extends__: [
+  'servers',
+  'sessions',
+  'databases',
+  'applications'
+]

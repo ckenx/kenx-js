@@ -1,0 +1,7 @@
+# Applications configuration
+applications:
+  - framework: 'express'
+    session: '[sessions]:default'
+    routes:
+      - prefix: '/'
+      - path: ''

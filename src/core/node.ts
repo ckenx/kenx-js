@@ -2,19 +2,43 @@ import Yaml from 'yaml'
 import Fs from 'node:fs'
 import Path from 'node:path'
 
-import type { DirectoryConfig, SetupTarget } from '#types/index'
+import type { SetupTarget } from '#types/index'
+
+function parseYaml( filepath: string ){
+  try {
+    let content = Yaml.parse( Fs.readFileSync(`./${filepath}.yml`, 'utf-8') )
+    if( content.__extends__ )
+      for( const each of content.__extends__ ){
+        content = {
+          ...content,
+          ...parseYaml(`${Path.dirname( filepath )}/${each}`)
+        }
+
+        delete content.__extends__
+      }
+
+    return content
+  }
+  catch( error ){
+    console.log(`[SETUP] - Parsing <${filepath}.yml> file:`, error )
+    return null
+  }
+}
 
 /**
  * Load setup configurations
  * 
- * @type {string} target: `backend`, `frontend`, `native`
+ * @type {string} target: `index`, `native`
  * @return {object} Defined setup `object` or `null` if not found
  * 
  */
-export const loadSetup = ( target: SetupTarget ) => {
-  try { return Yaml.parse( Fs.readFileSync(`./.setup/${target}.yml`, 'utf-8') ) }
+export const loadSetup = ( target?: SetupTarget ) => {
+  // Default target is .setup index
+  target = target || 'index' 
+
+  try { return parseYaml(`.setup/${target}`) }
   catch( error ){
-    console.log('Failed parsing .setup <backend.yml> file: ', error )
+    console.log(`[SETUP] <${target}> target:`, error )
     return null
   }
 }

@@ -1,15 +1,15 @@
 import type { Ckenx } from '#types/service'
-import type { BackendConfig, HTTPServerConfig, AuxiliaryServerConfig } from '#types/index'
+import type { SetupConfig, HTTPServerConfig, AuxiliaryServerConfig } from '#types/index'
 import dotenv from 'dotenv'
 import * as kxm from '#core/node'
 
 export const Manager = kxm
 
 /**
- * Ckenx backend setup configuration
+ * Ckenx setup configuration
  * 
  */
-let Backend: BackendConfig
+let Setup: SetupConfig
 
 /**
  * Auto-loaded features 
@@ -78,7 +78,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
      * - To HTTP Server with a given `key` or default
      * - To PORT
      */
-    const binder = config.bindTo && CORE_INTERFACE.servers ? CORE_INTERFACE.servers[`http:${bindTo}`]?.server : config.PORT
+    const binder = bindTo && CORE_INTERFACE.servers ? CORE_INTERFACE.servers[ bindTo ]?.server : config.PORT
     if( !binder )
       throw new Error('Undefined BIND_TO or PORT configuration')
 
@@ -93,17 +93,19 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
 
 export const autoload = async (): Promise<void> => {
   /**
-   * Load backend setup configuration
+   * Load setup configuration
    * 
    */
-  Backend = Manager.loadSetup('backend')
-  if( !Backend ) process.exit(1)
+  Setup = Manager.loadSetup()
+  if( !Setup ) process.exit(1)
+
+  console.log( Setup )
 
   /**
    * Load Environment Variabales
    * 
    */
-  Backend.env?.dev === true ?
+  Setup.env?.dev === true ?
         dotenv.config({ path: './.env.dev' }) // Load development specific environment variables
         : dotenv.config() // Load default .env variables
 
@@ -112,20 +114,20 @@ export const autoload = async (): Promise<void> => {
    * and pattern
    * 
    */
-  Backend.directory = Backend.directory || {}
+  Setup.directory = Setup.directory || {}
   
-  Backend.directory.root = Manager.getRoot( Backend.directory.root )
-  Backend.directory.pattern = Backend.directory.pattern || '-'
+  Setup.directory.root = Manager.getRoot( Setup.directory.root )
+  Setup.directory.pattern = Setup.directory.pattern || '-'
 
   /**
    * Load configured servers
    * 
    */
-  if( Array.isArray( Backend.servers ) ){
+  if( Array.isArray( Setup.servers ) ){
     if( !CORE_INTERFACE.servers )
       CORE_INTERFACE.servers = {}
     
-    for await ( const config of Backend.servers ){
+    for await ( const config of Setup.servers ){
       const { type, key } = config
       let server
 
@@ -137,8 +139,7 @@ export const autoload = async (): Promise<void> => {
       if( !server )
         throw new Error(`[${type.toUpperCase()} SERVER] - Unsupported`)
 
-      const ref = key ? `${type}:${key}` : type
-      CORE_INTERFACE.servers[ ref ] = server
+      CORE_INTERFACE.servers[`${type}:${key || 'default'}`] = server
 
       //
       const info = server.getInfo()
@@ -158,9 +159,9 @@ export const autoload = async (): Promise<void> => {
  */
 export const run = async () => {
   // Assumed `autoload` method has resolved
-  if( !Backend ) process.exit(1)
+  if( !Setup ) process.exit(1)
   
-  const { typescript, directory } = Backend
+  const { typescript, directory } = Setup
   switch( directory.pattern ){
     /**
      * MVC entrypoints project structure
