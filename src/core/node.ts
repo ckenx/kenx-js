@@ -25,10 +25,16 @@ export const loadSetup = ( target: SetupTarget ) => {
  * @return {module} Defined setup `object` or `null` if not found
  * 
  */
-export const importPlugin = async ( name: string ) => {
-  try { return ( await import(`./../plugins/${name}`) ).default }
+export const importPlugin = async ( reference: string ) => {
+  try { 
+    const [type, name] = reference.split(':')
+    if( !['app', 'server'].includes( type ) )
+      throw new Error(`<${type}:> is not a valid import type. Expect <app:>, <server:>, ...`)
+
+    return ( await import(`./../plugins/${type}s/${name}`) ).default
+  }
   catch( error: any ){
     console.error( error )
-    throw new Error(`Failed importing <${name}> plugin`)
+    throw new Error(`Failed importing <${reference}> plugin`)
   }
 }

@@ -11,16 +11,17 @@ if( nodeVersionMajor < 16 ) {
 }
 
 /**
- * NodeJS util functions
+ * Start initialization
  * 
  */
-import { Utils, autoload } from './core'
+import type { BackendConfig } from './types'
+import { Manager, autoload } from './core'
 
 /**
  * Load backend setup configuration
  * 
  */
-const Backend = Utils.loadSetup('backend') as BackendConfig
+const Backend = Manager.loadSetup('backend') as BackendConfig
 if( !Backend ) process.exit(1)
 
 /**
@@ -34,9 +35,7 @@ Backend.env?.dev === true ?
       : dotenv.config() // Load default .env variables
 
 /**
- * Server NodeJS application 
+ * Auto-load Ckenx backend services
  * 
  */
-import { BackendConfig } from './types'
-
 autoload( Backend )

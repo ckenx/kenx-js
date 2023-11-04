@@ -1,12 +1,24 @@
+# Enable typescript
 typscript: true
 
+# Environment variables
 env:
   dev: true
 
-server:
-  http:
+servers:
+  # HTTP server configurations
+  - type: 'http'
+    sid: 'default'
     HOST: 0.0.0.0
     PORT: 8008
     application:
       framework: 'express'
-  # socket: 'socket.io'
+  
+  # Socket.io server configurations
+  - type: 'socketio'
+    bindTo: 'default'
+    options:
+      cookie: false
+      allowEIO3: true
+      serveClient: true
+      connectTimeout: 15000

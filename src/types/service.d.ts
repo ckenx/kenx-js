@@ -1,10 +1,14 @@
 import type { Server } from 'http'
 import type { HTTPServerConfig } from '.'
+import * as KManager from '../core/node'
 
 declare namespace Ckenx {
+  export interface Manager extends KManager {
+    importPlugin: ( attr: string ) => Promise<any>
+  }
 
   export interface ApplicationPlugin<T> {
-    readonly app: T
+    private readonly app: T
     readonly HOST: string
     readonly PORT: number
     use: ( fn: any ) => this
@@ -24,8 +28,9 @@ declare namespace Ckenx {
     port?: number
   }
   export interface ServerPlugin<T> {
+    readonly server: T
     getInfo: () => ActiveServerInfo | null
-    listen: ( port: number, host: string ) => Promise<ActiveServerInfo | null>
+    listen: ( arg: any ) => Promise<ActiveServerInfo | null>
     close: () => Promise<unknown>
   }
 

@@ -1,7 +1,6 @@
-import type { HTTPServerConfig } from '../../types'
-import type { Ckenx } from '../../types/service'
+import type { HTTPServerConfig } from '../../../types'
+import type { Ckenx } from '../../../types/service'
 import express, { Express, NextFunction, Request, Response } from 'express'
-import http from 'http'
 import cors from 'cors'
 import logger from 'morgan'
 import helmet from 'helmet'
@@ -57,73 +56,19 @@ function _init_( port: number ){
   .use( express.urlencoded({ extended: true }) )
 }
 
-class HTTPServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> {
-  private server: Ckenx.HTTPServer
-
-  constructor( app?: Express ){
-    this.server = http.createServer( app )
-  
-    /**
-     * Event listener for HTTPS server event.
-     */
-    process.on('uncaughtException', ({ stack, message }: Error ) => console.error( 'Uncaught Exception at: %s - message: %s', stack, message ) )
-    process.on('unhandledRejection', ({ stack, message }: Error ) => console.error( 'Unhandled Rejection at: %s - message: %s', stack, message ) )
-
-    /* Listen on provided port, on all network interfaces. */
-    this.server
-    .on('error', ( error: any ) => {
-      // handle specific listen errors with friendly messages
-      switch( error.code ){
-        case 'EACCES': console.error('Requires elevated privileges'); break
-        case 'EADDRINUSE': console.error('Server PORT is already in use'); break
-        default: console.error( error )
-      }
-    } )
-  }
-
-  listen( port: number, host?: string ): Promise<Ckenx.ActiveServerInfo | null> {
-    return new Promise( ( resolve, reject ) => {
-      if( !this.server )
-        return reject('No HTTP Server')
-    
-      this.server.listen( port, host || '0.0.0.0', () => resolve( this.getInfo() ) )
-    } )
-  }
-
-  close(){
-    return new Promise( ( resolve, reject ) => {
-      if( !this.server )
-        return reject('No HTTP Server')
-    
-      this.server.close( ( error?: Error ) => error ? reject( error ) : resolve( true ) )
-    } )
-  }
-
-  getInfo(): Ckenx.ActiveServerInfo | null {
-    if( !this.server )
-      throw new Error('No HTTP Server')
-
-    const info = this.server.address()
-    if( typeof info == 'string' ) return null
-
-    return {
-      type: 'express',
-      ...info
-    }
-  }
-}
-
 export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
   readonly HOST: string
   readonly PORT: number
   readonly app: Express
+  private readonly KManager: Ckenx.Manager
 
   private AUTO_HANDLE_ERROR = true
   
-  constructor( httpServerConfig: HTTPServerConfig ){
+  constructor( kxm: Ckenx.Manager, httpServerConfig: HTTPServerConfig ){
     this.HOST = httpServerConfig.HOST
     this.PORT = httpServerConfig.PORT
 
+    this.KManager = kxm
     this.app = _init_( this.PORT )
   }
 
@@ -182,10 +127,15 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
   async serve(): Promise<Ckenx.ServerPlugin<Ckenx.HTTPServer>> {
     // Automatically handle application errors occurence
     this.AUTO_HANDLE_ERROR && this.handleError()
+    
+    if( !this.KManager )
+      throw new Error('Undefined Ckenx Utils object supply')
 
-    const server = new HTTPServer( this.app )
-    await server.listen( this.PORT, this.HOST )
+    const
+    HttpServer = await this.KManager.importPlugin('server:http'),
+    server: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( this.KManager, this.app )
 
+    await server.listen({ PORT: this.PORT, HOST: this.HOST })
     return server
   }
 }

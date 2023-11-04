@@ -1,12 +1,13 @@
 
-import type { Ckenx } from '../../types/service'
+import type { Ckenx } from '../../../types/service'
+import type { HTTPServerConfig } from '../../../types'
 import http from 'http'
 
 export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> {
-  private server: Ckenx.HTTPServer
+  readonly server: Ckenx.HTTPServer
 
-  constructor(){
-    this.server = http.createServer()
+  constructor( kxm: Ckenx.Manager, app?: any ){
+    this.server = http.createServer( app )
   
     /**
      * Event listener for HTTPS server event.
@@ -26,12 +27,12 @@ export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> 
     } )
   }
 
-  listen( port: number, host?: string ): Promise<Ckenx.ActiveServerInfo | null> {
+  listen({ PORT, HOST }: HTTPServerConfig ): Promise<Ckenx.ActiveServerInfo | null> {
     return new Promise( ( resolve, reject ) => {
       if( !this.server )
         return reject('No HTTP Server')
     
-      this.server.listen( port, host || '0.0.0.0', () => resolve( this.getInfo() ) )
+      this.server.listen( PORT, HOST || '0.0.0.0', () => resolve( this.getInfo() ) )
     } )
   }
 

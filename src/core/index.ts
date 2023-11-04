@@ -1,77 +1,119 @@
+
+import type IO from 'socket.io'
 import type { Ckenx } from '../types/service'
-import type { BackendConfig } from '../types'
-import * as _Utils from './node'
+import type { BackendConfig, HTTPServerConfig, AuxiliaryServerConfig } from '../types'
+import * as kxm from './node'
 
-export const Utils = _Utils
+export const Manager = kxm
 
-export const autoload = async ({ server }: BackendConfig ): Promise<Ckenx.CoreInterface> => {
+/**
+ * Auto-loaded features 
+ */
+const CORE_INTERFACE: Ckenx.CoreInterface = {}
+
+async function createHTTPServer( config: HTTPServerConfig ){
+  const { HOST, PORT, application } = config
+
+  config.HOST = HOST || process.env.HTTP_HOST || '0.0.0.0'
+  config.PORT = PORT || Number( process.env.HTTP_PORT ) || 8000
+
   /**
-   * Auto-loaded features 
-   */
-  const CORE_INTERFACE: Ckenx.CoreInterface = {}
-
-  /**
-   * Create HTTP server
+   * Handle server & application with
+   * existing plugin frameworks. 
+   * 
+   * Eg. express, fastify, ...
    * 
    */
-  if( server?.http ) {
-    const { HOST, PORT, application } = server.http
+  if( application?.framework ) {
+    CORE_INTERFACE.apps = {}
 
-    server.http.HOST = HOST || process.env.HTTP_HOST || '0.0.0.0'
-    server.http.PORT = PORT || Number( process.env.HTTP_PORT ) || 8000
-
-    CORE_INTERFACE.servers = {}
-
-    /**
-     * Handle server & application with
-     * existing plugin frameworks. 
-     * 
-     * Eg. express, fastify, ...
-     * 
-     */
-    if( application?.framework ) {
-      CORE_INTERFACE.apps = {}
-
-      try {
-        const
-        App = await Utils.importPlugin( application.framework ),
-        instance: Ckenx.ApplicationPlugin<Ckenx.HTTPServer> = new App( Utils, server.http )
-
-        CORE_INTERFACE.apps[ application.framework ] = instance
-
-        const httpServer = await instance.serve()
-        CORE_INTERFACE.servers.http = httpServer
-
-        //
-        const info = httpServer.getInfo()
-        if( !info ) throw new Error('Server returns no information')
-
-        console.log(`\nServer is up 🚀 running on PORT=${info.port}`)
-      } 
-      catch( error ){
-        console.error('Failed loading server application: ', error )
-        process.exit(1)
-      }
-    }
-
-    // Create default HTTP server
-    else try {
+    try {
       const
-      HttpServer = await Utils.importPlugin('http'),
-      instance: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( Utils )
+      App = await kxm.importPlugin(`app:${application.framework}`),
+      instance: Ckenx.ApplicationPlugin<Ckenx.HTTPServer> = new App( kxm, config )
 
-      await instance.listen( PORT, HOST )
-      CORE_INTERFACE.servers.http = instance
+      CORE_INTERFACE.apps[ application.framework ] = instance
 
-      //
-      const info = instance.getInfo()
-      if( !info ) throw new Error('Server returns no information')
-
-      console.log(`\nServer is up 🚀 running on PORT=${info.port}`)
+      return await instance.serve()
     } 
     catch( error ){
-      console.error('Failed loading server application: ', error )
+      console.error('[HTTP SERVER] -', error )
       process.exit(1)
+    }
+  }
+
+  // Create default HTTP server
+  else try {
+    const
+    HttpServer = await kxm.importPlugin('server:http'),
+    instance: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( kxm )
+
+    await instance.listen( config )
+    return instance
+  }
+  catch( error ){
+    console.error('[HTTP SERVER] -', error )
+    process.exit(1)
+  }
+}
+
+async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
+  try {
+    const { type, bindTo, PORT, options } = config
+    config.PORT = PORT || Number( process.env.HTTP_PORT )
+
+    const
+    AuxServer = await kxm.importPlugin(`server:${type}`),
+    instance: Ckenx.ServerPlugin<any> = new AuxServer( kxm, options )
+
+    /**
+     * Bind server
+     * 
+     * - To HTTP Server with a given `sid` or default
+     * - To PORT
+     */
+    const binder = config.bindTo && CORE_INTERFACE.servers ? CORE_INTERFACE.servers[`http:${bindTo}`]?.server : config.PORT
+    if( !binder )
+      throw new Error('Undefined BIND_TO or PORT configuration')
+
+    await instance.listen( binder )
+    return instance
+  }
+  catch( error ){
+    console.error('[SOCKET SERVER] -', error )
+    process.exit(1)
+  }
+}
+
+export const autoload = async ({ servers }: BackendConfig ): Promise<Ckenx.CoreInterface> => {
+  /**
+   * Load configured servers
+   * 
+   */
+  if( Array.isArray( servers ) ){
+    if( !CORE_INTERFACE.servers )
+      CORE_INTERFACE.servers = {}
+    
+    for await ( const config of servers ){
+      const { type, sid } = config
+      let server
+
+      switch( type ){
+        case 'http': server = await createHTTPServer( config as HTTPServerConfig ); break
+        default: server = await createAuxiliaryServer( config as AuxiliaryServerConfig ); break
+      }
+
+      if( !server )
+        throw new Error(`[${type.toUpperCase()} SERVER] - Unsupported`)
+
+      const ref = sid ? `${type}:${sid}` : type
+      CORE_INTERFACE.servers[ ref ] = server
+
+      //
+      const info = server.getInfo()
+      if( !info ) throw new Error('Server returns no information')
+
+      console.log(`\n[${type.toUpperCase()} SERVER] - running \n\tPORT=${info.port}`)
     }
   }
 
