@@ -1,10 +1,6 @@
 # Enable typescript
 typescript: true
 
-# Environment variables
-env:
-  dev: true
-
 # Project directory
 directory:
   root: './demos/simple'

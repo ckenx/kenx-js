@@ -1,60 +1,8 @@
 import type { HTTPServerConfig } from '#types/index'
 import type { Ckenx } from '#types/service'
-import express, { Express, NextFunction, Request, Response } from 'express'
-import cors from 'cors'
-import logger from 'morgan'
-import helmet from 'helmet'
-
-function _init_( port: number ){
-  /**
-   * Instanciate an Express application
-   */
-  return express()
-  
-  /**
-   * Server trust proxy configuration
-   * 
-   * TODO: 
-   *  - Research and find all proxy strategies & implementations
-   *  - Apply proxy configurations
-   * 
-   */
-  .enable('trust proxy')
-  .set('port', port )
-
-  /**
-   * Development logs
-   * 
-   * TODO:
-   *  - Provide to developer to set their favorate customization of logger
-   *  - Apply logger customization configurations
-   *  - Set default logger and recommandations as well
-   * 
-   */
-  .use( logger('dev') )
-
-  /**
-   * Security configuration
-   * 
-   * TODO:
-   *  - Apply security configuration
-   *  - Include CORS handler & configurations as well
-   *  - Propose best security practices configuration recommendation
-   * 
-   */
-  .use( helmet() )
-
-  /**
-   * Request Params, Query & Body parser
-   * 
-   * TODO: 
-   *  - Apply parsing configuration
-   *  - Add multi-part form-data handler
-   * 
-   */
-  .use( express.json() ) // limit: '50mb', extended: true
-  .use( express.urlencoded({ extended: true }) )
-}
+import type { Express, NextFunction, Request, Response } from 'express'
+import __session__ from './session'
+import __init__ from './init'
 
 export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
   readonly HOST: string
@@ -68,12 +16,26 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
     this.HOST = httpServerConfig.HOST
     this.PORT = httpServerConfig.PORT
 
+    if( !this.HOST || !this.PORT )
+      throw new Error('Invalid configuration. Expecting <HOST>, <PORT>, <application>, ...')
+
+    /**
+     * Ckenx Internal utils
+     */
     this.KManager = kxm
-    this.app = _init_( this.PORT )
+
+    /**
+     * Initiliaze application
+     */
+    this.app = __init__( this.PORT )
     
-    // Create application session
-    // httpServerConfig.application?.session 
-    // && createSession( this.app, httpServerConfig.application.session )
+    /**
+     * Initiliaze and manage application session
+     */
+    if( httpServerConfig.application?.session ){
+      const extendedApp = __session__( this.app, httpServerConfig.application.session )
+      if( extendedApp ) this.app = extendedApp
+    }
   }
 
   use( fn: any ){

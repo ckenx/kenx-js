@@ -18,7 +18,7 @@ let Setup: SetupConfig
 const CORE_INTERFACE: Ckenx.CoreInterface = {}
 
 async function createHTTPServer( config: HTTPServerConfig ){
-  const { HOST, PORT, application } = config
+  const { HOST, PORT } = config
 
   config.HOST = HOST || process.env.HTTP_HOST || '0.0.0.0'
   config.PORT = PORT || Number( process.env.HTTP_PORT ) || 8000
@@ -30,15 +30,15 @@ async function createHTTPServer( config: HTTPServerConfig ){
    * Eg. express, fastify, ...
    * 
    */
-  if( application?.framework ) {
+  if( config.application?.framework ) {
     CORE_INTERFACE.apps = {}
 
     try {
       const
-      App = await kxm.importPlugin(`app:${application.framework}`),
+      App = await kxm.importPlugin(`app:${config.application.framework}`),
       instance: Ckenx.ApplicationPlugin<Ckenx.HTTPServer> = new App( kxm, config )
 
-      CORE_INTERFACE.apps[ application.framework ] = instance
+      CORE_INTERFACE.apps[ config.application.framework ] = instance
 
       return await instance.serve()
     } 
@@ -93,21 +93,19 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
 
 export const autoload = async (): Promise<void> => {
   /**
+   * Load Environment Variabales
+   * 
+   */
+  process.env.NODE_ENV == 'development' ?
+          dotenv.config({ path: './.env.dev' }) // Load development specific environment variables
+          : dotenv.config() // Load default .env variables
+
+  /**
    * Load setup configuration
    * 
    */
   Setup = Manager.loadSetup()
   if( !Setup ) process.exit(1)
-
-  console.log( Setup )
-
-  /**
-   * Load Environment Variabales
-   * 
-   */
-  Setup.env?.dev === true ?
-        dotenv.config({ path: './.env.dev' }) // Load development specific environment variables
-        : dotenv.config() // Load default .env variables
 
   /**
    * Define project directory structure 

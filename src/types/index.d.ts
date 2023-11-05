@@ -27,6 +27,8 @@ Array.prototype.pmap = async function( fn ){
   return output
 }
 
+type JSObject<Type> = { [index: string]: Type }
+
 export type SetupTarget = 'index' | 'frontend' | 'native'
 
 export type ServerType = 'http' | 'socket.io' | 'websocket'
@@ -39,23 +41,17 @@ export type ServerConfig = {
 export type ApplicationSessionStore = {
   provider: string
   db: string
+  options: JSObject<any>
+}
+export type ApplicationSessionConfigSet = {
+  type: 'in-memory' | 'store'
+  store?: ApplicationSessionStore
+  options: JSObject<any>
 }
 export type ApplicationSessionConfig = {
-  type: 'in-memory' | 'store'
-  env?: 'development' | 'production'
-  store?: ApplicationSessionStore
-  config: {
-    name: string
-    secret: string
-    saveUninitialized?: boolean
-    resave?: boolean
-    cookie?: {
-      path?: string
-      httpOnly: boolean
-      secure: boolean
-      maxAge?: number
-    }
-  }
+  allenv: ApplicationSessionConfigSet
+  development?: ApplicationSessionConfigSet
+  production?: ApplicationSessionConfigSet
 }
 export type ApplicationConfig = {
   framework: string
@@ -77,9 +73,6 @@ export type DirectoryConfig = {
 }
 export type SetupConfig = {
   typescript?: boolean
-  env?: {
-    dev?: boolean
-  }
   directory: DirectoryConfig
   servers?: (HTTPServerConfig | AuxiliaryServerConfig)[]
 }

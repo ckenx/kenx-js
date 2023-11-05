@@ -1,8 +1,9 @@
 import Yaml from 'yaml'
 import Fs from 'node:fs'
 import Path from 'node:path'
+import type { SetupConfig, SetupTarget } from '#types/index'
 
-import type { SetupTarget } from '#types/index'
+const REFERENCE_MATCH_REGEX = /\[([a-zA-Z0-9-_.]+)\]:([a-zA-Z0-9-_.]+)/i
 
 function parseYaml( filepath: string ){
   try {
@@ -36,7 +37,39 @@ export const loadSetup = ( target?: SetupTarget ) => {
   // Default target is .setup index
   target = target || 'index' 
 
-  try { return parseYaml(`.setup/${target}`) }
+  try { 
+    const 
+    data = parseYaml(`.setup/${target}`),
+    comply = ( value: any ): any => {
+      if( !value ) return value
+
+      switch( typeof value ){
+        case 'string': return REFERENCE_MATCH_REGEX.test( value ) ? comply( resolveSetupReference( data, value ) ) : value
+        case 'number': return value
+        default: {
+          if( Array.isArray( value ) )
+            return value.map( ( each: any ) => { return comply( each ) })
+
+          else {
+            Object.entries( value ).map( ([ key, subValue ]) => {
+              value[ key ] = comply( subValue )
+              // console.log( key, subValue )
+            } )
+            return value
+          }
+        }
+      }
+    }
+    
+    /**
+     * Comply data by resolving all key references
+     * throughout partials configurations
+     * 
+     */
+    comply( data )
+
+    return data
+  }
   catch( error ){
     console.log(`[SETUP] <${target}> target:`, error )
     return null
@@ -46,7 +79,7 @@ export const loadSetup = ( target?: SetupTarget ) => {
 /**
  * Import plugin
  * 
- * @type {string} name
+ * @type {string} reference
  * @return {module} Defined setup `object` or `null` if not found
  * 
  */
@@ -65,6 +98,35 @@ export const importPlugin = async ( reference: string ) => {
 }
 
 /**
+ * Resolve setup reference
+ * 
+ * @type {string} reference
+ * @return {any}
+ * 
+ */
+export const resolveSetupReference = ( Setup: any, reference: string ) => {
+  if( typeof Setup !== 'object' || !Setup )
+    return
+
+  const [ _, section, key ] = reference.match( REFERENCE_MATCH_REGEX ) || []
+  if( !_ || !key || !section ) return
+
+  // Refer to defined environment variables
+  if( section === 'env' )
+    return process.env[ key ]
+
+  // Multi-configurations array
+  else if( Array.isArray( Setup[ section ] ) ){
+    for( const config of Setup[ section ] )
+      if( ( !config.key && key == 'default' ) || config.key == key )
+        return config
+  }
+
+  // Consise object
+  else return Setup[ section ][ key ]
+}
+
+/**
  * Return project directory root
  * 
  * @type {string} path
@@ -72,7 +134,8 @@ export const importPlugin = async ( reference: string ) => {
  * 
  */
 export const getRoot = ( path?: string ) => {
-  if( !path ) return process.cwd()
+  if( !path )
+    return process.cwd()
 
   return Path.resolve( process.cwd(), path )
 }
