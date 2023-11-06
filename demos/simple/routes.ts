@@ -1,15 +1,9 @@
-import { Express, Router } from 'express'
-
-declare module Express {
-  interface Request {
-    session: any
-  }
-}
+import { Router } from 'express'
 
 export default ( app: Router ) => {
   app
   // Render text request
-  .get('/', async ( req: Express.Request, res ) => {
+  .get('/', async ( req, res ) => {
     res.send(`Hello, ${req.session.name}!`)
   })
 
@@ -27,5 +21,51 @@ export default ( app: Router ) => {
         </head>
       </html>
     `)
+  })
+
+  // Test assets storage request
+  .get('/storage', async ( req, res ) => {
+    // @ts-ignore
+    const storage = req.app.storage()
+
+    res.send({
+      error: false,
+      status: 'STORAGE',
+      results: await storage.fetch()
+    })
+  })
+
+  // Upload assets page
+  .get('/upload', async ( req, res ) => {
+    res.send(`
+      <html>
+        <head>
+          <title>Upload</title>
+          <script type="text/javascript">
+            function onLoad(){
+              document
+              .querySelector('#file-input')
+              .addEventListener('change', e => {
+                const body = new FormData()
+
+                Array.from( e.target.files ).map( file => body.append('file', file ) )
+                
+                fetch('/upload/to', { method: 'POST', body }).catch( error => console.log('Failed:', error ) )
+              })
+            }
+          </script>
+        </head>
+        <body onload="onLoad()">
+          <input id="file-input" type="file" name="avatar"/>
+        </body>
+      </html>
+    `)
+  })
+  // Test handle upload and storage of assets
+  .post('/upload/to', async ( req, res ) => {
+    
+    console.log( req.files )
+
+    res.send('Uploaded successfully!')
   })
 }

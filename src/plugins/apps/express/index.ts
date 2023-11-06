@@ -1,13 +1,18 @@
 import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig } from '#types/index'
 import type { Ckenx } from '#types/service'
-import { Router, type Express, type NextFunction, type Request, type Response } from 'express'
+import type { Express, NextFunction, Request, Response, ErrorRequestHandler } from 'express'
+import { Router } from 'express'
 import __session__ from '../express-session'
 import __init__ from './init'
+
+interface DecoratedExpress extends Express {
+  [index: string]: any
+}
 
 export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
   readonly HOST: string
   readonly PORT: number
-  readonly core: Express
+  readonly core: DecoratedExpress
   private readonly Setup: Ckenx.SetupManager
 
   private AUTO_HANDLE_ERROR = true
@@ -56,6 +61,12 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
 
   use( fn: any ){
     this.core.use( fn )
+
+    return this
+  }
+
+  decorate( attribute: string, value: any ){
+    this.core[ attribute ] = value
 
     return this
   }

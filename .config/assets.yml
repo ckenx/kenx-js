@@ -24,11 +24,11 @@ assets:
         key: '[env]:STORAGE_CLIENT_KEY'
         secret: '[env]:STORAGE_CLIENT_SECRET'
         version: 'latest'
-      config:
-        hostname: '[env]:STORAGE_HOSTNAME'
-        baseURL: '[env]:STORAGE_BASE_URL'
-        region: '[env]:STORAGE_REGION'
-        bucket: '[env]:STORAGE_BUCKET'
+      spaces:
+        - endpoint: '[env]:STORAGE_ENDPOINT'
+          baseURL: '[env]:STORAGE_BASE_URL'
+          region: '[env]:STORAGE_REGION'
+          bucket: '[env]:STORAGE_BUCKET'
   
     # Asset upload management configuration
     # Settings change based on the used asset 

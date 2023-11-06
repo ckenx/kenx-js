@@ -1,14 +1,10 @@
-import type { ServeStaticOptions } from 'serve-static'
 import type { Ckenx } from '#types/service'
-import type { ApplicationAssetConfig, AssetStorageConfig, AssetUploadConfig } from '#types/index'
+import type { StaticAssetConfig, ApplicationAssetConfig, AssetStorageConfig, AssetUploadConfig } from '#types/index'
+// import './types'
 import os from 'os'
+import { CAS } from 'globe-sdk'
 import express, { Express } from 'express'
 import multipart from 'express-form-data'
-
-type StaticAssetConfig = {
-  root: string
-  options?: ServeStaticOptions
-}
 
 function addStatic( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, configList: StaticAssetConfig[] ){
   if( !Array.isArray( configList ) || !configList.length ) return
@@ -47,7 +43,36 @@ function addMultipart( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<E
 }
 
 function addStorage( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, storageConfig: AssetStorageConfig ){
+  switch( storageConfig.type ){
+    case 'cloud': {
+      const { client, spaces } = storageConfig
+      if( !client )
+        throw new Error('Undefined cloud storage client configuration')
 
+      if( !spaces )
+        throw new Error('Undefined cloud storage spaces')
+
+      const config = {
+        accessKey: client.key,
+        secret: client.secret,
+        spaces: spaces.map( ({ region, bucket, baseURL, endpoint }) => {
+          return {
+            region,
+            bucket,
+            endpoint,
+            host: baseURL,
+            version: client.version
+          }
+        })
+      }
+
+      app.decorate('storage', CAS.config( config ).Space )
+    } break
+    case 'local':
+    default: {
+      // TODO: Inforce local path and configuration
+    }
+  }
 }
 
 export default ( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, assetConfig: ApplicationAssetConfig ) => {

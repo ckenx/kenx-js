@@ -59,6 +59,12 @@ export type StaticAssetConfig = {
   root: string
   options: JSObject<any>
 }
+export type AssetStorageSpace = {
+  endpoint: string
+  baseURL: string
+  region: string
+  bucket: string
+}
 export type AssetStorageConfig = {
   type: 'local' | 'cloud'
   path?: string // Only for local type
@@ -67,12 +73,7 @@ export type AssetStorageConfig = {
     secret: string
     version?: string
   }
-  config?:{
-    hostname: string
-    baseURL: string
-    region: string
-    bucket: string
-  }
+  spaces?: AssetStorageSpace[]
 }
 export type AssetUploadConfig = {
   maxFileSize: number

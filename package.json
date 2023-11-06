@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build:backend": "rimraf ./dist && tsc && tsc-alias",
-    "dev:backend": "nodemon",
+    "dev": "nodemon",
     "start": "NODE_ENV=production node dist/index",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
@@ -21,6 +21,7 @@
     "express": "^4.18.2",
     "express-form-data": "^2.0.22",
     "express-session": "^1.17.3",
+    "globe-sdk": "^1.1.5",
     "helmet": "^7.0.0",
     "hpp": "^0.2.3",
     "morgan": "^1.10.0",
