@@ -1,21 +1,20 @@
 import type { Ckenx } from '#types/service'
-import type { SetupConfig, HTTPServerConfig, AuxiliaryServerConfig } from '#types/index'
+import type { HTTPServerConfig, AuxiliaryServerConfig } from '#types/index'
 import dotenv from 'dotenv'
-import * as kxm from '#core/node'
-
-export const Manager = kxm
+import SetupManager from '#core/setup'
 
 /**
  * Ckenx setup configuration
  * 
  */
-let Setup: SetupConfig
+const 
+Setup = new SetupManager(),
 
 /**
  * Auto-loaded features 
  * 
  */
-const CORE_INTERFACE: Ckenx.CoreInterface = {}
+CORE_INTERFACE: Ckenx.CoreInterface = {}
 
 async function createHTTPServer( config: HTTPServerConfig ){
   const { HOST, PORT } = config
@@ -33,8 +32,8 @@ async function createHTTPServer( config: HTTPServerConfig ){
   if( config.application?.framework ) {
     try {
       const
-      App = await kxm.importPlugin(`app:${config.application.framework}`),
-      instance: Ckenx.ApplicationPlugin<Ckenx.HTTPServer> = new App( kxm, config )
+      App = await Setup.importPlugin(`app:${config.application.framework}`),
+      instance: Ckenx.ApplicationPlugin<Ckenx.HTTPServer> = new App( Setup, config )
 
       return await instance.serve()
     } 
@@ -47,8 +46,8 @@ async function createHTTPServer( config: HTTPServerConfig ){
   // Create default HTTP server
   else try {
     const
-    HttpServer = await kxm.importPlugin('server:http'),
-    instance: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( kxm )
+    HttpServer = await Setup.importPlugin('server:http'),
+    instance: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( Setup )
 
     await instance.listen( config )
     return instance
@@ -65,8 +64,8 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
     config.PORT = PORT || Number( process.env.HTTP_PORT )
 
     const
-    AuxServer = await kxm.importPlugin(`server:${type}`),
-    instance: Ckenx.ServerPlugin<any> = new AuxServer( kxm, options )
+    AuxServer = await Setup.importPlugin(`server:${type}`),
+    instance: Ckenx.ServerPlugin<any> = new AuxServer( Setup, options )
 
     /**
      * Bind server
@@ -100,28 +99,18 @@ export const autoload = async (): Promise<void> => {
    * Load setup configuration
    * 
    */
-  Setup = Manager.loadSetup()
-  if( !Setup ) process.exit(1)
-
-  /**
-   * Define project directory structure 
-   * and pattern
-   * 
-   */
-  Setup.directory = Setup.directory || {}
-  
-  Setup.directory.root = Manager.getRoot( Setup.directory.root )
-  Setup.directory.pattern = Setup.directory.pattern || '-'
+  Setup.initialize()
+  const { servers } = Setup.getConfig()
 
   /**
    * Load configured servers
    * 
    */
-  if( Array.isArray( Setup.servers ) ){
+  if( Array.isArray( servers ) ){
     if( !CORE_INTERFACE.servers )
       CORE_INTERFACE.servers = {}
     
-    for await ( const config of Setup.servers ){
+    for await ( const config of servers ){
       const { type, key } = config
       let server
 
@@ -155,7 +144,7 @@ export const run = async () => {
   // Assumed `autoload` method has resolved
   if( !Setup ) process.exit(1)
   
-  const { typescript, directory } = Setup
+  const { typescript, directory } = Setup.getConfig()
   switch( directory.pattern ){
     /**
      * MVC entrypoints project structure
@@ -177,7 +166,7 @@ export const run = async () => {
       filename = `index.${typescript ? 'ts' : 'js'}`,
       entrypoint = await import(`${directory.root}/index`)
       if( !entrypoint )
-        throw new Error(`Invalid root directory or file - ${directory.root}/${filename}`)
+        throw new Error(`Invalid entrypoint file path - ${directory.root}/${filename}`)
       
       // Run plain script
       if( typeof entrypoint.default !== 'function' ) return

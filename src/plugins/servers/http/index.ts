@@ -7,7 +7,7 @@ export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> 
   readonly app?: Ckenx.ApplicationPlugin<any>
   readonly server: Ckenx.HTTPServer
 
-  constructor( kxm: Ckenx.Manager, app?: Ckenx.ApplicationPlugin<any> ){
+  constructor( Setup: Ckenx.SetupManager, app?: Ckenx.ApplicationPlugin<any> ){
     this.app = app
     this.server = http.createServer( app?.core )
   

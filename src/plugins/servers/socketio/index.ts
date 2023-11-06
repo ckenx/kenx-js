@@ -8,7 +8,7 @@ export default class SocketIOServer implements Ckenx.ServerPlugin<Server> {
     type: 'socket.io'
   }
 
-  constructor( kxm: Ckenx.Manager, options: ServerOptions ){
+  constructor( Setup: Ckenx.SetupManager, options: ServerOptions ){
     this.server = new Server( options ) // Standalone
   
     /* Listen on provided port, on all network interfaces. */

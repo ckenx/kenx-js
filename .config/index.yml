@@ -15,6 +15,7 @@ directory:
 
 # Additional configurations
 __extends__: [
+  'assets',
   'servers',
   'sessions',
   'databases',

@@ -8,6 +8,13 @@ export default ( port: number ) => {
    * Instanciate an Express application
    */
   return express()
+
+  /**
+   * Application settings
+   */
+  .set('x-powered-by', false )
+  .set('env', process.env.NODE_ENV )
+  .set('port', port )
   
   /**
    * Server trust proxy configuration
@@ -18,7 +25,6 @@ export default ( port: number ) => {
    * 
    */
   .enable('trust proxy')
-  .set('port', port )
 
   /**
    * Development logs

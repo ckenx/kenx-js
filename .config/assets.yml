@@ -1,0 +1,48 @@
+assets:
+  - key: 'default'
+    # Specify the plugin use to handle express 
+    # application assets:
+    # 
+    # `express-assets` plugin come by default with
+    # with `express` plugin. It's used by default if 
+    # `plugin` value isn't specified in the session 
+    # configuration
+    # 
+    # NOTE:
+    # The support for plugin is enable by express
+    # plugin itself, so others can use any stack
+    # and style they want to process differents aspects
+    # of the express application.
+    #
+    plugin: 'express-assets'
+    # Assets storage configuration
+    # - cloud: connect to online space storage (CDN)
+    # - local: use same file system as the project
+    storage:
+      type: 'cloud'
+      client:
+        key: '[env]:STORAGE_CLIENT_KEY'
+        secret: '[env]:STORAGE_CLIENT_SECRET'
+        version: 'latest'
+      config:
+        hostname: '[env]:STORAGE_HOSTNAME'
+        baseURL: '[env]:STORAGE_BASE_URL'
+        region: '[env]:STORAGE_REGION'
+        bucket: '[env]:STORAGE_BUCKET'
+  
+    # Asset upload management configuration
+    # Settings change based on the used asset 
+    # handler plugin
+    upload:
+      maxFileSize: 1024 # The max file size in bytes
+      # Authorized file mime types
+      mimeTypes:
+        - 'image/*'
+        - 'application/octect-stream'
+
+    # Static assets server configuration
+    static:
+      - root: './public'
+        options:
+          acceptRange: true
+          cacheControl: false

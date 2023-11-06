@@ -1,9 +1,28 @@
-import type { Express } from 'express'
+import type { ServeStaticOptions } from 'serve-static'
 import type { Ckenx } from '#types/service'
+import type { ApplicationAssetConfig, AssetStorageConfig, AssetUploadConfig } from '#types/index'
 import os from 'os'
+import express, { Express } from 'express'
 import multipart from 'express-form-data'
 
-function addMultipart( app: Express ){
+type StaticAssetConfig = {
+  root: string
+  options?: ServeStaticOptions
+}
+
+function addStatic( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, configList: StaticAssetConfig[] ){
+  if( !Array.isArray( configList ) || !configList.length ) return
+
+  // Mount each static root paths & options
+  configList.forEach( ({ root, options }) => {
+    root = Setup.resolvePath( root )
+    if( !root ) return
+    
+    app.use( express.static( root, options || {} ) ) 
+  })
+}
+
+function addMultipart( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, uploadConfig: AssetUploadConfig ){
   /**
    * Multi-part form data parser with connect-multiparty
    * 
@@ -19,10 +38,31 @@ function addMultipart( app: Express ){
    * Delete from the request all empty files (size == 0)
    */
   .use( multipart.format() )
+  /**
+   * Change the file objects to fs.ReadStream 
+   */
+  .use( multipart.stream() )
 
   return
 }
 
-export default ( app: Ckenx.ApplicationPlugin<Express>, assetConfig: ApplicationAssetConfig ) => {
-  
+function addStorage( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, storageConfig: AssetStorageConfig ){
+
+}
+
+export default ( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, assetConfig: ApplicationAssetConfig ) => {
+  /**
+   * Setup asset storage access
+   */
+  assetConfig.storage && addStorage( Setup, app, assetConfig.storage )
+
+  /**
+   * Setup asset uploading handler
+   */
+  assetConfig.upload && addMultipart( Setup, app, assetConfig.upload )
+
+  /**
+   * Setup static assets server
+   */
+  assetConfig.static && addStatic( Setup, app, assetConfig.static )
 }

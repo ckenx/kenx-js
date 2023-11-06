@@ -39,7 +39,7 @@ function addRedisStore( app: Ckenx.ApplicationPlugin<Express>, storeConfig: Appl
   }) )
 }
 
-export default ( app: Ckenx.ApplicationPlugin<Express>, sessionConfig: ApplicationSessionConfig ) => {
+export default ( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, sessionConfig: ApplicationSessionConfig ) => {
   /**
    * Create session by env mode
    * - allenv

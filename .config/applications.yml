@@ -2,6 +2,7 @@
 applications:
   - framework: 'express'
     session: '[sessions]:default'
+    assets: '[assets]:default'
     routes:
       - prefix: '/'
       - path: ''

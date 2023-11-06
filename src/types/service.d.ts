@@ -1,11 +1,9 @@
 import type { Server } from 'http'
 import type { HTTPServerConfig } from '#types/index'
-import * as KManager from '#core/node'
+import Setup from '#core/setup'
 
 declare namespace Ckenx {
-  export interface Manager extends KManager {
-    importPlugin: ( attr: string ) => Promise<any>
-  }
+  export interface SetupManager extends Setup {}
 
   export interface ApplicationPlugin<T> {
     private readonly core: T
