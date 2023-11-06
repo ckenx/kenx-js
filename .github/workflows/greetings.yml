@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request_target, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: "Hi there! Thank you for joining our community with your first posted issue. Your feedback are what make us do better. We'll give it a close look and revert."
+        pr-message: "Hi there! Thank you for your interest and willing to contribute to Ckenx. We'll give close look to your PR and keep you posted. Welcome to the community"
