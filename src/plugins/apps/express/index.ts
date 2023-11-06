@@ -1,17 +1,24 @@
-import type { HTTPServerConfig } from '#types/index'
+import type { HTTPServerConfig, ApplicationSessionConfig } from '#types/index'
 import type { Ckenx } from '#types/service'
-import type { Express, NextFunction, Request, Response } from 'express'
-import __session__ from './session'
+import { Router, type Express, type NextFunction, type Request, type Response } from 'express'
+import __session__ from '../express-session'
 import __init__ from './init'
 
 export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
   readonly HOST: string
   readonly PORT: number
-  readonly app: Express
+  readonly core: Express
   private readonly KManager: Ckenx.Manager
 
   private AUTO_HANDLE_ERROR = true
   
+  private async useSession( config?: ApplicationSessionConfig ){
+    if( !config ) return
+
+    const plugin = await this.KManager.importPlugin(`app:${config.plugin || 'express-session'}`)
+    plugin( this, config )
+  }
+
   constructor( kxm: Ckenx.Manager, httpServerConfig: HTTPServerConfig ){
     this.HOST = httpServerConfig.HOST
     this.PORT = httpServerConfig.PORT
@@ -25,42 +32,42 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
     this.KManager = kxm
 
     /**
-     * Initiliaze application
+     * Initialize application
      */
-    this.app = __init__( this.PORT )
+    this.core = __init__( this.PORT )
     
     /**
-     * Initiliaze and manage application session
+     * Initialize and manage application session
      */
-    if( httpServerConfig.application?.session ){
-      const extendedApp = __session__( this.app, httpServerConfig.application.session )
-      if( extendedApp ) this.app = extendedApp
-    }
+    this.useSession( httpServerConfig.application?.session )
   }
 
   use( fn: any ){
-    this.app.use( fn )
+    this.core.use( fn )
 
     return this
   }
 
-  addRouter( prefix: string, router: any ){
-    this.app.use( prefix, router )
+  addRouter( prefix: string, fn: any ){
+    const router = Router()
+    fn( router )
+    
+    this.core.use( prefix, router )
 
     return this
   }
 
   addHandler( type: string, func: any ){
     // switch( type ){
-    //   case 'plugin': this.app.register( func ); break
-    //   default: this.app.addHook( type, func )
+    //   case 'plugin': this.core.register( func ); break
+    //   default: this.core.addHook( type, func )
     // }
 
     return this
   }
 
   private handleError( listener?: any ){
-    this.app
+    this.core
     // catch 404 and forward to error handler
     .use( ( req, res, next ) => {
       let error: any = new Error('Not Found')
@@ -77,13 +84,13 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
       
       typeof listener == 'function' ?
                   // Handover error to listener
-                  listener( error )
+                  listener( error, req, res, next )
                   // Auto response with error
                   : res.status( error.status || 500 ).json( error )
     } )
   }
 
-  onError( listener: ( error: Error ) => void ){
+  onError( listener: ( error: Error, req: Request, res: Response, next: NextFunction ) => void ){
     this.AUTO_HANDLE_ERROR = false
     this.handleError( listener )
 
@@ -92,14 +99,14 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
 
   async serve(): Promise<Ckenx.ServerPlugin<Ckenx.HTTPServer>> {
     // Automatically handle application errors occurence
-    this.AUTO_HANDLE_ERROR && this.handleError()
+    // this.AUTO_HANDLE_ERROR && this.handleError()
     
     if( !this.KManager )
       throw new Error('Undefined Ckenx Utils object supply')
 
     const
     HttpServer = await this.KManager.importPlugin('server:http'),
-    server: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( this.KManager, this.app )
+    server: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( this.KManager, this )
 
     await server.listen({ PORT: this.PORT, HOST: this.HOST })
     return server

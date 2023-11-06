@@ -31,14 +31,10 @@ async function createHTTPServer( config: HTTPServerConfig ){
    * 
    */
   if( config.application?.framework ) {
-    CORE_INTERFACE.apps = {}
-
     try {
       const
       App = await kxm.importPlugin(`app:${config.application.framework}`),
       instance: Ckenx.ApplicationPlugin<Ckenx.HTTPServer> = new App( kxm, config )
-
-      CORE_INTERFACE.apps[ config.application.framework ] = instance
 
       return await instance.serve()
     } 

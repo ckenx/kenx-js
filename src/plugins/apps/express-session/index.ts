@@ -1,24 +1,23 @@
 import type { Express } from 'express'
+import type { Ckenx } from '#types/service'
 import type { ApplicationSessionConfig, ApplicationSessionStore } from '#types/index'
 import { createClient } from 'redis'
 import cookie from 'cookie-parser'
 import RedisStore from 'connect-redis'
 import session, { SessionOptions } from 'express-session'
 
-function addInMemory( app: Express, options: SessionOptions ): Express {
+function addInMemory( app: Ckenx.ApplicationPlugin<Express>, options: SessionOptions ){
   // Cookie-parser is required in development mode
   app
   .use( cookie(`${options.secret}-<TEMPFIX>`) )
   .use( session( options ) )
-
-  return app
 }
 
 /**
  * Initialize Redis-server connection to 
  * manage session store
  */
-function addRedisStore( app: Express, storeConfig: ApplicationSessionStore, options: SessionOptions ): Express {
+function addRedisStore( app: Ckenx.ApplicationPlugin<Express>, storeConfig: ApplicationSessionStore, options: SessionOptions ){
   // Initialize client
   const client = createClient()
   client
@@ -38,18 +37,16 @@ function addRedisStore( app: Express, storeConfig: ApplicationSessionStore, opti
     resave: false, // required: force lightweight session keep alive (touch)
     saveUninitialized: false, // recommended: only save session when data exists
   }) )
-
-  return app
 }
 
-export default ( app: Express, configsByEnv: ApplicationSessionConfig ): Express => {
+export default ( app: Ckenx.ApplicationPlugin<Express>, sessionConfig: ApplicationSessionConfig ) => {
   /**
    * Create session by env mode
    * - allenv
    * - development
    * - production
    */
-  const config = configsByEnv[(process.env.NODE_ENV as 'development' | 'production') || 'allenv']
+  const config = sessionConfig[(process.env.NODE_ENV as 'development' | 'production') || 'allenv']
   if( !config )
     throw new Error(`Undefined <${process.env.NODE_ENV}> or <allenv> session configuration`)
 
@@ -58,7 +55,7 @@ export default ( app: Express, configsByEnv: ApplicationSessionConfig ): Express
    * and cookie.
    */
   if( config.type == 'in-memory' )
-    app = addInMemory( app, config.options as SessionOptions )
+    addInMemory( app, config.options as SessionOptions )
 
   /**
    * Use database store
@@ -68,12 +65,10 @@ export default ( app: Express, configsByEnv: ApplicationSessionConfig ): Express
       throw new Error('Undefined express session store configuration')
 
     switch( config.store.provider ){
-      case 'redis-store': return app = addRedisStore( app, config.store, config.options as SessionOptions ); break
+      case 'redis-store': addRedisStore( app, config.store, config.options as SessionOptions ); break
       // case 'mongo-store': break
       // case 'mysql-store': break
       // case 'postgress-store': break
     }
   }
-
-  return app
 }

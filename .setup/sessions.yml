@@ -1,6 +1,21 @@
 # Application session configuration
 sessions:
   - key: 'default'
+    # Specify the plugin use to handle express 
+    # application session:
+    # 
+    # `express-session` plugin come by default with
+    # with `express` plugin. It's used by default if 
+    # `plugin` value isn't specified in the session 
+    # configuration
+    # 
+    # NOTE:
+    # The support for plugin is enable by express
+    # plugin itself, so others can use any stack
+    # and style they want to process differents aspects
+    # of the express application.
+    #
+    plugin: 'express-session'
     # Development environment
     development:
       # Using `in-memory` storage
@@ -13,7 +28,7 @@ sessions:
       #        
       #       Eg. `[env]:VARIABLE_NAME`
       options:
-        name: '[env]:SESSION_NAME' # Refer to environment variable
+        name: '[env]:APPNAME' # Refer to environment variable
         secret: '[env]:SESSION_SECRET' # Refer to environment variable
         saveUninitialized: true
         resave: false
@@ -46,7 +61,7 @@ sessions:
       #        
       #       Eg. `[env]:VARIABLE_NAME`
       options:
-        name: '[env]:SESSION_NAME' # Refer to environment variable
+        name: '[env]:APPNAME' # Refer to environment variable
         secret: '[env]:SESSION_SECRET' # Refer to environment variable
         saveUninitialized: true
         resave: true

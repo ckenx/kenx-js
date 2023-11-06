@@ -4,10 +4,12 @@ import type { HTTPServerConfig } from '#types/index'
 import http from 'http'
 
 export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> {
+  readonly app?: Ckenx.ApplicationPlugin<any>
   readonly server: Ckenx.HTTPServer
 
-  constructor( kxm: Ckenx.Manager, app?: any ){
-    this.server = http.createServer( app )
+  constructor( kxm: Ckenx.Manager, app?: Ckenx.ApplicationPlugin<any> ){
+    this.app = app
+    this.server = http.createServer( app?.core )
   
     /**
      * Event listener for HTTPS server event.

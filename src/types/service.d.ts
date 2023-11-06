@@ -8,13 +8,13 @@ declare namespace Ckenx {
   }
 
   export interface ApplicationPlugin<T> {
-    private readonly app: T
+    private readonly core: T
     readonly HOST: string
     readonly PORT: number
     use: ( fn: any ) => this
     addRouter: ( prefix: string, router: any ) => this
     addHandler: ( type: string, func: any ) => this
-    onError: ( listener: ( error: Error ) => void ) => this
+    onError: ( listener: ( error: Error, ...args: any[] ) => void ) => this
     serve: () => Promise<ServerPlugin<Server>>
   }
 
@@ -29,13 +29,13 @@ declare namespace Ckenx {
   }
   export interface ServerPlugin<T> {
     readonly server: T
+    readonly app?: ApplicationPlugin<any>
     getInfo: () => ActiveServerInfo | null
     listen: ( arg: any ) => Promise<ActiveServerInfo | null>
     close: () => Promise<unknown>
   }
 
   export type CoreInterface = {
-    apps?: { [index: string]: ApplicationPlugin<any> }
     servers?: { [index: string]: ServerPlugin<any> }
     databases?: { [index: string]: any }
   }

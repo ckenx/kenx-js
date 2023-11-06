@@ -1,4 +1,4 @@
-
+import hpp from 'hpp'
 import logger from 'morgan'
 import helmet from 'helmet'
 import express from 'express'
@@ -52,4 +52,10 @@ export default ( port: number ) => {
    */
   .use( express.json() ) // limit: '50mb', extended: true
   .use( express.urlencoded({ extended: true }) )
+
+
+  /**
+   * Protect from HTTP parameter pollution attacks
+   */
+  .use( hpp() )
 }

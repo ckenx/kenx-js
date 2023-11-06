@@ -49,6 +49,7 @@ export type ApplicationSessionConfigSet = {
   options: JSObject<any>
 }
 export type ApplicationSessionConfig = {
+  plugin: string
   allenv: ApplicationSessionConfigSet
   development?: ApplicationSessionConfigSet
   production?: ApplicationSessionConfigSet
