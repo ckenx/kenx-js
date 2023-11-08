@@ -1,10 +1,10 @@
-import type { Ckenx } from '#types/service'
-import type { HTTPServerConfig, AuxiliaryServerConfig } from '#types/index'
+import type { Kenx } from '#types/service'
+import type { HTTPServerConfig, AuxiliaryServerConfig, DatbaseConfig } from '#types/index'
 import dotenv from 'dotenv'
 import SetupManager from '#core/setup'
 
 /**
- * Ckenx setup configuration
+ * Kenx setup configuration
  * 
  */
 const 
@@ -14,7 +14,7 @@ Setup = new SetupManager(),
  * Auto-loaded features 
  * 
  */
-CORE_INTERFACE: Ckenx.CoreInterface = {}
+CORE_INTERFACE: Kenx.CoreInterface = {}
 
 async function createHTTPServer( config: HTTPServerConfig ){
   const { HOST, PORT } = config
@@ -33,7 +33,7 @@ async function createHTTPServer( config: HTTPServerConfig ){
     try {
       const
       App = await Setup.importPlugin(`app:${config.application.framework}`),
-      instance: Ckenx.ApplicationPlugin<Ckenx.HTTPServer> = new App( Setup, config )
+      instance: Kenx.ApplicationPlugin<Kenx.HTTPServer> = new App( Setup, config )
 
       return await instance.serve()
     } 
@@ -47,7 +47,7 @@ async function createHTTPServer( config: HTTPServerConfig ){
   else try {
     const
     HttpServer = await Setup.importPlugin('server:http'),
-    instance: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( Setup )
+    instance: Kenx.ServerPlugin<Kenx.HTTPServer> = new HttpServer( Setup )
 
     await instance.listen( config )
     return instance
@@ -65,7 +65,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
 
     const
     AuxServer = await Setup.importPlugin(`server:${type}`),
-    instance: Ckenx.ServerPlugin<any> = new AuxServer( Setup, options )
+    instance: Kenx.ServerPlugin<any> = new AuxServer( Setup, options )
 
     /**
      * Bind server
@@ -78,6 +78,22 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
       throw new Error('Undefined BIND_TO or PORT configuration')
 
     await instance.listen( binder )
+    return instance
+  }
+  catch( error ){
+    console.error('[SOCKET SERVER] -', error )
+    process.exit(1)
+  }
+}
+
+async function connectDatabase( config: DatbaseConfig ){
+  try {
+    const
+    DbClient = await Setup.importPlugin(`database:${config.type}`),
+    instance: Kenx.DatabasePlugin<any> = new DbClient( Setup, config )
+    
+    config.autoconnect && await instance.connect()
+
     return instance
   }
   catch( error ){
@@ -100,7 +116,27 @@ export const autoload = async (): Promise<void> => {
    * 
    */
   Setup.initialize()
-  const { servers } = Setup.getConfig()
+  const { servers, databases } = Setup.getConfig()
+
+  /**
+   * Connect to databases
+   * 
+   */
+  if( Array.isArray( databases ) ){
+    if( !CORE_INTERFACE.databases )
+      CORE_INTERFACE.databases = {}
+
+    for await ( const config of databases ){
+      const { type, key } = config
+      let database = await connectDatabase( config as DatbaseConfig )
+      if( !database )
+        throw new Error(`[${type.toUpperCase()} SERVER] - Unsupported`)
+
+      CORE_INTERFACE.databases[`database:${key || 'default'}`] = database
+
+      console.log(`\n[${type.toUpperCase()} DATABASE] - connected \n\tPORT=${config.url}`)
+    }
+  }
 
   /**
    * Load configured servers
@@ -124,7 +160,6 @@ export const autoload = async (): Promise<void> => {
 
       CORE_INTERFACE.servers[`${type}:${key || 'default'}`] = server
 
-      //
       const info = server.getInfo()
       if( !info ) throw new Error('Server returns no information')
 
@@ -140,7 +175,7 @@ export const autoload = async (): Promise<void> => {
  * @return {module} Defined setup `object` or `null` if not found
  * 
  */
-export const run = async () => {
+export const dispatch = async () => {
   // Assumed `autoload` method has resolved
   if( !Setup ) process.exit(1)
   
@@ -175,8 +210,8 @@ export const run = async () => {
        * Give access to all loaded services
        *  - Apps
        *  - Servers
-       *  - Databases,
-       *  - ... 
+       *  - Databases
+       *  - ...
        */
       entrypoint.default( CORE_INTERFACE )
     }

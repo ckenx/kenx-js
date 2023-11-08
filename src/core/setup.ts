@@ -107,8 +107,8 @@ export default class Setup {
   async importPlugin( reference: string ){
     try { 
       const [type, name] = reference.split(':')
-      if( !['app', 'server'].includes( type ) )
-        throw new Error(`<${type}:> is not a valid import type. Expect <app:>, <server:>, ...`)
+      if( !['app', 'server', 'database'].includes( type ) )
+        throw new Error(`<${type}:> is not a valid import type. Expect <app:>, <server:>, <server:>, ...`)
 
       return ( await import(`./../plugins/${type}s/${name}`) ).default
     }

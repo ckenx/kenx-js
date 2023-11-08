@@ -31,7 +31,7 @@ type JSObject<Type> = { [index: string]: Type }
 
 export type SetupTarget = 'index' | 'frontend' | 'native'
 
-export type ServerType = 'http' | 'socket.io' | 'websocket'
+export type ServerType = 'http' | 'socketio' | 'websocket'
 export type ServerConfig = {
   type: ServerType
   key?: string
@@ -99,6 +99,20 @@ export type HTTPServerConfig = ServerConfig & {
 export type AuxiliaryServerConfig = ServerConfig & {
   PORT?: number
   options?: IO.ServerOptions
+}
+export type DatbaseConfig = {
+  type: string
+  key?: string
+  autoconnect?: string
+  uri?: string
+  options?: {
+    host: string
+    port: number
+    database?: string
+    user: string
+    password?: string
+    pool?: JSObject<any>
+  }
 }
 
 export type DirectoryConfig = {

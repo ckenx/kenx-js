@@ -1,93 +1,100 @@
-import type { Ckenx } from '#types/service'
+import type { Kenx } from '#types/service'
 import type { StaticAssetConfig, ApplicationAssetConfig, AssetStorageConfig, AssetUploadConfig } from '#types/index'
-// import './types'
 import os from 'os'
 import { CAS } from 'globe-sdk'
 import express, { Express } from 'express'
 import multipart from 'express-form-data'
 
-function addStatic( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, configList: StaticAssetConfig[] ){
-  if( !Array.isArray( configList ) || !configList.length ) return
+export default class ExpressAssetPlugin {
+  private readonly setup: Kenx.SetupManager
+  private readonly app: Kenx.ApplicationPlugin<Express>
 
-  // Mount each static root paths & options
-  configList.forEach( ({ root, options }) => {
-    root = Setup.resolvePath( root )
-    if( !root ) return
-    
-    app.use( express.static( root, options || {} ) ) 
-  })
-}
+  private addStatic( configList: StaticAssetConfig[] ){
+    if( !Array.isArray( configList ) || !configList.length ) return
 
-function addMultipart( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, uploadConfig: AssetUploadConfig ){
-  /**
-   * Multi-part form data parser with connect-multiparty
-   * 
-   * Options are the same as multiparty takes.
-   * 
-   * NOTE: there is a new option `autoClean` to clean all 
-   *       files in "uploadDir" folder after the response.
-   *       By default, it is `false`.
-   */
-  app
-  .use( multipart.parse({ uploadDir: os.tmpdir(), autoClean: true }) )
-  /**
-   * Delete from the request all empty files (size == 0)
-   */
-  .use( multipart.format() )
-  /**
-   * Change the file objects to fs.ReadStream 
-   */
-  .use( multipart.stream() )
+    // Mount each static root paths & options
+    configList.forEach( ({ root, options }) => {
+      root = this.setup.resolvePath( root )
+      if( !root ) return
+      
+      this.app.use( express.static( root, options || {} ) ) 
+    })
+  }
 
-  return
-}
+  private addMultipart( config: AssetUploadConfig ){
+    /**
+     * Multi-part form data parser with connect-multiparty
+     * 
+     * Options are the same as multiparty takes.
+     * 
+     * NOTE: there is a new option `autoClean` to clean all 
+     *       files in "uploadDir" folder after the response.
+     *       By default, it is `false`.
+     */
+    this.app
+    .use( multipart.parse({ ...config, uploadDir: os.tmpdir(), autoClean: true }) )
+    /**
+     * Delete from the request all empty files (size == 0)
+     */
+    .use( multipart.format() )
+    /**
+     * Change the file objects to fs.ReadStream 
+     */
+    .use( multipart.stream() )
 
-function addStorage( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, storageConfig: AssetStorageConfig ){
-  switch( storageConfig.type ){
-    case 'cloud': {
-      const { client, spaces } = storageConfig
-      if( !client )
-        throw new Error('Undefined cloud storage client configuration')
+    return
+  }
 
-      if( !spaces )
-        throw new Error('Undefined cloud storage spaces')
+  private addStorage( config: AssetStorageConfig ){
+    switch( config.type ){
+      case 'cloud': {
+        const { client, spaces } = config
+        if( !client )
+          throw new Error('Undefined cloud storage client configuration')
 
-      const config = {
-        accessKey: client.key,
-        secret: client.secret,
-        spaces: spaces.map( ({ region, bucket, baseURL, endpoint }) => {
-          return {
-            region,
-            bucket,
-            endpoint,
-            host: baseURL,
-            version: client.version
-          }
+        if( !spaces )
+          throw new Error('Undefined cloud storage spaces')
+
+        const storage = CAS.config({
+          accessKey: client.key,
+          secret: client.secret,
+          spaces: spaces.map( ({ region, bucket, baseURL, endpoint }) => {
+            return {
+              region,
+              bucket,
+              endpoint,
+              host: baseURL,
+              version: client.version
+            }
+          })
         })
-      }
 
-      app.decorate('storage', CAS.config( config ).Space )
-    } break
-    case 'local':
-    default: {
-      // TODO: Inforce local path and configuration
+        this.app.decorate('storage', storage.Space )
+      } break
+      case 'local':
+      default: {
+        // TODO: Inforce local path and configuration
+      }
     }
   }
-}
 
-export default ( Setup: Ckenx.SetupManager, app: Ckenx.ApplicationPlugin<Express>, assetConfig: ApplicationAssetConfig ) => {
-  /**
-   * Setup asset storage access
-   */
-  assetConfig.storage && addStorage( Setup, app, assetConfig.storage )
+  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<Express>, assetConfig: ApplicationAssetConfig ){
+    this.setup = Setup
+    this.app = app
 
-  /**
-   * Setup asset uploading handler
-   */
-  assetConfig.upload && addMultipart( Setup, app, assetConfig.upload )
+    /**
+     * Setup asset storage access
+     */
+    assetConfig.storage && this.addStorage( assetConfig.storage )
 
-  /**
-   * Setup static assets server
-   */
-  assetConfig.static && addStatic( Setup, app, assetConfig.static )
+    /**
+     * Setup asset uploading handler
+     */
+    assetConfig.upload && this.addMultipart( assetConfig.upload )
+
+    /**
+     * Setup static assets server
+     */
+    assetConfig.static && this.addStatic( assetConfig.static )
+  }
 }

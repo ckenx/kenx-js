@@ -1,2 +1,2 @@
-# ckenx-node
-Ckenx framework for NodeJS
+# kenx-node
+Kenx framework for NodeJS

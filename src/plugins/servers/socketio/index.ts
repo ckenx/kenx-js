@@ -1,14 +1,14 @@
 
-import type { Ckenx } from '#types/service'
+import type { Kenx } from '#types/service'
 import { Server, ServerOptions } from 'socket.io'
 
-export default class SocketIOServer implements Ckenx.ServerPlugin<Server> {
+export default class SocketIOServer implements Kenx.ServerPlugin<Server> {
   readonly server: Server
-  private info: Ckenx.ActiveServerInfo = {
+  private info: Kenx.ActiveServerInfo = {
     type: 'socket.io'
   }
 
-  constructor( Setup: Ckenx.SetupManager, options: ServerOptions ){
+  constructor( Setup: Kenx.SetupManager, options: ServerOptions ){
     this.server = new Server( options ) // Standalone
   
     /* Listen on provided port, on all network interfaces. */
@@ -16,7 +16,7 @@ export default class SocketIOServer implements Ckenx.ServerPlugin<Server> {
     .on('error', ( error: any ) => console.error( error ) )
   }
 
-  listen( arg: number | Ckenx.HTTPServer ): Promise<Ckenx.ActiveServerInfo | null> {
+  listen( arg: number | Kenx.HTTPServer ): Promise<Kenx.ActiveServerInfo | null> {
     return new Promise( ( resolve, reject ) => {
       if( !this.server )
         return reject('No Socket.io Server')
@@ -44,7 +44,7 @@ export default class SocketIOServer implements Ckenx.ServerPlugin<Server> {
     } )
   }
 
-  getInfo(): Ckenx.ActiveServerInfo | null {
+  getInfo(): Kenx.ActiveServerInfo | null {
     if( !this.server )
       throw new Error('No Socket.io Server')
     

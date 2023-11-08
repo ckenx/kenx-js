@@ -1,13 +1,13 @@
 
-import type { Ckenx } from '#types/service'
+import type { Kenx } from '#types/service'
 import type { HTTPServerConfig } from '#types/index'
 import http from 'http'
 
-export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> {
-  readonly app?: Ckenx.ApplicationPlugin<any>
-  readonly server: Ckenx.HTTPServer
+export default class HttpServer implements Kenx.ServerPlugin<Kenx.HTTPServer> {
+  readonly app?: Kenx.ApplicationPlugin<any>
+  readonly server: Kenx.HTTPServer
 
-  constructor( Setup: Ckenx.SetupManager, app?: Ckenx.ApplicationPlugin<any> ){
+  constructor( Setup: Kenx.SetupManager, app?: Kenx.ApplicationPlugin<any> ){
     this.app = app
     this.server = http.createServer( app?.core )
   
@@ -29,7 +29,7 @@ export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> 
     } )
   }
 
-  listen({ PORT, HOST }: HTTPServerConfig ): Promise<Ckenx.ActiveServerInfo | null> {
+  listen({ PORT, HOST }: HTTPServerConfig ): Promise<Kenx.ActiveServerInfo | null> {
     return new Promise( ( resolve, reject ) => {
       if( !this.server )
         return reject('No HTTP Server')
@@ -47,7 +47,7 @@ export default class HttpServer implements Ckenx.ServerPlugin<Ckenx.HTTPServer> 
     } )
   }
 
-  getInfo(): Ckenx.ActiveServerInfo | null {
+  getInfo(): Kenx.ActiveServerInfo | null {
     if( !this.server )
       throw new Error('No HTTP Server')
 

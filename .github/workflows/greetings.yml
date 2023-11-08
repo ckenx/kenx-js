@@ -13,4 +13,4 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         issue-message: "Hi there! Thank you for joining our community with your first posted issue. Your feedback are what make us do better. We'll give it a close look and revert."
-        pr-message: "Hi there! Thank you for your interest and willing to contribute to Ckenx. We'll give close look to your PR and keep you posted. Welcome to the community"
+        pr-message: "Hi there! Thank you for your interest and willing to contribute to Kenx. We'll give close look to your PR and keep you posted. Welcome to the community"

@@ -1,7 +1,7 @@
 /**
  * Minumum NodeJS version required
  * v16+ supported from the fist version of 
- * ckenx framework.
+ * kenx framework.
  */
 const nodeVersionMajor = parseInt( process.version.split('.')[0].replace('v', '') )
 
@@ -14,7 +14,7 @@ if( nodeVersionMajor < 16 ) {
  * Start initialization
  * 
  */
-import { autoload, run } from '#core/index'
+import { autoload, dispatch } from '#core/index'
 
 ( async () => {
   /**
@@ -24,8 +24,8 @@ import { autoload, run } from '#core/index'
   await autoload()
 
   /**
-   * Initialize & run the project
+   * Initialize & map setup services to project components
    * 
    */
-  await run()
+  await dispatch()
 })()

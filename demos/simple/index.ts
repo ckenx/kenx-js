@@ -1,9 +1,11 @@
-
-import type { Ckenx } from '#types/service'
+import type { MongoClient } from 'mongodb'
+import type { Kenx } from '#types/service'
 import routes from './routes'
 
-export default ({ servers, databases }: Ckenx.CoreInterface ) => {
-  if( !servers ) return
+export const takeover = ['http', 'database']
+
+export default ({ http, database }: Kenx.Takeover<http.Server, MongoClient> ) => {
+  if( !http ) return
 
   const { app } = servers['http:default']
   if( !app ) return

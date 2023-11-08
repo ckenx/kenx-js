@@ -2,7 +2,7 @@ import type { Server } from 'http'
 import type { HTTPServerConfig } from '#types/index'
 import Setup from '#core/setup'
 
-declare namespace Ckenx {
+declare namespace Kenx {
   export interface SetupManager extends Setup {}
 
   export interface ApplicationPlugin<T> {
@@ -14,7 +14,7 @@ declare namespace Ckenx {
     addRouter: ( prefix: string, router: any ) => this
     addHandler: ( type: string, func: any ) => this
     onError: ( listener: ( error: Error, ...args: any[] ) => void ) => this
-    serve: () => Promise<ServerPlugin<Server>>
+    serve: ( overhead?: boolean ) => Promise<ServerPlugin<Server>>
   }
 
   interface AppConstructor<T> {
@@ -33,9 +33,19 @@ declare namespace Ckenx {
     listen: ( arg: any ) => Promise<ActiveServerInfo | null>
     close: () => Promise<unknown>
   }
+  export interface DatabasePlugin<T> {
+    readonly connection?: T
+    connect: () => Promise<T>
+    disconnect: () => Promise<void>
+    getConnection: ( dbname: string ) => T
+  }
 
   export type CoreInterface = {
     servers?: { [index: string]: ServerPlugin<any> }
     databases?: { [index: string]: any }
+  }
+  export type Takeover<ServerType, DBType> = {
+    http?: ServerPlugin<ServerType>
+    database?: DatabasePlugin<DBType>
   }
 }

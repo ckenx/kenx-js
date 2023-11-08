@@ -1,5 +1,5 @@
 import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig } from '#types/index'
-import type { Ckenx } from '#types/service'
+import type { Kenx } from '#types/service'
 import type { Express, NextFunction, Request, Response, ErrorRequestHandler } from 'express'
 import { Router } from 'express'
 import __session__ from '../express-session'
@@ -9,29 +9,29 @@ interface DecoratedExpress extends Express {
   [index: string]: any
 }
 
-export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
+export default class ExpressPlugin implements Kenx.ApplicationPlugin<Express> {
   readonly HOST: string
   readonly PORT: number
   readonly core: DecoratedExpress
-  private readonly Setup: Ckenx.SetupManager
+  private readonly Setup: Kenx.SetupManager
 
   private AUTO_HANDLE_ERROR = true
   
   private async useSession( config?: ApplicationSessionConfig ){
     if( !config ) return
 
-    const plugin = await this.Setup.importPlugin(`app:${config.plugin || 'express-session'}`)
-    plugin( this.Setup, this, config )
+    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || 'express-session'}`)
+    new Plugin( this.Setup, this, config )
   }
 
   private async useAssets( config?: ApplicationAssetConfig ){
     if( !config ) return
 
-    const plugin = await this.Setup.importPlugin(`app:${config.plugin || 'express-session'}`)
-    plugin( this.Setup, this, config )
+    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || 'express-session'}`)
+    new Plugin( this.Setup, this, config )
   }
 
-  constructor( Setup: Ckenx.SetupManager, httpServerConfig: HTTPServerConfig ){
+  constructor( Setup: Kenx.SetupManager, httpServerConfig: HTTPServerConfig ){
     this.HOST = httpServerConfig.HOST
     this.PORT = httpServerConfig.PORT
 
@@ -39,7 +39,7 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
       throw new Error('Invalid configuration. Expecting <HOST>, <PORT>, <application>, ...')
 
     /**
-     * Ckenx Internal utils
+     * Kenx Internal utils
      */
     this.Setup = Setup
 
@@ -61,13 +61,11 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
 
   use( fn: any ){
     this.core.use( fn )
-
     return this
   }
 
   decorate( attribute: string, value: any ){
     this.core[ attribute ] = value
-
     return this
   }
 
@@ -76,7 +74,6 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
     fn( router )
     
     this.core.use( prefix, router )
-
     return this
   }
 
@@ -120,16 +117,18 @@ export default class ExpressApp implements Ckenx.ApplicationPlugin<Express> {
     return this
   }
 
-  async serve(): Promise<Ckenx.ServerPlugin<Ckenx.HTTPServer>> {
+  async serve( overhead?: boolean ): Promise<Kenx.ServerPlugin<Kenx.HTTPServer>> {
     // Automatically handle application errors occurence
-    // this.AUTO_HANDLE_ERROR && this.handleError()
+    overhead
+    && this.AUTO_HANDLE_ERROR
+    && this.handleError()
     
     if( !this.Setup )
-      throw new Error('Undefined Ckenx Utils object supply')
+      throw new Error('Undefined Kenx Utils object supply')
 
     const
     HttpServer = await this.Setup.importPlugin('server:http'),
-    server: Ckenx.ServerPlugin<Ckenx.HTTPServer> = new HttpServer( this.Setup, this )
+    server: Kenx.ServerPlugin<Kenx.HTTPServer> = new HttpServer( this.Setup, this )
 
     await server.listen({ PORT: this.PORT, HOST: this.HOST })
     return server
