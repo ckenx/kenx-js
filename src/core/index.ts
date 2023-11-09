@@ -1,5 +1,5 @@
 import type { Kenx } from '#types/service'
-import type { HTTPServerConfig, AuxiliaryServerConfig, DatbaseConfig } from '#types/index'
+import type { HTTPServerConfig, AuxiliaryServerConfig, DatbaseConfig, JSObject } from '#types/index'
 import dotenv from 'dotenv'
 import SetupManager from '#core/setup'
 
@@ -11,10 +11,10 @@ const
 Setup = new SetupManager(),
 
 /**
- * Auto-loaded features 
+ * Auto-loaded services 
  * 
  */
-CORE_INTERFACE: Kenx.CoreInterface = {}
+SERVICES: Kenx.Services = {}
 
 async function createHTTPServer( config: HTTPServerConfig ){
   const { HOST, PORT } = config
@@ -73,7 +73,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
      * - To HTTP Server with a given `key` or default
      * - To PORT
      */
-    const binder = bindTo && CORE_INTERFACE.servers ? CORE_INTERFACE.servers[ bindTo ]?.server : config.PORT
+    const binder = bindTo ? SERVICES[ bindTo ].server : config.PORT
     if( !binder )
       throw new Error('Undefined BIND_TO or PORT configuration')
 
@@ -86,18 +86,16 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
   }
 }
 
-async function connectDatabase( config: DatbaseConfig ){
+async function createResource( type: string, config: any ){
   try {
-    const
-    DbClient = await Setup.importPlugin(`database:${config.type}`),
-    instance: Kenx.DatabasePlugin<any> = new DbClient( Setup, config )
-    
-    config.autoconnect && await instance.connect()
+    if( ['server', 'app'].includes( type ) )
+      throw new Error(`<${type}:> is not a resource. Expected <database:>, <worker:>, ...`)
 
-    return instance
+    const Resource = await Setup.importPlugin(`${type}:${config.type}`)
+    return new Resource( Setup, config )
   }
   catch( error ){
-    console.error('[SOCKET SERVER] -', error )
+    console.error(`[${type.toUpperCase()} RESOURCE] -`, error )
     process.exit(1)
   }
 }
@@ -123,18 +121,18 @@ export const autoload = async (): Promise<void> => {
    * 
    */
   if( Array.isArray( databases ) ){
-    if( !CORE_INTERFACE.databases )
-      CORE_INTERFACE.databases = {}
-
     for await ( const config of databases ){
       const { type, key } = config
-      let database = await connectDatabase( config as DatbaseConfig )
+      let database = await createResource('database', config as DatbaseConfig )
       if( !database )
-        throw new Error(`[${type.toUpperCase()} SERVER] - Unsupported`)
+        throw new Error(`[${type.toUpperCase()} DATABASE] - Unsupported`)
 
-      CORE_INTERFACE.databases[`database:${key || 'default'}`] = database
+      SERVICES[`database:${key || 'default'}`] = database
 
-      console.log(`\n[${type.toUpperCase()} DATABASE] - connected \n\tPORT=${config.url}`)
+      // Establish connection to the database during deployement
+      config.autoconnect && await database.connect()
+      
+      console.log(`[${type.toUpperCase()} DATABASE] - ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
     }
   }
 
@@ -143,9 +141,6 @@ export const autoload = async (): Promise<void> => {
    * 
    */
   if( Array.isArray( servers ) ){
-    if( !CORE_INTERFACE.servers )
-      CORE_INTERFACE.servers = {}
-    
     for await ( const config of servers ){
       const { type, key } = config
       let server
@@ -158,7 +153,7 @@ export const autoload = async (): Promise<void> => {
       if( !server )
         throw new Error(`[${type.toUpperCase()} SERVER] - Unsupported`)
 
-      CORE_INTERFACE.servers[`${type}:${key || 'default'}`] = server
+      SERVICES[`${type}:${key || 'default'}`] = server
 
       const info = server.getInfo()
       if( !info ) throw new Error('Server returns no information')
@@ -205,15 +200,68 @@ export const dispatch = async () => {
       
       // Run plain script
       if( typeof entrypoint.default !== 'function' ) return
+
+      if( !Array.isArray( entrypoint.takeover ) )
+        throw new Error('No entrypoint <takeover> export')
       
-      /**
-       * Give access to all loaded services
-       *  - Apps
-       *  - Servers
-       *  - Databases
-       *  - ...
-       */
-      entrypoint.default( CORE_INTERFACE )
+        const group: JSObject<string[]> = {}
+
+        entrypoint.takeover.forEach( ( attribute: string ) => {
+          attribute = !attribute.includes(':') ? `${attribute}:default` : attribute
+          
+          const [ section, key ] = attribute.split(':')
+          if( !section || !key ) return
+
+          !group[ section ] ?
+                group[ section ] = [ key ]
+                : group[ section ].push( key )
+        } )
+        
+        const Args: any = []
+
+        Object.entries( group )
+        .map( ([ section, array ], index ) => {
+          if( !array.length ){
+            Args[ index ] = undefined
+            return
+          }
+
+          if( array.length == 1 ){
+            const key = array[0]
+
+            // Return resource group
+            if( key == '*' ){
+              Args[ index ] = {}
+              Object.entries( SERVICES )
+                    .map( ([ attribute, value ]) => {
+                      const [ _section, _key ] = attribute.split(':')
+                      if( _section && _key && _section == section ) Args[ index ][ _key ] = value
+                    })
+            }
+            else Args[ index ] = SERVICES[`${section}:${key}`]
+
+            return
+          }
+          else {
+            Args[ index ] = {}
+            array.forEach( key => {
+              Object.entries( SERVICES )
+                  .map( ([ attribute, value ]) => {
+                    const [ _section, key ] = attribute.split(':')
+                    if( attribute == `${section}:${key}` ) Args[ index ][ key ] = value
+                  })
+            } )
+          }
+        } )
+        
+        /**
+         * Give access to all loaded services
+         *  - Apps
+         *  - Servers
+         *  - Databases
+         *  - ...
+         */
+        entrypoint.default( ...Args )
     }
     catch( error ){ console.log('[PROJECT ENTRYPOINT] -', error ) }
   }

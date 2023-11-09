@@ -8,8 +8,8 @@ export default class RedisPugin implements Kenx.DatabasePlugin<any> {
   connection?: any
   
   constructor( Setup: Kenx.SetupManager, config: DatbaseConfig ){
-    if( typeof config == 'string' )
-      this.config = { url: config }
+    if( config.uri )
+      this.config = { url: config.uri }
 
     else if( typeof config.options == 'object' ){
       this.config = config.options as any

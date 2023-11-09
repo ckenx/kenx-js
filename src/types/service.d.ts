@@ -9,7 +9,7 @@ declare namespace Kenx {
     private readonly core: T
     readonly HOST: string
     readonly PORT: number
-    use: ( fn: any ) => this
+    // use: ( fn: any ) => this
     decorate: ( attribute: string, value: any ) => this
     addRouter: ( prefix: string, router: any ) => this
     addHandler: ( type: string, func: any ) => this
@@ -37,12 +37,12 @@ declare namespace Kenx {
     readonly connection?: T
     connect: () => Promise<T>
     disconnect: () => Promise<void>
-    getConnection: ( dbname: string ) => T
+    getConnection: ( dbname?: string ) => T
   }
 
-  export type CoreInterface = {
-    servers?: { [index: string]: ServerPlugin<any> }
-    databases?: { [index: string]: any }
+  export type Services = {
+    [index: string]: ServerPlugin<any>
+    [index: string]: DatabasePlugin<any>
   }
   export type Takeover<ServerType, DBType> = {
     http?: ServerPlugin<ServerType>

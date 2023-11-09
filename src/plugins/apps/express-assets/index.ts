@@ -17,7 +17,7 @@ export default class ExpressAssetPlugin {
       root = this.setup.resolvePath( root )
       if( !root ) return
       
-      this.app.use( express.static( root, options || {} ) ) 
+      this.app.addHandler('middleware', express.static( root, options || {} ) ) 
     })
   }
 
@@ -32,15 +32,15 @@ export default class ExpressAssetPlugin {
      *       By default, it is `false`.
      */
     this.app
-    .use( multipart.parse({ ...config, uploadDir: os.tmpdir(), autoClean: true }) )
+    .addHandler('middleware', multipart.parse({ ...config, uploadDir: os.tmpdir(), autoClean: true }) )
     /**
      * Delete from the request all empty files (size == 0)
      */
-    .use( multipart.format() )
+    .addHandler('middleware', multipart.format() )
     /**
      * Change the file objects to fs.ReadStream 
      */
-    .use( multipart.stream() )
+    .addHandler('middleware', multipart.stream() )
 
     return
   }

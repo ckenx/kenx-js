@@ -2,9 +2,9 @@ import type { Express } from 'express'
 import type { Kenx } from '#types/service'
 import type { ApplicationSessionConfig, ApplicationSessionStore } from '#types/index'
 import { createClient } from 'redis'
-import cookie from 'cookie-parser'
+import Cookie from 'cookie-parser'
 import RedisStore from 'connect-redis'
-import session, { SessionOptions } from 'express-session'
+import Session, { SessionOptions } from 'express-session'
 
 export default class ExpressSessionPlugin {
   private readonly setup: Kenx.SetupManager
@@ -13,8 +13,8 @@ export default class ExpressSessionPlugin {
   private addInMemory( options: SessionOptions ){
     // Cookie-parser is required in development mode
     this.app
-    .use( cookie(`${options.secret}-<TEMPFIX>`) )
-    .use( session( options ) )
+    .addHandler('middleware', Cookie(`${options.secret}-<TEMPFIX>`) )
+    .addHandler('middleware', Session( options ) )
   }
 
   /**
@@ -32,18 +32,18 @@ export default class ExpressSessionPlugin {
     .catch( ( error : Error ) => console.log('[ERROR] Redis-Server Error: ', error ) )
 
     // Initialize store
-    const store = new RedisStore({
-      client,
-      ttl: 86400,
-      ...storeConfig.options
-    })
-    
-    this.app.use( session({
+    const handler = Session({
       ...options,
-      store,
+      store: new RedisStore({
+        client,
+        ttl: 86400,
+        ...storeConfig.options
+      }),
       resave: false, // required: force lightweight session keep alive (touch)
       saveUninitialized: false, // recommended: only save session when data exists
-    }) )
+    })
+    
+    this.app.addHandler('middleware', handler )
   }
 
   constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<Express>, sessionConfig: ApplicationSessionConfig ){

@@ -7,6 +7,16 @@ export default ( app: Router ) => {
     res.send(`Hello, ${req.session.name}!`)
   })
 
+  // Make mongo database query
+  .get('/user/:email', async ( req, res ) => {
+    const
+    { email } = req.params,
+    users = req.app.mongodb.collection('users'),
+    user = await users.findOne({ email }, { projection: { _id: 0 } })
+
+    res.json( user )
+  })
+
   // Test socket.io connection at http://localhost:8008/socket
   .get('/socket', async ( req, res ) => {
     res.send(`

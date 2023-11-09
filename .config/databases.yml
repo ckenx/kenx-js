@@ -5,11 +5,12 @@ databases:
     key: 'default'
     # Automatically connect the database during 
     # the project deployment.
-    autoConnect: true
-    uri: 'mongodb://127.0.0.1:27017/TestDB'
+    autoconnect: true
+    uri: 'mongodb://127.0.0.1:27017/Temp'
 
   # Or user connection parameters
   - type: 'mysql'
+    key: 'mysql-db'
     options:
       host: 'localhost'
       port: 3306
@@ -41,4 +42,4 @@ databases:
   # Use on a connection string
   - type: 'redis'
     key: 'redis-store-db'
-    uri: 'rediss://121.0.0.1:25061'
+    uri: 'redis://121.0.0.1:25061'

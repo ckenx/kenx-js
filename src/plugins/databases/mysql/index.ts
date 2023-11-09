@@ -8,8 +8,8 @@ export default class MysqlPlugin implements Kenx.DatabasePlugin<Connection> {
   connection?: Connection
   
   constructor( Setup: Kenx.SetupManager, config: DatbaseConfig ){
-    if( typeof config == 'string' )
-      this.config = config
+    if( config.uri )
+      this.config = config.uri
 
     else if( typeof config.options == 'object' ){
       const { pool, ...rest } = config.options

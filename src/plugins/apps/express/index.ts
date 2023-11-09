@@ -1,18 +1,14 @@
 import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig } from '#types/index'
 import type { Kenx } from '#types/service'
-import type { Express, NextFunction, Request, Response, ErrorRequestHandler } from 'express'
+import type { NextFunction, Request, Response, ErrorRequestHandler, Application } from 'express'
 import { Router } from 'express'
 import __session__ from '../express-session'
 import __init__ from './init'
 
-interface DecoratedExpress extends Express {
-  [index: string]: any
-}
-
-export default class ExpressPlugin implements Kenx.ApplicationPlugin<Express> {
+export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application> {
   readonly HOST: string
   readonly PORT: number
-  readonly core: DecoratedExpress
+  readonly core: Application
   private readonly Setup: Kenx.SetupManager
 
   private AUTO_HANDLE_ERROR = true
@@ -59,11 +55,6 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Express> {
     this.useAssets( httpServerConfig.application?.assets )
   }
 
-  use( fn: any ){
-    this.core.use( fn )
-    return this
-  }
-
   decorate( attribute: string, value: any ){
     this.core[ attribute ] = value
     return this
@@ -78,10 +69,10 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Express> {
   }
 
   addHandler( type: string, func: any ){
-    // switch( type ){
-    //   case 'plugin': this.core.register( func ); break
-    //   default: this.core.addHook( type, func )
-    // }
+    switch( type ){
+      case 'middleware':
+      default: this.core.use( func )
+    }
 
     return this
   }
