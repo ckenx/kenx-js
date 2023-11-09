@@ -48,7 +48,7 @@ sessions:
         # Set database connection configuration in `databases.yml` 
         # file with a unique `key`, then provide that key here as
         # a reference
-        database: '[databases]:redis-store-db'
+        database: '[databases]:redis-db'
         # Extra store configuration
         options:
           prefix: 'session:'

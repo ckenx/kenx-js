@@ -14,6 +14,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
+    "@socket.io/redis-adapter": "^8.2.1",
     "connect-redis": "^7.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -21,6 +22,7 @@
     "express": "^4.18.2",
     "express-form-data": "^2.0.22",
     "express-session": "^1.17.3",
+    "fs-extra": "^11.1.1",
     "globe-sdk": "^1.1.5",
     "helmet": "^7.0.0",
     "hpp": "^0.2.3",
@@ -35,6 +37,7 @@
     "@types/express": "^4.17.20",
     "@types/express-form-data": "^2.0.4",
     "@types/express-session": "^1.17.9",
+    "@types/fs-extra": "^11.0.4",
     "@types/hpp": "^0.2.4",
     "@types/morgan": "^1.9.7",
     "@types/node": "^20.8.9",

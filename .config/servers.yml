@@ -10,6 +10,7 @@ servers:
   # Socket.io server configurations
   - type: 'socketio'
     bindTo: 'http:default'
+    adapter: '[databases]:redis-db'
     options:
       cookie: false
       allowEIO3: true

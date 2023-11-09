@@ -41,5 +41,5 @@ databases:
       
   # Use on a connection string
   - type: 'redis'
-    key: 'redis-store-db'
+    key: 'redis-db'
     uri: 'redis://121.0.0.1:25061'

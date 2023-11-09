@@ -100,6 +100,63 @@ async function createResource( type: string, config: any ){
   }
 }
 
+function getResource( arg: string | string[] ){
+  if( typeof arg == 'string' )
+    arg = [ arg ]
+  
+  const group: JSObject<string[]> = {}
+
+  arg.forEach( ( attribute: string ) => {
+    attribute = !attribute.includes(':') ? `${attribute}:default` : attribute
+    
+    const [ section, key ] = attribute.split(':')
+    if( !section || !key ) return
+
+    !group[ section ] ?
+          group[ section ] = [ key ]
+          : group[ section ].push( key )
+  } )
+  
+  const resources: any = {}
+
+  Object.entries( group )
+  .map( ([ section, array ]) => {
+    if( !array.length ){
+      resources[ section ] = undefined
+      return
+    }
+
+    if( array.length == 1 ){
+      const key = array[0]
+
+      // Return resource group
+      if( key == '*' ){
+        resources[ section ] = {}
+        Object.entries( SERVICES )
+              .map( ([ attribute, value ]) => {
+                const [ _section, _key ] = attribute.split(':')
+                if( _section && _key && _section == section ) resources[ section ][ _key ] = value
+              })
+      }
+      else resources[ section ] = SERVICES[`${section}:${key}`]
+
+      return
+    }
+    else {
+      resources[ section ] = {}
+      array.forEach( key => {
+        Object.entries( SERVICES )
+            .map( ([ attribute, value ]) => {
+              const [ _section, key ] = attribute.split(':')
+              if( attribute == `${section}:${key}` ) resources[ section ][ key ] = value
+            })
+      } )
+    }
+  } )
+
+  return resources
+}
+
 export const autoload = async (): Promise<void> => {
   /**
    * Load Environment Variabales
@@ -113,14 +170,14 @@ export const autoload = async (): Promise<void> => {
    * Load setup configuration
    * 
    */
-  Setup.initialize()
+  await Setup.initialize()
   const { servers, databases } = Setup.getConfig()
 
   /**
    * Connect to databases
    * 
    */
-  if( Array.isArray( databases ) ){
+  if( Array.isArray( databases ) )
     for await ( const config of databases ){
       const { type, key } = config
       let database = await createResource('database', config as DatbaseConfig )
@@ -134,13 +191,12 @@ export const autoload = async (): Promise<void> => {
       
       console.log(`[${type.toUpperCase()} DATABASE] - ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
     }
-  }
 
   /**
    * Load configured servers
    * 
    */
-  if( Array.isArray( servers ) ){
+  if( Array.isArray( servers ) )
     for await ( const config of servers ){
       const { type, key } = config
       let server
@@ -160,7 +216,99 @@ export const autoload = async (): Promise<void> => {
 
       console.log(`\n[${type.toUpperCase()} SERVER] - running \n\tPORT=${info.port}`)
     }
+}
+
+async function toSingleton( root: string, typescript = false ){
+  try {
+    const
+    filename = `index.${typescript ? 'ts' : 'js'}`,
+    entrypoint = await import(`${root}/index`)
+    if( !entrypoint )
+      throw new Error(`Invalid entrypoint file path - ${root}/${filename}`)
+    
+    // Run plain script
+    if( typeof entrypoint.default !== 'function' ) return
+
+    if( !Array.isArray( entrypoint.takeover ) )
+      throw new Error('No entrypoint <takeover> export')
+    
+    /**
+     * Give access to specified/default loaded services & resources
+     *  - Apps
+     *  - Servers
+     *  - Databases
+     *  - ...
+     */
+    const Args = Object.values( getResource( entrypoint.takeover ) )
+    entrypoint.default( ...Args )
   }
+  catch( error ){ console.log('[PROJECT ENTRYPOINT] -', error ) }
+}
+
+async function toMVC( root: string, typescript = false ){
+  try {
+    const ext = typescript ? 'ts' : 'js'
+
+    /**
+     * Load models
+     */
+    const mIndexPath = `${root}/models/index.${ext}`
+    if( !await Setup.Fs.exists( mIndexPath ) )
+      throw new Error(`Models index [${root}/models/index.${ext}] not found`)
+
+    const mFactory = await import(`${root}/models/index.${ext}`)
+    if( !mFactory || typeof mFactory.default !== 'function' )
+      throw new Error('Invalid models index. Expected default export')
+    
+    /**
+     * Auto-assign mounted database to models factory
+     */
+    const mFactoryDeps = getResource( mFactory.takeover || 'database:*' )
+    if( !mFactoryDeps ) console.warn('No takeover dependency available for <models>')
+    
+    const models = mFactory.default( ...Object.values( mFactoryDeps ) )
+
+    /**
+     * Load views (Optional)
+     */
+    let views
+    const vIndexPath = `${root}/views/index.${ext}`
+    if( await Setup.Fs.exists( vIndexPath ) ){
+      const vFactory = await import(`${root}/views/index.${ext}`)
+      if( !vFactory || typeof vFactory.default !== 'function' )
+        throw new Error('Invalid views index. Expected default export')
+      
+      let vFactoryDeps = {}
+      if( vFactory.takeover )
+        vFactoryDeps = getResource( vFactory.takeover )
+
+      views = vFactory.default( ...Object.values( vFactoryDeps ) )
+    }
+
+    /**
+     * Load controllers
+     */
+    const cIndexPath = `${root}/controllers/index.${ext}`
+    if( !await Setup.Fs.exists( cIndexPath ) )
+      throw new Error(`Controllers index [${root}/controllers/index.${ext}] not found`)
+
+    const cFactory = await import(`${root}/controllers/index.${ext}`)
+    if( !cFactory || typeof cFactory.default !== 'function' )
+      throw new Error('Invalid controllers index. Expected default export')
+
+    /**
+     * Auto-assign loaded services & aux resources 
+     * to controller factory
+     */
+    const cFactoryDeps = getResource( cFactory.takeover || 'http:*')
+
+    if( !cFactoryDeps ) console.warn('No service available for <controllers>')
+    if( !models ) console.warn('No models available for <controllers>')
+    if( !views ) console.warn('No views available for <controllers>')
+    
+    cFactory.default( ...Object.values( cFactoryDeps ), models, views )
+  }
+  catch( error ){ console.log('[PROJECT MVC] -', error ) }
 }
 
 /**
@@ -184,85 +332,13 @@ export const dispatch = async () => {
      *  - views: `root/views`
      *  - controllers: `root/controllers`
      */
-    case 'mvc': break
+    case 'mvc': toMVC( directory.root, typescript ); break
 
     /**
      * Single entrypoint project structure
      * 
      * path: `root/index.ts` or .js 
      */
-    default: try {
-      const
-      filename = `index.${typescript ? 'ts' : 'js'}`,
-      entrypoint = await import(`${directory.root}/index`)
-      if( !entrypoint )
-        throw new Error(`Invalid entrypoint file path - ${directory.root}/${filename}`)
-      
-      // Run plain script
-      if( typeof entrypoint.default !== 'function' ) return
-
-      if( !Array.isArray( entrypoint.takeover ) )
-        throw new Error('No entrypoint <takeover> export')
-      
-        const group: JSObject<string[]> = {}
-
-        entrypoint.takeover.forEach( ( attribute: string ) => {
-          attribute = !attribute.includes(':') ? `${attribute}:default` : attribute
-          
-          const [ section, key ] = attribute.split(':')
-          if( !section || !key ) return
-
-          !group[ section ] ?
-                group[ section ] = [ key ]
-                : group[ section ].push( key )
-        } )
-        
-        const Args: any = []
-
-        Object.entries( group )
-        .map( ([ section, array ], index ) => {
-          if( !array.length ){
-            Args[ index ] = undefined
-            return
-          }
-
-          if( array.length == 1 ){
-            const key = array[0]
-
-            // Return resource group
-            if( key == '*' ){
-              Args[ index ] = {}
-              Object.entries( SERVICES )
-                    .map( ([ attribute, value ]) => {
-                      const [ _section, _key ] = attribute.split(':')
-                      if( _section && _key && _section == section ) Args[ index ][ _key ] = value
-                    })
-            }
-            else Args[ index ] = SERVICES[`${section}:${key}`]
-
-            return
-          }
-          else {
-            Args[ index ] = {}
-            array.forEach( key => {
-              Object.entries( SERVICES )
-                  .map( ([ attribute, value ]) => {
-                    const [ _section, key ] = attribute.split(':')
-                    if( attribute == `${section}:${key}` ) Args[ index ][ key ] = value
-                  })
-            } )
-          }
-        } )
-        
-        /**
-         * Give access to all loaded services
-         *  - Apps
-         *  - Servers
-         *  - Databases
-         *  - ...
-         */
-        entrypoint.default( ...Args )
-    }
-    catch( error ){ console.log('[PROJECT ENTRYPOINT] -', error ) }
+    default: toSingleton( directory.root, typescript )
   }
 }

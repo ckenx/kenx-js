@@ -1,20 +1,23 @@
 import Yaml from 'yaml'
-import Fs from 'node:fs'
-import Path from 'node:path'
-import type { SetupConfig, SetupTarget } from '#types/index'
+import nodeFs from 'fs-extra'
+import nodePath from 'node:path'
+import type { JSObject, SetupConfig, SetupTarget } from '#types/index'
 
 export default class Setup {
   private readonly REFERENCE_MATCH_REGEX = /\[([a-zA-Z0-9-_.]+)\]:([a-zA-Z0-9-_.]+)/i
   private Config?: SetupConfig
 
-  private parseYaml( filepath: string ){
+  public readonly Path = nodePath
+  public readonly Fs = nodeFs
+
+  private async parseYaml( filepath: string ){
     try {
-      let content = Yaml.parse( Fs.readFileSync(`./${filepath}.yml`, 'utf-8') )
+      let content = Yaml.parse( await this.Fs.readFile(`./${filepath}.yml`, 'utf-8') )
       if( content.__extends__ )
         for( const each of content.__extends__ ){
           content = {
             ...content,
-            ...this.parseYaml(`${Path.dirname( filepath )}/${each}`)
+            ...(await this.parseYaml(`${this.Path.dirname( filepath )}/${each}`))
           }
 
           delete content.__extends__
@@ -46,8 +49,8 @@ export default class Setup {
     }
   }
   
-  initialize(){
-    this.Config = this.loadConfig('index')
+  async initialize(){
+    this.Config = await this.loadConfig('index')
     if( !this.Config ) process.exit(1)
     
     /**
@@ -63,7 +66,7 @@ export default class Setup {
      */
     this.Config.directory = this.Config.directory || {}
     
-    this.Config.directory.root = Path.resolve( process.cwd(), this.Config.directory.root || '/' )
+    this.Config.directory.root = this.Path.resolve( process.cwd(), this.Config.directory.root || '/' )
     this.Config.directory.pattern = this.Config.directory.pattern || '-' 
   }
 
@@ -74,9 +77,9 @@ export default class Setup {
    * @return {object} Defined config `object` or `null` if not found
    * 
    */
-  loadConfig( target: SetupTarget ){
+  async loadConfig( target: SetupTarget ){
     // Default target is .config index
-    try { return this.parseYaml(`.config/${target}`) }
+    try { return await this.parseYaml(`.config/${target}`) }
     catch( error ){
       console.log(`[SETUP] <${target}> target:`, error )
       return null
@@ -159,6 +162,6 @@ export default class Setup {
     if( !this.Config || typeof this.Config !== 'object' )
       throw new Error('No setup configuration found')
 
-    return Path.resolve( this.Config?.directory.root, path )
+    return this.Path.resolve( this.Config?.directory.root, path )
   }
 }

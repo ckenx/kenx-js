@@ -14,6 +14,22 @@ export default class SocketIOServer implements Kenx.ServerPlugin<Server> {
     /* Listen on provided port, on all network interfaces. */
     this.server
     .on('error', ( error: any ) => console.error( error ) )
+
+    // Socket.io-redis plugin
+    // import { Server } from 'socket.io'
+    // import { createClient } from 'redis'
+    // import { createAdapter } from '@socket.io/redis-adapter'
+
+    // const io = new Server();
+
+    // const pubClient = createClient({ host: "localhost", port: 6379 });
+    // const subClient = pubClient.duplicate();
+
+    // this.server.adapter( createAdapter( pubClient, subClient ) )
+    // Promise.all([
+    //   pubClient.connect(),
+    //   subClient.connect()
+    // ]).then(() => io.listen(3000) )
   }
 
   listen( arg: number | Kenx.HTTPServer ): Promise<Kenx.ActiveServerInfo | null> {
