@@ -1,8 +1,11 @@
 # Applications configuration
 applications:
   - framework: 'express'
+    key: 'express-app'
     session: '[sessions]:default'
     assets: '[assets]:default'
-    routes:
-      - prefix: '/'
-      - path: ''
+  
+  - framework: 'fastify'
+    key: 'fastify-app'
+    session: '[sessions]:default'
+    assets: '[assets]:default'

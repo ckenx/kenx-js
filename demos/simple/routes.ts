@@ -1,32 +1,37 @@
 import { Router } from 'express'
+import { FastifyInstance } from 'fastify'
+import fs from 'node:fs'
+import path from 'node:path'
 
-export default ( app: Router ) => {
+export default async ( app: FastifyInstance ) => {
   app
   // Render text request
   .get('/', async ( req, res ) => {
     res.send(`Hello, ${req.session.name}!`)
   })
 
-  // Make mongo database query
+  // Make mongo database query: 
   .get('/user/:email', async ( req, res ) => {
     const
-    { email } = req.params,
-    users = req.app.mongodb.collection('users'),
+    { email }: any = req.params,
+    users = app.mongodb.collection('users'),
     user = await users.findOne({ email }, { projection: { _id: 0 } })
 
-    res.json( user )
+    res.send( user )
   })
 
   // Test socket.io connection at http://localhost:8008/socket
   .get('/socket', async ( req, res ) => {
-    res.send(`
+    res
+    .headers({ 'content-type': 'text/html' })
+    .send(`
       <html>
         <head>
           <title>Socket</title>
           <script src="/socket.io/socket.io.js" type="text/javascript"></script>
           <script type="text/javascript">
             const socket = io()
-            socket.on('connect', () => console.log('Socket Connected: ', socket.id ) )
+            socket.on('connect', () => alert('Socket Connected: '+ socket.id ) )
           </script>
         </head>
       </html>
@@ -36,7 +41,7 @@ export default ( app: Router ) => {
   // Test assets storage request
   .get('/storage', async ( req, res ) => {
     // @ts-ignore
-    const storage = req.app.storage()
+    const storage = app.storage()
 
     res.send({
       error: false,
@@ -47,7 +52,9 @@ export default ( app: Router ) => {
 
   // Upload assets page
   .get('/upload', async ( req, res ) => {
-    res.send(`
+    res
+    .headers({ 'content-type': 'text/html' })
+    .send(`
       <html>
         <head>
           <title>Upload</title>
@@ -73,9 +80,19 @@ export default ( app: Router ) => {
   })
   // Test handle upload and storage of assets
   .post('/upload/to', async ( req, res ) => {
-    
-    console.log( req.files )
+    if ( !req.isMultipart() )
+      return res.code(400).send( new Error('Request is not multipart') )
 
-    res.send('Uploaded successfully!')
+    const files = await req.files()
+
+    for await ( const each of files ){
+      console.log( each.filename )
+      // Store file in ./public folder
+      await req.pumpStream( each.file, fs.createWriteStream( path.resolve( __dirname, `./public/${each.filename}` )) )
+      // Or Store file on cloud space storage
+      await req.pumpStream( each.file, await app.storage().stream.to(`chenx/${each.filename}`) )
+    }
+
+    return res.send('Uploaded successfully!')
   })
 }

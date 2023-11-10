@@ -33,8 +33,9 @@ export default class HttpServer implements Kenx.ServerPlugin<Kenx.HTTPServer> {
     return new Promise( ( resolve, reject ) => {
       if( !this.server )
         return reject('No HTTP Server')
-    
-      this.server.listen( PORT, HOST || '0.0.0.0', () => resolve( this.getInfo() ) )
+
+      !this.server.listening
+      && this.server.listen( PORT, HOST || '0.0.0.0', () => resolve( this.getInfo() ) )
     } )
   }
 

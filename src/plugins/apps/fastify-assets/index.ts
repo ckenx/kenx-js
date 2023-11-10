@@ -1,13 +1,22 @@
 import type { Kenx } from '#types/service'
 import type { StaticAssetConfig, ApplicationAssetConfig, AssetStorageConfig, AssetUploadConfig } from '#types/index'
-import os from 'os'
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import { CAS } from 'globe-sdk'
-import express, { Application } from 'express'
-import multipart from 'express-form-data'
+import Plugin from 'fastify-plugin'
+import Static from '@fastify/static'
+import multipart from '@fastify/multipart'
+import util from 'node:util'
+import { Stream, pipeline } from 'node:stream'
 
-export default class ExpressAssetsPlugin {
+declare module 'fastify' {
+  interface FastifyRequest {
+    pumpStream: ( input: Stream, output: Stream ) => Promise<void>
+  }
+}
+
+export default class FastifyAssetsPlugin {
   private readonly setup: Kenx.SetupManager
-  private readonly app: Kenx.ApplicationPlugin<Application>
+  private readonly app: Kenx.ApplicationPlugin<FastifyInstance>
 
   private addStatic( configList: StaticAssetConfig[] ){
     if( !Array.isArray( configList ) || !configList.length ) return
@@ -17,13 +26,13 @@ export default class ExpressAssetsPlugin {
       root = this.setup.resolvePath( root )
       if( !root ) return
       
-      this.app.register( express.static( root, options || {} ) ) 
+      this.app.register( Static, { root: [ root ], ...options }) 
     })
   }
 
   private addMultipart( config: AssetUploadConfig ){
     /**
-     * Multi-part form data parser with connect-multiparty
+     * Multi-part form data parser with fastify-multiparty
      * 
      * Options are the same as multiparty takes.
      * 
@@ -31,16 +40,22 @@ export default class ExpressAssetsPlugin {
      *       files in "uploadDir" folder after the response.
      *       By default, it is `false`.
      */
-    this.app
-    .register( multipart.parse({ ...config, uploadDir: os.tmpdir(), autoClean: true }) )
+    this.app.register( multipart )
+
     /**
-     * Delete from the request all empty files (size == 0)
+     * Register a wrapper function for the `node:stream` pump
+     * to support cross-runtime environment use.
+     * Eg. Node, Deno, Bun
      */
-    .register( multipart.format() )
-    /**
-     * Change the file objects to fs.ReadStream 
-     */
-    .register( multipart.stream() )
+    const 
+    pump = util.promisify( pipeline ),
+    plugin: FastifyPluginAsync = Plugin( async ( app: FastifyInstance ) => {
+      app.addHook( 'onRequest', async req => {
+        req.pumpStream = async ( input, output ) => { await pump( input as any, output as any ) }
+      } )
+    } ) 
+
+    this.app.register( plugin )
   }
 
   private addStorage( config: AssetStorageConfig ){
@@ -76,7 +91,7 @@ export default class ExpressAssetsPlugin {
     }
   }
 
-  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<Application>, assetConfig: ApplicationAssetConfig ){
+  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<FastifyInstance>, assetConfig: ApplicationAssetConfig ){
     this.setup = Setup
     this.app = app
 

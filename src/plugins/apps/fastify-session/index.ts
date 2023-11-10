@@ -1,27 +1,27 @@
-import type { Application } from 'express'
+import type { FastifyInstance } from 'fastify'
 import type { Kenx } from '#types/service'
 import type { ApplicationSessionConfig, ApplicationSessionStore } from '#types/index'
 import { createClient } from 'redis'
-import Cookie from 'cookie-parser'
+import Cookie from '@fastify/cookie'
+import Session, { FastifySessionOptions } from '@fastify/session'
 import RedisStore from 'connect-redis'
-import Session, { SessionOptions } from 'express-session'
 
-export default class ExpressSessionPlugin {
+export default class FastifySessionPlugin {
   private readonly setup: Kenx.SetupManager
-  private readonly app: Kenx.ApplicationPlugin<Application>
+  private readonly app: Kenx.ApplicationPlugin<FastifyInstance>
 
-  private addInMemory( options: SessionOptions ){
+  private addInMemory( options: FastifySessionOptions ){
     // Cookie-parser is required in development mode
     this.app
-    .register( Cookie(`${options.secret}-<TEMPFIX>`) )
-    .register( Session( options ) )
+    .register( Cookie )
+    .register( Session, options )
   }
 
   /**
    * Initialize Redis-server connection to 
    * manage session store
    */
-  private addRedisStore( storeConfig: ApplicationSessionStore, options: SessionOptions ){
+  private addRedisStore( storeConfig: ApplicationSessionStore, options: FastifySessionOptions ){
     // Initialize client
 
     // TODO: Connect to database
@@ -32,21 +32,21 @@ export default class ExpressSessionPlugin {
     .catch( ( error : Error ) => console.log('[ERROR] Redis-Server Error: ', error ) )
 
     // Initialize store
-    const handler = Session({
+    options = {
       ...options,
       store: new RedisStore({
         client,
         ttl: 86400,
         ...storeConfig.options
       }),
-      resave: false, // required: force lightweight session keep alive (touch)
+      // resave: false, // required: force lightweight session keep alive (touch)
       saveUninitialized: false, // recommended: only save session when data exists
-    })
+    }
     
-    this.app.register( handler )
+    this.app.register( Session, options )
   }
 
-  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<Application>, sessionConfig: ApplicationSessionConfig ){
+  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<FastifyInstance>, sessionConfig: ApplicationSessionConfig ){
     this.setup = Setup
     this.app = app
 
@@ -65,7 +65,7 @@ export default class ExpressSessionPlugin {
      * and cookie.
      */
     if( config.type == 'in-memory' )
-      this.addInMemory( config.options as SessionOptions )
+      this.addInMemory( config.options as FastifySessionOptions )
 
     /**
      * Use database store
@@ -75,7 +75,7 @@ export default class ExpressSessionPlugin {
         throw new Error('Undefined express session store configuration')
 
       switch( config.store.provider ){
-        case 'redis-store': this.addRedisStore( config.store, config.options as SessionOptions ); break
+        case 'redis-store': this.addRedisStore( config.store, config.options as FastifySessionOptions ); break
         // case 'mongo-store': break
         // case 'mysql-store': break
         // case 'postgress-store': break

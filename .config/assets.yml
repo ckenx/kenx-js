@@ -14,7 +14,7 @@ assets:
     # and style they want to process differents aspects
     # of the express application.
     #
-    plugin: 'express-assets'
+    # plugin: 'express-assets'
     # Assets storage configuration
     # - cloud: connect to online space storage (CDN)
     # - local: use same file system as the project
@@ -44,5 +44,6 @@ assets:
     static:
       - root: './public'
         options:
+          prefix: '/static'
           acceptRange: true
           cacheControl: false

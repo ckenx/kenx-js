@@ -15,7 +15,7 @@ sessions:
     # and style they want to process differents aspects
     # of the express application.
     #
-    plugin: 'express-session'
+    # plugin: 'express-session'
     # Development environment
     development:
       # Using `in-memory` storage

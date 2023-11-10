@@ -6,7 +6,7 @@ import routes from './routes'
 export const takeover = ['http', 'socketio', 'database:*']
 export default ( http: Kenx.ServerPlugin<http.Server>, io: io.Server, databases: { [index: string]: Kenx.DatabasePlugin<any> } ) => {
   if( !http ) return
-  
+
   const { app } = http
   if( !app ) return
 
@@ -17,13 +17,21 @@ export default ( http: Kenx.ServerPlugin<http.Server>, io: io.Server, databases:
   .decorate('mongodb', databases.default.getConnection() )
 
   // Add express middleware
-  .addHandler('middleware', ( req: any, res: any, next: any ) => {
-    console.log('-- Middleware --')
+  // .register( ( req: any, res: any, next: any ) => {
+  //   console.log('-- Middleware --')
 
+  //   // Test session
+  //   req.session.name = 'Bob'
+    
+  //   next()
+  // })
+
+  // Add fastify middleware
+  .addHandler('onRequest', async ( req: any, res: any ) => {
+    console.log('-- Middleware --')
+    
     // Test session
     req.session.name = 'Bob'
-    
-    next()
   })
 
   // Register express routes
@@ -34,4 +42,6 @@ export default ( http: Kenx.ServerPlugin<http.Server>, io: io.Server, databases:
     console.log( error )
     res.status(500).send( error )
   })
+
+  http.listen( true )
 }

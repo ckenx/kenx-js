@@ -5,7 +5,7 @@ servers:
     key: 'default' # Optional value
     HOST: 0.0.0.0
     PORT: 8008
-    application: '[applications]:default'
+    application: '[applications]:fastify-app'
   
   # Socket.io server configurations
   - type: 'socketio'

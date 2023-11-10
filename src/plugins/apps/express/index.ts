@@ -2,7 +2,6 @@ import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig
 import type { Kenx } from '#types/service'
 import type { NextFunction, Request, Response, ErrorRequestHandler, Application } from 'express'
 import { Router } from 'express'
-import __session__ from '../express-session'
 import __init__ from './init'
 
 export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application> {
@@ -23,7 +22,7 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
   private async useAssets( config?: ApplicationAssetConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || 'express-session'}`)
+    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || 'express-assets'}`)
     new Plugin( this.Setup, this, config )
   }
 
@@ -55,6 +54,11 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
     this.useAssets( httpServerConfig.application?.assets )
   }
 
+  register( middleware: any ){
+    this.core.use( middleware )
+    return this
+  }
+
   decorate( attribute: string, value: any ){
     this.core[ attribute ] = value
     return this
@@ -69,10 +73,10 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
   }
 
   addHandler( type: string, func: any ){
-    switch( type ){
-      case 'middleware':
-      default: this.core.use( func )
-    }
+    // switch( type ){
+    //   case 'middleware':
+    //   default: this.core.use( func )
+    // }
 
     return this
   }

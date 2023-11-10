@@ -9,7 +9,7 @@ declare namespace Kenx {
     private readonly core: T
     readonly HOST: string
     readonly PORT: number
-    // use: ( fn: any ) => this
+    register: ( fn: any, options?: any ) => this
     decorate: ( attribute: string, value: any ) => this
     addRouter: ( prefix: string, router: any ) => this
     addHandler: ( type: string, func: any ) => this
