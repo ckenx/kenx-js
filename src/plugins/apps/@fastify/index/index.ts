@@ -1,4 +1,4 @@
-import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig } from '#types/index'
+import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig, ApplicationApiComplianceConfig } from '#types/index'
 import type { Kenx } from '#types/service'
 import type { FastifyInstance } from 'fastify'
 import __init__ from './init'
@@ -54,14 +54,21 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
   private async useSession( config?: ApplicationSessionConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || 'fastify-session'}`)
+    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@fastify/session'}`)
     new Plugin( this.Setup, this, config )
   }
 
   private async useAssets( config?: ApplicationAssetConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || 'fastify-assets'}`)
+    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@fastify/assets'}`)
+    new Plugin( this.Setup, this, config )
+  }
+
+  private async useAPICompliance( config?: ApplicationApiComplianceConfig ){
+    if( !config ) return
+
+    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@fastify/api-compliance'}`)
     new Plugin( this.Setup, this, config )
   }
 
@@ -91,6 +98,11 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
      * Initialize and manage application assets
      */
     this.useAssets( httpServerConfig.application?.assets )
+    
+    /**
+     * Initialize api compliances features
+     */
+    this.useAPICompliance( httpServerConfig.application?.api )
   }
 
   register( plugin: any, options?: any ){

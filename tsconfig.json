@@ -13,7 +13,7 @@
     "moduleResolution": "node",
     "baseUrl": "src",
     "paths": {
-      "#plugins/*": ["plugins/*"],
+      "#plugins/*": ["src/plugins/*"],
       "#types/*": ["types/*"],
       "#core/*": ["core/*"],
       "#root/*": ["*"]

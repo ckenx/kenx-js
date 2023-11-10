@@ -86,10 +86,23 @@ export type ApplicationAssetConfig = {
   static: StaticAssetConfig[]
 }
 
+export type ApplicationApiComplianceConfig = {
+  plugin?: string
+  profile: {
+    appname?: string
+    version: string
+    status: 'development' | 'operational' | 'maintenance' | 'deprecated'
+  }
+  ratelimit: {
+    maxRPS: number
+  }
+}
 export type ApplicationConfig = {
   framework: string
   session?: ApplicationSessionConfig
   assets?: ApplicationAssetConfig
+  api?: ApplicationApiComplianceConfig
+  [index: string]: any
 }
 export type HTTPServerConfig = ServerConfig & {
   HOST: string

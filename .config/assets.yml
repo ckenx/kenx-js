@@ -1,20 +1,5 @@
 assets:
   - key: 'default'
-    # Specify the plugin use to handle express 
-    # application assets:
-    # 
-    # `express-assets` plugin come by default with
-    # with `express` plugin. It's used by default if 
-    # `plugin` value isn't specified in the session 
-    # configuration
-    # 
-    # NOTE:
-    # The support for plugin is enable by express
-    # plugin itself, so others can use any stack
-    # and style they want to process differents aspects
-    # of the express application.
-    #
-    # plugin: 'express-assets'
     # Assets storage configuration
     # - cloud: connect to online space storage (CDN)
     # - local: use same file system as the project

@@ -32,7 +32,7 @@ async function createHTTPServer( config: HTTPServerConfig ){
   if( config.application?.framework ) {
     try {
       const
-      App = await Setup.importPlugin(`app:${config.application.framework}`),
+      App = await Setup.importPlugin(`app:@${config.application.framework}/index`),
       instance: Kenx.ApplicationPlugin<Kenx.HTTPServer> = new App( Setup, config )
 
       return await instance.serve()

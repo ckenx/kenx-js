@@ -9,3 +9,19 @@ applications:
     key: 'fastify-app'
     session: '[sessions]:default'
     assets: '[assets]:default'
+    api:
+      # Specify the plugin use to handle api compliances
+      # 
+      # `@fastify/api-compliance` plugin is used by default if 
+      # `plugin` value isn't specified in the application.api 
+      # configuration
+      #
+      plugin: '@fastify/api-compliance'
+      profile:
+        appname: '[env]:APPNAME'
+        version: '[env]:API_VERSION'
+        status: '[env]:API_STATUS'
+
+      ratelimit: 
+        enable: true
+        maxRPS: 60000
