@@ -45,7 +45,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/hpp": "^0.2.4",
     "@types/morgan": "^1.9.7",
-    "@types/node": "^20.8.9",
+    "@types/node": "^20.9.0",
     "eslint": "^8.53.0",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
