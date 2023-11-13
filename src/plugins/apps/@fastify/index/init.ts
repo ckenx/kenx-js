@@ -9,6 +9,10 @@ export default () => {
   const
   config = {
     /**
+     * Application settings
+     */
+    trustProxy: true,
+    /**
      * Development logs
      * 
      * TODO:

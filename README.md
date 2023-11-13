@@ -15,31 +15,7 @@ Contribution
 
 For those who would like to contribute, please do not esitate at all. Create a fork of the project, do your thing, send a PR and we'll get along from there.
 
-Guidelines and code of conduct for CONTRIBUTORS will be publish soon.
-
-### Installation for development
-Open your favorate terminal. Go to the directory where you want to add the project and run respectively the commands below.
-
-```
-git clone https://github.com/ckenx/kenx-node
-
-cd /kenx-node
-```
-
-Install project dependencies 
-
-```
-yarn install
-yarn dev
-```
-
-For `npm` users
-
-```
-npm install
-npm dev
-```
-
+Kindly check our [guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) for CONTRIBUTORS.
 
 ### Development roadmap
 
@@ -84,7 +60,7 @@ npm dev
     - [ ] Application Request & Response handlers
 - [ ] Services & Resources
   - [x] Plugin support
-  - [ ] Servers
+  - [x] Servers
     - [x] Plugin support
     - [x] Configure & create a server
     - [x] Server-to-Server Binding
@@ -131,8 +107,6 @@ npm dev
     - [x] Exceptions & Errors handler
   - [ ] Service Workers
   - [ ] User Interface
-    - [ ] Error Profiler
-    - [ ] Accessibility Inforcement Tools
     - [ ] Configuer & mount UI asset bundlers
     - [ ] Design framework integration
     - [ ] UI component & flow Testor
@@ -162,6 +136,24 @@ npm dev
     - [ ] Jest Testor
     - [ ] Mocha Testor
     - [ ] Selenium Test Kit
+    - [ ] OAuth2.0 - OpenID provider
+    - [ ] Wilcard SSO strategies support
+- [ ] UI Development Kit
+  - [ ] Plugin support
+  - [ ] Error Profiler
+  - [ ] UI Builder Sandbox
+    - [ ] Custom styles, Fonts & theme generator
+    - [ ] UI components & pages designer
+    - [ ] Reusable widgets/view & templates
+    - [ ] Accessibility tools
+    - [ ] Live collaboration tools
+    - [ ] UI components marketplate
+  - [ ] Easy Documentation access
+    - [ ] Search engine (Online contents)
+    - [ ] Errors & Features linkage
+  - [ ] Collaboration forum (Online only)
+    - [ ] Find & Post issues & comments
+    - [ ] Direct sync with Github
 - [ ] Test kit
   - [ ] Plugin support
   - [ ] Linting test & fix
@@ -190,7 +182,6 @@ License
 -------
 
 This software is free to use under the MIT license. See the [LICENSE file][] for license text and copyright information.
-
 
 [LICENSE file]: https://github.com/ckenx/kenx-node/blob/master/LICENSE
 [Issues here]: https://github.com/ckenx/kenx-node/issues
