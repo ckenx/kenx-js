@@ -5,6 +5,7 @@ import type { JSObject, SetupConfig, SetupTarget } from '#types/index'
 
 export default class Setup {
   private readonly REFERENCE_MATCH_REGEX = /\[([a-zA-Z0-9-_.]+)\]:([a-zA-Z0-9-_.]+)/i
+  private readonly PLUGIN_NAME_MATCH_REGEX = /(@?[a-zA-Z0-9-_.]+)\/?([a-zA-Z0-9-_.]+)?/i
   private Config?: SetupConfig
 
   public readonly Path = nodePath
@@ -107,17 +108,22 @@ export default class Setup {
    * @return {module} Defined setup `object` or `null` if not found
    * 
    */
-  async importPlugin( reference: string ){
-    try { 
-      const [type, name] = reference.split(':')
-      if( !['app', 'server', 'database'].includes( type ) )
-        throw new Error(`<${type}:> is not a valid import type. Expect <app:>, <server:>, <server:>, ...`)
+  async importPlugin( refname: string ){
+    try {
+      if( !refname ) throw null
 
-      return ( await import(`./../plugins/${type}s/${name}`) ).default
+      const [ _, namespace, name ] = refname.match( this.PLUGIN_NAME_MATCH_REGEX ) || []
+      if( !_ || !namespace ) throw null
+
+      refname = /^@/.test( namespace ) ?
+                        `${namespace}/${name ? name : 'index'}` // Namespace plugin
+                        : namespace // Standalone plugin
+      
+      return ( await import(`./../plugins/${refname}`) ).default
     }
     catch( error: any ){
       console.error( error )
-      throw new Error(`Failed importing <${reference}> plugin`)
+      throw new Error(`Failed importing <${refname}> plugin`)
     }
   }
 

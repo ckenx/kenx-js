@@ -2,6 +2,7 @@
 databases:
   # Use on a connection string
   - type: 'mongodb'
+    plugin: '@mongodb'
     key: 'default'
     # Automatically connect the database during 
     # the project deployment.
@@ -10,6 +11,7 @@ databases:
 
   # Or user connection parameters
   - type: 'mysql'
+    plugin: '@mysql'
     key: 'mysql-db'
     options:
       host: 'localhost'
@@ -41,5 +43,6 @@ databases:
       
   # Use on a connection string
   - type: 'redis'
+    plugin: '@redis'
     key: 'redis-db'
     uri: 'redis://121.0.0.1:25061'

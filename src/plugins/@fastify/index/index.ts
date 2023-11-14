@@ -16,21 +16,21 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
   private async useSession( config?: ApplicationSessionConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@fastify/session'}`)
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@fastify/session' )
     new Plugin( this.Setup, this, config )
   }
 
   private async useAssets( config?: ApplicationAssetConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@fastify/assets'}`)
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@fastify/assets' )
     new Plugin( this.Setup, this, config )
   }
 
   private async useAPICompliance( config?: ApplicationApiComplianceConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@fastify/api-compliance'}`)
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@fastify/api-compliance' )
     new Plugin( this.Setup, this, config )
   }
 
@@ -140,7 +140,7 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
     if( !this.Setup )
       throw new Error('Undefined Kenx Utils object supply')
 
-    const server = new FServer( this, { type: 'http', PORT: this.PORT, HOST: this.HOST })
+    const server = new FServer( this, { port: this.PORT, host: this.HOST })
     return server
   }
 }

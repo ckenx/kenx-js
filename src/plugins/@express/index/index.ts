@@ -15,21 +15,21 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
   private async useSession( config?: ApplicationSessionConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@express/session'}`)
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@express/session' )
     new Plugin( this.Setup, this, config )
   }
 
   private async useAssets( config?: ApplicationAssetConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@express/assets'}`)
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@express/assets' )
     new Plugin( this.Setup, this, config )
   }
 
   private async useAPICompliance( config?: ApplicationApiComplianceConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin(`app:${config.plugin || '@express/api-compliance'}`)
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@express/api-compliance' )
     new Plugin( this.Setup, this, config )
   }
 

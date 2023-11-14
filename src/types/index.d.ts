@@ -31,11 +31,10 @@ type JSObject<Type> = { [index: string]: Type }
 
 export type SetupTarget = 'index' | 'frontend' | 'native'
 
-export type ServerType = 'http' | 'socketio' | 'websocket'
-export type ServerConfig = {
-  type: ServerType
+export type ResourceConfig = {
+  type: string
+  plugin: string
   key?: string
-  bindTo?: string
 }
 
 export type ApplicationSessionStore = {
@@ -98,24 +97,23 @@ export type ApplicationApiComplianceConfig = {
   }
 }
 export type ApplicationConfig = {
-  framework: string
+  plugin: string
   session?: ApplicationSessionConfig
   assets?: ApplicationAssetConfig
   api?: ApplicationApiComplianceConfig
   [index: string]: any
 }
-export type HTTPServerConfig = ServerConfig & {
+export type HTTPServerConfig = ResourceConfig & {
   HOST: string
   PORT: number
   application?: ApplicationConfig
 }
-export type AuxiliaryServerConfig = ServerConfig & {
+export type AuxiliaryServerConfig = ResourceConfig & {
   PORT?: number
+  bindTo?: string
   options?: IO.ServerOptions
 }
-export type DatbaseConfig = {
-  type: string
-  key?: string
+export type DatabaseConfig = ResourceConfig & {
   autoconnect?: string
   uri?: string
   options?: {

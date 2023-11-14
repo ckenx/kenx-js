@@ -1,4 +1,4 @@
-import type { DatbaseConfig } from '#types/index'
+import type { DatabaseConfig } from '#types/index'
 import type { Kenx } from '#types/service'
 import { type Connection, createConnection, createPool, ConnectionConfig } from 'mysql2/promise'
 
@@ -7,7 +7,7 @@ export default class MysqlPlugin implements Kenx.DatabasePlugin<Connection> {
   private isPool = false
   connection?: Connection
   
-  constructor( Setup: Kenx.SetupManager, config: DatbaseConfig ){
+  constructor( Setup: Kenx.SetupManager, config: DatabaseConfig ){
     if( config.uri )
       this.config = config.uri
 

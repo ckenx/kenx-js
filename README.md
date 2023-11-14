@@ -19,7 +19,7 @@ Kindly check our [guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF
 
 ### Development roadmap
 
-- [ ] Project creation
+- [ ] Project
   - [ ] Architecture & Components
   - [ ] Command line Interface
   - [ ] Generate project commands
@@ -96,9 +96,10 @@ Kindly check our [guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF
       - [x] Local & Cloud storage handler
       - [x] Multipart Upload handler
       - [ ] Download asset controls
-    - [x] API Compliance
-      - [x] API profile
-      - [x] Rate Limit
+    - [ ] API Compliance
+      - [x] API Profile
+      - [ ] Rate Limit
+      - [ ] Maintenance Stage Mounting
     - [ ] API Authentication Proxy
   - [x] Databases
     - [x] Plugin support

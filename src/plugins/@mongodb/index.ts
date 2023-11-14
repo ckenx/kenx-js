@@ -1,4 +1,4 @@
-import type { DatbaseConfig } from '#types/index'
+import type { DatabaseConfig } from '#types/index'
 import type { Kenx } from '#types/service'
 import { MongoClient, MongoClientOptions, Db } from 'mongodb'
 
@@ -7,7 +7,7 @@ export default class MongodbPugin implements Kenx.DatabasePlugin<Db> {
   private readonly config: string
   connection?: Db
   
-  constructor( Setup: Kenx.SetupManager, config: DatbaseConfig ){
+  constructor( Setup: Kenx.SetupManager, config: DatabaseConfig ){
     // TODO: Convert connection options object to connection string
 
     this.config = config.uri || ''

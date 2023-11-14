@@ -1,25 +1,22 @@
 import type { Kenx } from '#types/service'
+import type { ServerConfig } from './types'
 import type { FastifyInstance } from 'fastify'
-import type { HTTPServerConfig } from '#types/index'
 
 export default class Server implements Kenx.ServerPlugin<Kenx.HTTPServer> {
   readonly app: Kenx.ApplicationPlugin<FastifyInstance>
   readonly server: Kenx.HTTPServer
-  private readonly options: HTTPServerConfig
+  private readonly config: ServerConfig
 
-  constructor( app: Kenx.ApplicationPlugin<FastifyInstance>, options: HTTPServerConfig ){
+  constructor( app: Kenx.ApplicationPlugin<FastifyInstance>, config: ServerConfig ){
     this.app = app
-    this.options = options
+    this.config = config
     this.server = app.core.server
   }
   async listen(){
-    if( !this.app || !this.options )
+    if( !this.app || !this.config )
       throw new Error('No HTTP Server')
 
-    if( !this.server.listening ){
-      const { PORT, HOST } = this.options
-      await this.app.core.listen({ port: PORT, host: HOST })
-    }
+    !this.server.listening && await this.app.core.listen( this.config )
 
     return this.getInfo()
   }

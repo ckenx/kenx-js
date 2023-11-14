@@ -1,11 +1,11 @@
 # Applications configuration
 applications:
-  - framework: 'express'
+  - plugin: '@express'
     key: 'express-app'
     session: '[sessions]:default'
     assets: '[assets]:default'
   
-  - framework: 'fastify'
+  - plugin: '@fastify'
     key: 'fastify-app'
     session: '[sessions]:default'
     assets: '[assets]:default'

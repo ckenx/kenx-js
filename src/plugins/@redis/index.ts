@@ -1,4 +1,4 @@
-import type { DatbaseConfig } from '#types/index'
+import type { DatabaseConfig } from '#types/index'
 import type { Kenx } from '#types/service'
 import { RedisClientOptions, RedisClientType, createClient } from 'redis'
 
@@ -7,7 +7,7 @@ export default class RedisPugin implements Kenx.DatabasePlugin<any> {
   private readonly config: RedisClientOptions
   connection?: any
   
-  constructor( Setup: Kenx.SetupManager, config: DatbaseConfig ){
+  constructor( Setup: Kenx.SetupManager, config: DatabaseConfig ){
     if( config.uri )
       this.config = { url: config.uri }
 

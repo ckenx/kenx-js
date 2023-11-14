@@ -1,5 +1,5 @@
 import type { Kenx } from '#types/service'
-import type { HTTPServerConfig, AuxiliaryServerConfig, DatbaseConfig, JSObject } from '#types/index'
+import type { ResourceConfig, HTTPServerConfig, AuxiliaryServerConfig, DatabaseConfig, JSObject } from '#types/index'
 import dotenv from 'dotenv'
 import SetupManager from '#core/setup'
 
@@ -29,10 +29,11 @@ async function createHTTPServer( config: HTTPServerConfig ){
    * Eg. express, fastify, ...
    * 
    */
-  if( config.application?.framework ) {
+    console.log( config.application?.plugin )
+  if( config.application?.plugin ) {
     try {
       const
-      App = await Setup.importPlugin(`app:@${config.application.framework}/index`),
+      App = await Setup.importPlugin( config.application.plugin ),
       instance: Kenx.ApplicationPlugin<Kenx.HTTPServer> = new App( Setup, config )
 
       return await instance.serve()
@@ -45,8 +46,11 @@ async function createHTTPServer( config: HTTPServerConfig ){
 
   // Create default HTTP server
   else try {
+    if( !config.plugin )
+      throw new Error(`Undefined <${config.type || 'http'}> server plugin`)
+
     const
-    HttpServer = await Setup.importPlugin('server:http'),
+    HttpServer = await Setup.importPlugin( config.plugin ),
     instance: Kenx.ServerPlugin<Kenx.HTTPServer> = new HttpServer( Setup )
 
     await instance.listen( config )
@@ -60,11 +64,14 @@ async function createHTTPServer( config: HTTPServerConfig ){
 
 async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
   try {
-    const { type, bindTo, PORT, options } = config
+    if( !config.plugin )
+      throw new Error(`Undefined <${config.type || 'auxiliary'}> server plugin`)
+
+    const { plugin, bindTo, PORT, options } = config
     config.PORT = PORT || Number( process.env.HTTP_PORT )
 
     const
-    AuxServer = await Setup.importPlugin(`server:${type}`),
+    AuxServer = await Setup.importPlugin( plugin ),
     instance: Kenx.ServerPlugin<any> = new AuxServer( Setup, options )
 
     /**
@@ -86,16 +93,13 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
   }
 }
 
-async function createResource( type: string, config: any ){
+async function createResource( config: ResourceConfig ){
   try {
-    if( ['server', 'app'].includes( type ) )
-      throw new Error(`<${type}:> is not a resource. Expected <database:>, <worker:>, ...`)
-
-    const Resource = await Setup.importPlugin(`${type}:${config.type}`)
+    const Resource = await Setup.importPlugin( config.plugin )
     return new Resource( Setup, config )
   }
   catch( error ){
-    console.error(`[${type.toUpperCase()} RESOURCE] -`, error )
+    console.error(`[${config.type.toUpperCase()} RESOURCE] -`, error )
     process.exit(1)
   }
 }
@@ -180,7 +184,7 @@ export const autoload = async (): Promise<void> => {
   if( Array.isArray( databases ) )
     for await ( const config of databases ){
       const { type, key } = config
-      let database = await createResource('database', config as DatbaseConfig )
+      let database = await createResource( config as DatabaseConfig )
       if( !database )
         throw new Error(`[${type.toUpperCase()} DATABASE] - Unsupported`)
 
@@ -240,6 +244,8 @@ async function toSingleton( root: string, typescript = false ){
      *  - ...
      */
     const Args = Object.values( getResource( entrypoint.takeover ) )
+
+    console.log(`[KENX] - Takeover ...`)
     entrypoint.default( ...Args )
   }
   catch( error ){ console.log('[PROJECT ENTRYPOINT] -', error ) }
@@ -306,6 +312,7 @@ async function toMVC( root: string, typescript = false ){
     if( !models ) console.warn('No models available for <controllers>')
     if( !views ) console.warn('No views available for <controllers>')
     
+    console.log(`[KENX] - Takeover ...`)
     cFactory.default( ...Object.values( cFactoryDeps ), models, views )
   }
   catch( error ){ console.log('[PROJECT MVC] -', error ) }
@@ -321,7 +328,9 @@ async function toMVC( root: string, typescript = false ){
 export const dispatch = async () => {
   // Assumed `autoload` method has resolved
   if( !Setup ) process.exit(1)
-  
+
+  console.log(`[KENX] - Setup ready`)
+
   const { typescript, directory } = Setup.getConfig()
   switch( directory.pattern ){
     /**

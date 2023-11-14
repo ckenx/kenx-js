@@ -5,3 +5,8 @@
 //     [index: string]: unknown
 //   }
 // }
+
+export type ServerConfig = {
+  host: string
+  port: number
+}

@@ -47,5 +47,20 @@ export default class FastifyAPICompliancePlugin {
      * Setup API rate-limit manager
      */
     config.ratelimit && this.addRateLimit( app.core, config )
+
+    /**
+     * TODO: Setup maintenance stage handler
+     * 
+     * When maintenance mode is enabled in production, 
+     * `MAINTAINER MODE MIDDLEWARE` get mounted at the
+     * root of the application/server:
+     * 
+     * - Keeps the site active
+     * - Redirect users to `ONGOING MAINTENANCE PAGE`
+     * - Activate development kits is available in the production code
+     * - Maintainer go to `/maintenance` page where an iframe version 
+     *   of the site is mounted, allowing them to operate with the site 
+     *   like in production mode but with development tools.
+     */
   }
 }
