@@ -1247,10 +1247,10 @@
     "@types/jsonfile" "*"
     "@types/node" "*"
 
-"@types/hpp@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/@types/hpp/-/hpp-0.2.4.tgz"
-  integrity sha512-1PPJtNNvQRKALKPCbTtWQtiqEqhi1Gkw6ROD4Cot2AIAmpBcEcZ3mKl9iujj2vcL7XuVv4ZiZGaHrfdRusUrBg==
+"@types/hpp@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@types/hpp/-/hpp-0.2.5.tgz#82e91b6adae5b3b463a2c89b92f745465ddd4eca"
+  integrity sha512-CBCYtHX0Gb2+jUs8BkLA4UbI/gBzsg93ffVPrVvrKQmXekcbQkxmwr//ccpHUdgVCD2IOaPsSJTXkCV6yeGaHg==
   dependencies:
     "@types/express" "*"
 
@@ -3760,6 +3760,7 @@ stream-wormhole@^1.1.0:
   integrity sha512-gHFfL3px0Kctd6Po0M8TzEvt3De/xu6cnRrjlfYNhwbhLPLwigI2t1nc6jrzNuaYg5C4YF78PPFuQPzRiqn9ew==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==

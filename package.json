@@ -43,7 +43,7 @@
     "@types/express-form-data": "^2.0.5",
     "@types/express-session": "^1.17.9",
     "@types/fs-extra": "^11.0.4",
-    "@types/hpp": "^0.2.4",
+    "@types/hpp": "^0.2.5",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.9.0",
     "eslint": "^8.53.0",
