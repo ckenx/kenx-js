@@ -1204,10 +1204,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/express-form-data@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/@types/express-form-data/-/express-form-data-2.0.4.tgz"
-  integrity sha512-zYlUXBdSHI81FZcZs5gm1caJ1WPcdAyI4ycTmsyY/oXQEjNDqYOLBUc5TT8pMcSV4x7ywCWsOPaPEkUHUjtT0g==
+"@types/express-form-data@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@types/express-form-data/-/express-form-data-2.0.5.tgz#cacf95f58d7fcf7c5b8275e1cba6c2435b17dbe6"
+  integrity sha512-zn1Cvy/scDOgV4j5pUKxsPQQVIX5vAGL6xjLWteSApd3HAmmfbdeZ3WMbFAks0kIaAxbSIT79W9GB4AVkS6fOA==
   dependencies:
     "@types/connect" "*"
     "@types/multiparty" "*"
