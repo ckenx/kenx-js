@@ -1,6 +1,7 @@
 {
   "name": "kenx-node",
   "version": "0.0.1",
+  "private": true,
   "description": "Kenx framework for NodeJS",
   "main": "dist/index.js",
   "repository": "https://github.com/ckenx/kenx-node",
@@ -14,39 +15,13 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@fastify/cookie": "^9.1.0",
-    "@fastify/formbody": "^7.4.0",
-    "@fastify/multipart": "^8.0.0",
-    "@fastify/session": "^10.5.0",
-    "@socket.io/redis-adapter": "^8.2.1",
-    "connect-redis": "^7.1.0",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-form-data": "^2.0.22",
-    "express-session": "^1.17.3",
-    "fastify": "^4.24.3",
     "fs-extra": "^11.1.1",
-    "globe-sdk": "^1.1.5",
-    "helmet": "^7.1.0",
-    "hpp": "^0.2.3",
-    "morgan": "^1.10.0",
-    "mysql2": "^3.6.3",
-    "redis": "^4.6.10",
-    "socket.io": "^4.7.2",
-    "ts-import": "^4.0.0-beta.10",
-    "typescript-require": "^0.3.0"
+    "tsc-prog": "^2.3.0",
+    "yaml": "^2.3.4"
   },
   "devDependencies": {
-    "@types/cookie-parser": "^1.4.5",
-    "@types/cors": "^2.8.15",
-    "@types/express": "^4.17.20",
-    "@types/express-form-data": "^2.0.5",
-    "@types/express-session": "^1.17.9",
     "@types/fs-extra": "^11.0.4",
-    "@types/hpp": "^0.2.5",
-    "@types/morgan": "^1.9.9",
     "@types/node": "^20.9.0",
     "eslint": "^8.53.0",
     "rimraf": "^5.0.5",
@@ -54,8 +29,10 @@
     "tsc": "^2.0.4",
     "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.2.2",
     "typescript-eslint": "^0.0.1-alpha.0",
-    "yaml": "^2.3.4"
-  }
+    "typescript": "^5.2.2"
+  },
+  "workspaces": [
+    "src/plugins/**/*"
+  ]
 }

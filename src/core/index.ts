@@ -166,7 +166,7 @@ export const autoload = async (): Promise<void> => {
    * 
    */
   process.env.NODE_ENV == 'development' ?
-          dotenv.config({ path: './.env.dev' }) // Load development specific environment variables
+          dotenv.config({ path: `${process.cwd()}/.env.dev` }) // Load development specific environment variables
           : dotenv.config() // Load default .env variables
 
   /**
@@ -185,7 +185,7 @@ export const autoload = async (): Promise<void> => {
       const { type, key } = config
       let database = await createResource( config as DatabaseConfig )
       if( !database ){
-        Setup.context.error(`<${type} database> is not supported`)
+        console.error(`<${type} database> is not supported`)
         process.exit(1)
       }
 
@@ -194,7 +194,7 @@ export const autoload = async (): Promise<void> => {
       // Establish connection to the database during deployement
       config.autoconnect && await database.connect()
       
-      Setup.context.log(`<${type} database> ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
+      console.log(`<${type} database> ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
     }
 
   /**
@@ -212,7 +212,7 @@ export const autoload = async (): Promise<void> => {
       }
 
       if( !server ){
-        Setup.context.error(`<${type} server> is not supported`)
+        console.error(`<${type} server> is not supported`)
         process.exit(1)
       }
 
@@ -224,16 +224,16 @@ export const autoload = async (): Promise<void> => {
         process.exit(1)
       }
 
-      Setup.context.log(`<${type.toUpperCase()} server> - running \t[PORT=${info.port}]`)
+      console.log(`<${type.toUpperCase()} server> - running \t[PORT=${info.port}]`)
     }
 }
 
-async function toSingleton( root: string, typescript = false ){
+async function toSingleton(){
   try {
     const
-    entrypoint = await Setup.importModule( root )
+    entrypoint = await Setup.importModule('./')
     if( !entrypoint )
-      throw new Error(`No entrypoint file found at ${root}`)
+      throw new Error('No entrypoint file found')
     
     // Run plain script
     if( typeof entrypoint.default !== 'function' ) return
@@ -259,18 +259,12 @@ async function toSingleton( root: string, typescript = false ){
   }
 }
 
-async function toMVC( root: string, typescript = false ){
+async function toMVC(){
   try {
-    const ext = typescript ? 'ts' : 'js'
-
     /**
      * Load models
      */
-    const mIndexPath = `${root}/models/index.${ext}`
-    if( !await Setup.Fs.exists( mIndexPath ) )
-      throw new Error(`Models index [${root}/models/index.${ext}] not found`)
-
-    const mFactory = await Setup.importModule(`${root}/models/index.${ext}`)
+    const mFactory = await Setup.importModule('./models')
     if( !mFactory || typeof mFactory.default !== 'function' )
       throw new Error('Invalid models index. Expected default export')
     
@@ -286,10 +280,9 @@ async function toMVC( root: string, typescript = false ){
      * Load views (Optional)
      */
     let views
-    const vIndexPath = `${root}/views/index.${ext}`
-    if( await Setup.Fs.exists( vIndexPath ) ){
-      const vFactory = await Setup.importModule(`${root}/views/index.${ext}`)
-      if( !vFactory || typeof vFactory.default !== 'function' )
+    const vFactory = await Setup.importModule('./views')
+    if( vFactory ){
+      if( typeof vFactory.default !== 'function' )
         throw new Error('Invalid views index. Expected default export')
       
       let vFactoryDeps = {}
@@ -302,11 +295,7 @@ async function toMVC( root: string, typescript = false ){
     /**
      * Load controllers
      */
-    const cIndexPath = `${root}/controllers/index.${ext}`
-    if( !await Setup.Fs.exists( cIndexPath ) )
-      throw new Error(`Controllers index [${root}/controllers/index.${ext}] not found`)
-
-    const cFactory = await Setup.importModule(`${root}/controllers/index.${ext}`)
+    const cFactory = await Setup.importModule('./controllers')
     if( !cFactory || typeof cFactory.default !== 'function' )
       throw new Error('Invalid controllers index. Expected default export')
 
@@ -342,7 +331,7 @@ export const dispatch = async () => {
     Setup.context.log('Ready')
     : process.exit(1)
 
-  const { typescript, directory } = Setup.getConfig()
+  const { directory } = Setup.getConfig()
   switch( directory.pattern ){
     /**
      * MVC entrypoints project structure
@@ -352,13 +341,13 @@ export const dispatch = async () => {
      *  - views: `root/views`
      *  - controllers: `root/controllers`
      */
-    case 'mvc': toMVC( directory.root, typescript ); break
+    case 'mvc': toMVC(); break
 
     /**
      * Single entrypoint project structure
      * 
      * path: `root/index.ts` or .js 
      */
-    default: toSingleton( directory.root, typescript )
+    default: toSingleton()
   }
 }

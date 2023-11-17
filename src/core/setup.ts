@@ -3,7 +3,7 @@ import type { SetupConfig, SetupTarget } from '#types/index'
 import Yaml from 'yaml'
 import nodeFs from 'fs-extra'
 import nodePath from 'node:path'
-import ts from 'ts-node'
+import * as tsc from 'tsc-prog'
 import Context from '../lib/context'
 
 export default class Setup {
@@ -77,7 +77,34 @@ export default class Setup {
     this.Config.directory = this.Config.directory || {}
     
     this.Config.directory.root = this.Path.resolve( process.cwd(), this.Config.directory.root || '/' )
-    this.Config.directory.pattern = this.Config.directory.pattern || '-' 
+    this.Config.directory.pattern = this.Config.directory.pattern || '-'
+
+    /**
+     * Automatically build typscript activated project
+     */
+    if( this.Config?.typescript )
+      try {
+        tsc.build({
+          basePath: process.cwd(),
+          configFilePath: 'tsconfig.json', // Inherited config (optional)
+          clean: {
+            outDir: true,
+            declarationDir: true
+          },
+          compilerOptions: {
+            rootDir: 'src',
+            outDir: 'dist',
+            declaration: true,
+            skipLibCheck: true,
+          },
+          include: ['src/**/*'],
+          exclude: ['**/*.test.ts', '**/*.spec.ts'],
+        })
+      }
+      catch( error: any ){
+        console.error( error )
+        process.exit(1)
+      }
   }
 
   /**
@@ -123,48 +150,20 @@ export default class Setup {
 
     if( !path )
       throw new Error('Undefined module path')
-    
+
+    path = this.Config?.typescript ?
+                      // Typescript build folder
+                      this.Path.join(`${process.cwd()}/dist`, path )
+                      // Specified project root
+                      : this.Path.join( this.Config.directory.root, path )
+
+    /**
+     * Check project's current working directory
+     */
     let module
+    try { module = await import( path ) }
+    catch( error: any ){}
     
-    /**
-     * Check for Typescript modules in the project's 
-     * current working directory by directly loading
-     * its `index.ts` file.
-     */
-    if( this.Config?.typescript ){
-      const
-      options = {},
-      ext = this.Path.extname( path )
-
-      // Apply `.ts` extension
-      // if( await this.Fs.exists( ext ? path : `${path}.ts` ) )
-
-        try { module = ts.create({}).compile( 'hello', path ) }
-        catch( error: any ){
-          console.log('---: ', error )
-        }
-
-      // Check directory `index.ts`
-      // if( !module && !ext )
-      //   try { module = await tsimport.load(`${path}/index.ts`, options ) }
-      //   catch( error: any ){
-      //     console.log('---: ', error )
-      //   }
-
-      console.log( module )
-    }
-    
-    /**
-     * Check for Javascript module in the project's 
-     * current working directory
-     */
-    if( !module )
-      try { module = await import( path ) }
-      catch( error: any ){}
-
-    // if( !module )
-    //   throw new Error(`<${path}> module not found`)
-
     return module
   }
 
@@ -196,7 +195,7 @@ export default class Setup {
      * Check plugins in the project's current 
      * working directory
      */
-    try { plugin = await this.importModule(`${this.Config?.directory.root}/plugins/${refname}`) }
+    try { plugin = await this.importModule(`/plugins/${refname}`) }
     catch( error: any ){}
 
     // Check installed plugins in /node_modules folder
