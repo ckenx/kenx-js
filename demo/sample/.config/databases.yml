@@ -1,0 +1,48 @@
+# Databases configuration
+databases:
+  # Use on a connection string
+  # - type: 'mongodb'
+  #   plugin: '@mongodb'
+  #   key: 'default'
+  #   # Automatically connect the database during 
+  #   # the project deployment.
+  #   autoconnect: true
+  #   uri: 'mongodb://127.0.0.1:27017/Temp'
+
+  # Or user connection parameters
+  # - type: 'mysql'
+  #   plugin: '@mysql'
+  #   key: 'mysql-db'
+  #   options:
+  #     host: 'localhost'
+  #     port: 3306
+  #     database: 'TestDB'
+  #     # Authentication credentials: It's strongly 
+  #     # recommended to keep this information in 
+  #     # the .env file
+  #     auth:
+  #       user: 'root'
+  #       password: 'password'
+
+  #     # Connection pools help reduce the time spent 
+  #     # connecting to the MySQL server by reusing a 
+  #     # previous connection, leaving them open instead 
+  #     # of closing when you are done with them.
+  #     pool:
+  #       waitForConnections: true
+  #       connectionLimit: 10
+  #       # Max idle connections, the default value is 
+  #       # the same as `connectionLimit`
+  #       maxIdle: 10
+  #       # Idle connections timeout, in milliseconds, 
+  #       # the default value 60000
+  #       idleTimeout: 60000
+  #       queueLimit: 0
+  #       enableKeepAlive: true
+  #       keepAliveInitialDelay: 0
+      
+  # Use on a connection string
+  # - type: 'redis'
+  #   plugin: '@redis'
+  #   key: 'redis-db'
+  #   uri: 'redis://121.0.0.1:25061'

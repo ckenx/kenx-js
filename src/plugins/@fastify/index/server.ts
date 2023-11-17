@@ -1,4 +1,4 @@
-import type { Kenx } from '#types/service'
+import type { Kenx } from '#types/resource'
 import type { ServerConfig } from './types'
 import type { FastifyInstance } from 'fastify'
 

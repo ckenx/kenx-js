@@ -16,7 +16,7 @@ if( nodeVersionMajor < 16 ) {
  */
 import { autoload, dispatch } from '#core/index'
 
-( async () => {
+export default async function init(){
   /**
    * Autoload Chenx services
    * 
@@ -28,4 +28,6 @@ import { autoload, dispatch } from '#core/index'
    * 
    */
   await dispatch()
-})()
+}
+
+// require.main == module && init()

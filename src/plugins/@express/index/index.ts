@@ -1,6 +1,6 @@
-import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig, ApplicationApiComplianceConfig } from '#types/index'
-import type { Kenx } from '#types/service'
-import type { NextFunction, Request, Response, ErrorRequestHandler, Application } from 'express'
+import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig, ApplicationRoutingConfig } from '#types/index'
+import type { Kenx } from '#types/resource'
+import type { NextFunction, Request, Response, Application } from 'express'
 import { Router } from 'express'
 import __init__ from './init'
 
@@ -26,10 +26,10 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
     new Plugin( this.Setup, this, config )
   }
 
-  private async useAPICompliance( config?: ApplicationApiComplianceConfig ){
+  private async useRoute( config?: ApplicationRoutingConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin( config.plugin || '@express/api-compliance' )
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@express/routing' )
     new Plugin( this.Setup, this, config )
   }
 
@@ -61,9 +61,9 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
     this.useAssets( httpServerConfig.application?.assets )
     
     /**
-     * Initialize api compliances features
+     * Initialize routing features
      */
-    // this.useAPICompliance( httpServerConfig.application?.api )
+    this.useRoute( httpServerConfig.application?.routing )
   }
 
   register( middleware: any ){

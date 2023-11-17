@@ -1,9 +1,15 @@
+
+import type { SetupConfig, SetupTarget } from '#types/index'
 import Yaml from 'yaml'
 import nodeFs from 'fs-extra'
 import nodePath from 'node:path'
-import type { JSObject, SetupConfig, SetupTarget } from '#types/index'
+import ts from 'ts-node'
+import Context from '../lib/context'
 
 export default class Setup {
+  // Defined setup context
+  public context = new Context('setup')
+
   private readonly REFERENCE_MATCH_REGEX = /\[([a-zA-Z0-9-_.]+)\]:([a-zA-Z0-9-_.]+)/i
   private readonly PLUGIN_NAME_MATCH_REGEX = /(@?[a-zA-Z0-9-_.]+)\/?([a-zA-Z0-9-_.]+)?/i
   private Config?: SetupConfig
@@ -13,7 +19,7 @@ export default class Setup {
 
   private async parseYaml( filepath: string ){
     try {
-      let content = Yaml.parse( await this.Fs.readFile(`./${filepath}.yml`, 'utf-8') )
+      let content = Yaml.parse( await this.Fs.readFile(`${filepath}.yml`, 'utf-8') )
       if( content.__extends__ )
         for( const each of content.__extends__ ){
           content = {
@@ -27,7 +33,7 @@ export default class Setup {
       return content
     }
     catch( error ){
-      console.log(`[SETUP] - Parsing <${filepath}.yml> file:`, error )
+      this.context.log(`Parsing <${filepath}.yml> file:`, error )
       return null
     }
   }
@@ -49,10 +55,13 @@ export default class Setup {
       }
     }
   }
-  
+
   async initialize(){
     this.Config = await this.loadConfig('index')
-    if( !this.Config ) process.exit(1)
+    if( !this.Config ){
+      this.context.error('Setup configuration not found')
+      process.exit(1)
+    }
     
     /**
      * Comply data by resolving all key references
@@ -80,9 +89,9 @@ export default class Setup {
    */
   async loadConfig( target: SetupTarget ){
     // Default target is .config index
-    try { return await this.parseYaml(`.config/${target}`) }
+    try { return await this.parseYaml(`${process.cwd()}/.config/${target}`) }
     catch( error ){
-      console.log(`[SETUP] <${target}> target:`, error )
+      this.context.log(`<${target}> target: %o`, error )
       return null
     }
   }
@@ -102,6 +111,64 @@ export default class Setup {
   }
 
   /**
+   * Import module
+   * 
+   * @type {string} module name
+   * @return {module} Defined setup `object` or `null` if not found
+   * 
+   */
+  async importModule( path: string ){
+    if( !this.Config )
+      throw new Error('No setup configuration found')
+
+    if( !path )
+      throw new Error('Undefined module path')
+    
+    let module
+    
+    /**
+     * Check for Typescript modules in the project's 
+     * current working directory by directly loading
+     * its `index.ts` file.
+     */
+    if( this.Config?.typescript ){
+      const
+      options = {},
+      ext = this.Path.extname( path )
+
+      // Apply `.ts` extension
+      // if( await this.Fs.exists( ext ? path : `${path}.ts` ) )
+
+        try { module = ts.create({}).compile( 'hello', path ) }
+        catch( error: any ){
+          console.log('---: ', error )
+        }
+
+      // Check directory `index.ts`
+      // if( !module && !ext )
+      //   try { module = await tsimport.load(`${path}/index.ts`, options ) }
+      //   catch( error: any ){
+      //     console.log('---: ', error )
+      //   }
+
+      console.log( module )
+    }
+    
+    /**
+     * Check for Javascript module in the project's 
+     * current working directory
+     */
+    if( !module )
+      try { module = await import( path ) }
+      catch( error: any ){}
+
+    // if( !module )
+    //   throw new Error(`<${path}> module not found`)
+
+    return module
+  }
+
+  /**
    * Import plugin
    * 
    * @type {string} reference
@@ -109,22 +176,43 @@ export default class Setup {
    * 
    */
   async importPlugin( refname: string ){
-    try {
-      if( !refname ) throw null
+    if( !this.Config )
+      throw new Error('No setup configuration found')
 
-      const [ _, namespace, name ] = refname.match( this.PLUGIN_NAME_MATCH_REGEX ) || []
-      if( !_ || !namespace ) throw null
+    if( !refname )
+      throw new Error('Undefined plugin name')
 
-      refname = /^@/.test( namespace ) ?
-                        `${namespace}/${name ? name : 'index'}` // Namespace plugin
-                        : namespace // Standalone plugin
-      
-      return ( await import(`./../plugins/${refname}`) ).default
-    }
-    catch( error: any ){
-      console.error( error )
-      throw new Error(`Failed importing <${refname}> plugin`)
-    }
+    const [ _, namespace, name ] = refname.match( this.PLUGIN_NAME_MATCH_REGEX ) || []
+    if( !_ || !namespace )
+      throw new Error('Invalid plugin name')
+
+    refname = /^@/.test( namespace ) ?
+                      `${namespace}/${name ? name : 'index'}` // Namespace plugin
+                      : namespace // Standalone plugin
+
+    let plugin
+
+    /**
+     * Check plugins in the project's current 
+     * working directory
+     */
+    try { plugin = await this.importModule(`${this.Config?.directory.root}/plugins/${refname}`) }
+    catch( error: any ){}
+
+    // Check installed plugins in /node_modules folder
+    if( !plugin )
+      try { plugin = await import(`${process.cwd()}/node_modules/${refname}`) }
+      catch( error: any ){}
+
+    // Check kenx build-in plugins folder
+    if( !plugin )
+      try { plugin = await import(`./../plugins/${refname}`) }
+      catch( error: any ){}
+
+    if( !plugin?.default )
+      throw new Error(`<${refname}> plugin not found`)
+
+    return plugin.default
   }
 
   /**

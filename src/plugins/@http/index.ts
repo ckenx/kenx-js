@@ -1,5 +1,5 @@
 
-import type { Kenx } from '#types/service'
+import type { Kenx } from '#types/resource'
 import type { HTTPServerConfig } from '#types/index'
 import http from 'http'
 

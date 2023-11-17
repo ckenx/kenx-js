@@ -1,4 +1,4 @@
-import type { Kenx } from '#types/service'
+import type { Kenx } from '#types/resource'
 import type { StaticAssetConfig, ApplicationAssetConfig, AssetStorageConfig, AssetUploadConfig } from '#types/index'
 import os from 'os'
 import { CAS } from 'globe-sdk'

@@ -1,0 +1,1 @@
+// Database events subscriber extension

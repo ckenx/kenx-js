@@ -1,0 +1,21 @@
+strategies:
+  - key: 'google-oauth'
+    provider: 'google'
+    clientId: '[env]:GOOGLE_OAUTH_CLIENT_ID'
+    clientSecret: '[env]:GOOGLE_OAUTH_CLIENT_ID'
+    initiateURL: '/auth/google/initiate'
+    callbackURL: '/auth/google/callback'
+    logoutURL: '/logout'
+    scope:
+      - 'https://www.googleapis.com/auth/userinfo.email'
+
+  - key: 'github-oauth'
+    provider: 'github'
+    clientId: '[env]:GITHUB_OAUTH_CLIENT_ID'
+    clientSecret: '[env]:GITHUB_OAUTH_CLIENT_ID'
+    initiateURL: '/auth/github/initiate'
+    callbackURL: '/auth/github/callback'
+    logoutURL: '/logout'
+    scope:
+      - 'read:user'
+      - 'user:email'

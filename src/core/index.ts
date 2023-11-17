@@ -1,4 +1,4 @@
-import type { Kenx } from '#types/service'
+import type { Kenx } from '#types/resource'
 import type { ResourceConfig, HTTPServerConfig, AuxiliaryServerConfig, DatabaseConfig, JSObject } from '#types/index'
 import dotenv from 'dotenv'
 import SetupManager from '#core/setup'
@@ -11,10 +11,10 @@ const
 Setup = new SetupManager(),
 
 /**
- * Auto-loaded services 
+ * Auto-loaded resources 
  * 
  */
-SERVICES: Kenx.Services = {}
+RESOURCES: Kenx.Resources = {}
 
 async function createHTTPServer( config: HTTPServerConfig ){
   const { HOST, PORT } = config
@@ -29,17 +29,16 @@ async function createHTTPServer( config: HTTPServerConfig ){
    * Eg. express, fastify, ...
    * 
    */
-    console.log( config.application?.plugin )
-  if( config.application?.plugin ) {
+  if( config.application?.type ) {
     try {
       const
-      App = await Setup.importPlugin( config.application.plugin ),
+      App = await Setup.importPlugin( config.application.plugin || `@${config.application?.type}` ),
       instance: Kenx.ApplicationPlugin<Kenx.HTTPServer> = new App( Setup, config )
 
       return await instance.serve()
     } 
     catch( error ){
-      console.error('[HTTP SERVER] -', error )
+      Setup.context.error('HTTP server application:', error )
       process.exit(1)
     }
   }
@@ -57,7 +56,7 @@ async function createHTTPServer( config: HTTPServerConfig ){
     return instance
   }
   catch( error ){
-    console.error('[HTTP SERVER] -', error )
+    Setup.context.error('HTTP server:', error )
     process.exit(1)
   }
 }
@@ -80,7 +79,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
      * - To HTTP Server with a given `key` or default
      * - To PORT
      */
-    const binder = bindTo ? SERVICES[ bindTo ].server : config.PORT
+    const binder = bindTo ? RESOURCES[ bindTo ].server : config.PORT
     if( !binder )
       throw new Error('Undefined BIND_TO or PORT configuration')
 
@@ -88,7 +87,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
     return instance
   }
   catch( error ){
-    console.error('[SOCKET SERVER] -', error )
+    Setup.context.error('Auxiliary server:', error )
     process.exit(1)
   }
 }
@@ -99,7 +98,7 @@ async function createResource( config: ResourceConfig ){
     return new Resource( Setup, config )
   }
   catch( error ){
-    console.error(`[${config.type.toUpperCase()} RESOURCE] -`, error )
+    Setup.context.error(`${config.type.toUpperCase()} resource:`, error )
     process.exit(1)
   }
 }
@@ -136,20 +135,20 @@ function getResource( arg: string | string[] ){
       // Return resource group
       if( key == '*' ){
         resources[ section ] = {}
-        Object.entries( SERVICES )
+        Object.entries( RESOURCES )
               .map( ([ attribute, value ]) => {
                 const [ _section, _key ] = attribute.split(':')
                 if( _section && _key && _section == section ) resources[ section ][ _key ] = value
               })
       }
-      else resources[ section ] = SERVICES[`${section}:${key}`]
+      else resources[ section ] = RESOURCES[`${section}:${key}`]
 
       return
     }
     else {
       resources[ section ] = {}
       array.forEach( key => {
-        Object.entries( SERVICES )
+        Object.entries( RESOURCES )
             .map( ([ attribute, value ]) => {
               const [ _section, key ] = attribute.split(':')
               if( attribute == `${section}:${key}` ) resources[ section ][ key ] = value
@@ -185,15 +184,17 @@ export const autoload = async (): Promise<void> => {
     for await ( const config of databases ){
       const { type, key } = config
       let database = await createResource( config as DatabaseConfig )
-      if( !database )
-        throw new Error(`[${type.toUpperCase()} DATABASE] - Unsupported`)
+      if( !database ){
+        Setup.context.error(`<${type} database> is not supported`)
+        process.exit(1)
+      }
 
-      SERVICES[`database:${key || 'default'}`] = database
+      RESOURCES[`database:${key || 'default'}`] = database
 
       // Establish connection to the database during deployement
       config.autoconnect && await database.connect()
       
-      console.log(`[${type.toUpperCase()} DATABASE] - ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
+      Setup.context.log(`<${type} database> ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
     }
 
   /**
@@ -210,25 +211,29 @@ export const autoload = async (): Promise<void> => {
         default: server = await createAuxiliaryServer( config as AuxiliaryServerConfig ); break
       }
 
-      if( !server )
-        throw new Error(`[${type.toUpperCase()} SERVER] - Unsupported`)
+      if( !server ){
+        Setup.context.error(`<${type} server> is not supported`)
+        process.exit(1)
+      }
 
-      SERVICES[`${type}:${key || 'default'}`] = server
+      RESOURCES[`${type}:${key || 'default'}`] = server
 
       const info = server.getInfo()
-      if( !info ) throw new Error('Server returns no information')
+      if( !info ) {
+        Setup.context.error('Server returns no information')
+        process.exit(1)
+      }
 
-      console.log(`\n[${type.toUpperCase()} SERVER] - running \n\tPORT=${info.port}`)
+      Setup.context.log(`<${type.toUpperCase()} server> - running \t[PORT=${info.port}]`)
     }
 }
 
 async function toSingleton( root: string, typescript = false ){
   try {
     const
-    filename = `index.${typescript ? 'ts' : 'js'}`,
-    entrypoint = await import(`${root}/index`)
+    entrypoint = await Setup.importModule( root )
     if( !entrypoint )
-      throw new Error(`Invalid entrypoint file path - ${root}/${filename}`)
+      throw new Error(`No entrypoint file found at ${root}`)
     
     // Run plain script
     if( typeof entrypoint.default !== 'function' ) return
@@ -237,7 +242,7 @@ async function toSingleton( root: string, typescript = false ){
       throw new Error('No entrypoint <takeover> export')
     
     /**
-     * Give access to specified/default loaded services & resources
+     * Give access to specified/default loaded resources
      *  - Apps
      *  - Servers
      *  - Databases
@@ -245,10 +250,13 @@ async function toSingleton( root: string, typescript = false ){
      */
     const Args = Object.values( getResource( entrypoint.takeover ) )
 
-    console.log(`[KENX] - Takeover ...`)
+    Setup.context.log('Takeover ...')
     entrypoint.default( ...Args )
   }
-  catch( error ){ console.log('[PROJECT ENTRYPOINT] -', error ) }
+  catch( error ){ 
+    Setup.context.error('project entrypoint:', error )
+    process.exit(1)
+  }
 }
 
 async function toMVC( root: string, typescript = false ){
@@ -262,7 +270,7 @@ async function toMVC( root: string, typescript = false ){
     if( !await Setup.Fs.exists( mIndexPath ) )
       throw new Error(`Models index [${root}/models/index.${ext}] not found`)
 
-    const mFactory = await import(`${root}/models/index.${ext}`)
+    const mFactory = await Setup.importModule(`${root}/models/index.${ext}`)
     if( !mFactory || typeof mFactory.default !== 'function' )
       throw new Error('Invalid models index. Expected default export')
     
@@ -270,7 +278,7 @@ async function toMVC( root: string, typescript = false ){
      * Auto-assign mounted database to models factory
      */
     const mFactoryDeps = getResource( mFactory.takeover || 'database:*' )
-    if( !mFactoryDeps ) console.warn('No takeover dependency available for <models>')
+    if( !mFactoryDeps ) Setup.context.warn('No takeover dependency available for <models>')
     
     const models = mFactory.default( ...Object.values( mFactoryDeps ) )
 
@@ -280,7 +288,7 @@ async function toMVC( root: string, typescript = false ){
     let views
     const vIndexPath = `${root}/views/index.${ext}`
     if( await Setup.Fs.exists( vIndexPath ) ){
-      const vFactory = await import(`${root}/views/index.${ext}`)
+      const vFactory = await Setup.importModule(`${root}/views/index.${ext}`)
       if( !vFactory || typeof vFactory.default !== 'function' )
         throw new Error('Invalid views index. Expected default export')
       
@@ -298,24 +306,27 @@ async function toMVC( root: string, typescript = false ){
     if( !await Setup.Fs.exists( cIndexPath ) )
       throw new Error(`Controllers index [${root}/controllers/index.${ext}] not found`)
 
-    const cFactory = await import(`${root}/controllers/index.${ext}`)
+    const cFactory = await Setup.importModule(`${root}/controllers/index.${ext}`)
     if( !cFactory || typeof cFactory.default !== 'function' )
       throw new Error('Invalid controllers index. Expected default export')
 
     /**
-     * Auto-assign loaded services & aux resources 
+     * Auto-assign loaded resources 
      * to controller factory
      */
     const cFactoryDeps = getResource( cFactory.takeover || 'http:*')
 
-    if( !cFactoryDeps ) console.warn('No service available for <controllers>')
-    if( !models ) console.warn('No models available for <controllers>')
-    if( !views ) console.warn('No views available for <controllers>')
+    if( !cFactoryDeps ) Setup.context.warn('No resource available for <controllers>')
+    if( !models ) Setup.context.warn('No models available for <controllers>')
+    if( !views ) Setup.context.warn('No views available for <controllers>')
     
-    console.log(`[KENX] - Takeover ...`)
+    Setup.context.log('Takeover ...')
     cFactory.default( ...Object.values( cFactoryDeps ), models, views )
   }
-  catch( error ){ console.log('[PROJECT MVC] -', error ) }
+  catch( error ){ 
+    Setup.context.error('MVC pattern:', error )
+    process.exit(1)
+  }
 }
 
 /**
@@ -327,9 +338,9 @@ async function toMVC( root: string, typescript = false ){
  */
 export const dispatch = async () => {
   // Assumed `autoload` method has resolved
-  if( !Setup ) process.exit(1)
-
-  console.log(`[KENX] - Setup ready`)
+  Setup ? 
+    Setup.context.log('Ready')
+    : process.exit(1)
 
   const { typescript, directory } = Setup.getConfig()
   switch( directory.pattern ){

@@ -1,5 +1,5 @@
 import type { Application } from 'express'
-import type { Kenx } from '#types/service'
+import type { Kenx } from '#types/resource'
 import type { ApplicationSessionConfig, ApplicationSessionStore } from '#types/index'
 import { createClient } from 'redis'
 import Cookie from 'cookie-parser'

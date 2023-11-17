@@ -85,7 +85,7 @@ export type ApplicationAssetConfig = {
   static: StaticAssetConfig[]
 }
 
-export type ApplicationApiComplianceConfig = {
+export type ApplicationRoutingConfig = {
   plugin?: string
   profile: {
     appname?: string
@@ -100,7 +100,7 @@ export type ApplicationConfig = {
   plugin: string
   session?: ApplicationSessionConfig
   assets?: ApplicationAssetConfig
-  api?: ApplicationApiComplianceConfig
+  routing?: ApplicationRoutingConfig
   [index: string]: any
 }
 export type HTTPServerConfig = ResourceConfig & {

@@ -1,0 +1,10 @@
+node_modules
+.github
+demos
+docs
+test
+src
+yarn-error.log
+tsconfig.json
+nodemon.json
+docker*

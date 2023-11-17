@@ -1,7 +1,7 @@
-import type { Kenx } from '#types/service'
+import type { Kenx } from '#types/resource'
 import type { FastifyInstance } from 'fastify'
 import type { ApplicationHook, LifecycleHook } from 'fastify/types/hooks'
-import type { HTTPServerConfig, ApplicationSessionConfig, ApplicationAssetConfig, ApplicationApiComplianceConfig } from '#types/index'
+import type { HTTPServerConfig, ApplicationRoutingConfig, ApplicationSessionConfig, ApplicationAssetConfig } from '#types/index'
 import __init__ from './init'
 import FServer from './server'
 
@@ -27,10 +27,10 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
     new Plugin( this.Setup, this, config )
   }
 
-  private async useAPICompliance( config?: ApplicationApiComplianceConfig ){
+  private async useRouting( config?: ApplicationRoutingConfig ){
     if( !config ) return
 
-    const Plugin = await this.Setup.importPlugin( config.plugin || '@fastify/api-compliance' )
+    const Plugin = await this.Setup.importPlugin( config.plugin || '@fastify/routing' )
     new Plugin( this.Setup, this, config )
   }
 
@@ -62,9 +62,9 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
     this.useAssets( httpServerConfig.application?.assets )
     
     /**
-     * Initialize api compliances features
+     * Initialize routing features
      */
-    this.useAPICompliance( httpServerConfig.application?.api )
+    this.useRouting( httpServerConfig.application?.routing )
   }
 
   register( plugin: any, options?: any ){

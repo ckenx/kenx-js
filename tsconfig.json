@@ -11,6 +11,7 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
+    "declaration": true,
     "baseUrl": "src",
     "paths": {
       "#plugins/*": ["src/plugins/*"],
@@ -22,5 +23,5 @@
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
-  "exclude": ["/src/views/**/*"]
+  "exclude": ["./demo"]
 }

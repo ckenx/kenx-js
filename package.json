@@ -7,7 +7,7 @@
   "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build:backend": "rimraf ./dist && tsc && tsc-alias",
+    "build": "rimraf ./dist && tsc && tsc-alias",
     "dev": "nodemon",
     "start": "NODE_ENV=production node dist/index",
     "lint": "eslint . --ext .ts",
@@ -22,6 +22,7 @@
     "connect-redis": "^7.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "debug": "^4.3.4",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-form-data": "^2.0.22",
@@ -34,11 +35,14 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.6.3",
     "redis": "^4.6.10",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "ts-import": "^4.0.0-beta.10",
+    "typescript-require": "^0.3.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.5",
     "@types/cors": "^2.8.15",
+    "@types/debug": "^4.1.12",
     "@types/express": "^4.17.20",
     "@types/express-form-data": "^2.0.4",
     "@types/express-session": "^1.17.9",
