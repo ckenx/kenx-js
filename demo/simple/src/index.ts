@@ -3,7 +3,8 @@ import type http from 'http'
 import type io from 'socket.io'
 import routes from './routes'
 
-export const takeover = ['http', 'socketio', 'database:*']
+// export const takeover = ['http', 'socketio', 'database:*']
+
 export default ( http: Kenx.ServerPlugin<http.Server>, io: io.Server, databases: { [index: string]: Kenx.DatabasePlugin<any> } ) => {
   if( !http ) return
 

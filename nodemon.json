@@ -1,6 +1,0 @@
-{
-  "watch": [".config", "src", "demos"],
-  "ext": ".ts,.js,.json,.yml",
-  "ignore": [],
-  "exec": "NODE_ENV=development ts-node --files ./src/index.ts && tsc-alias"
-}

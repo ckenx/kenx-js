@@ -16,7 +16,7 @@ if( nodeVersionMajor < 16 ) {
  */
 import { autoload, dispatch } from '#core/index'
 
-export default async function init(){
+export default async function run( takeover?: string[] ){
   /**
    * Autoload Chenx services
    * 
@@ -27,7 +27,7 @@ export default async function init(){
    * Initialize & map setup services to project components
    * 
    */
-  await dispatch()
+  await dispatch( takeover )
 }
 
-// require.main == module && init()
+require.main == module && process.exit(0)

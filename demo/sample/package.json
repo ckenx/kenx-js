@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Kenx web application for NodeJS",
   "main": "dist/index.js",
-  "repository": "https://github.com/ckenx/kenx-node-app",
-  "author": "Fabrice K.M.E",
-  "license": "MIT"
+  "scripts": {
+    "build": "ckenx build",
+    "dev": "ckenx run --dev",
+    "start": "ckenx run --prod"
+  },
+  "devDependencies": {}
 }

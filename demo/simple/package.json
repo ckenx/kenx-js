@@ -8,8 +8,5 @@
     "dev": "ckenx run --dev",
     "start": "ckenx run --prod"
   },
-  "repository": "https://github.com/ckenx/kenx-node-app",
-  "author": "Fabrice K.M.E",
-  "license": "MIT",
   "devDependencies": {}
 }

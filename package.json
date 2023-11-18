@@ -1,5 +1,5 @@
 {
-  "name": "kenx-node",
+  "name": "@ckenx/node",
   "version": "0.0.1",
   "private": true,
   "description": "Kenx framework for NodeJS",
@@ -8,11 +8,13 @@
   "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf ./dist && tsc && tsc-alias",
-    "dev": "nodemon",
-    "start": "NODE_ENV=production node dist/index",
+    "compile": "rimraf ./dist && tsc && tsc-alias",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "test": "yarn run compile && yarn run test:types && yarn run test:unit",
+    "test:types": "tsd",
+    "test:unit": "nyc mocha --require ts-node/register --reporter spec --slow 200 --bail --timeout 10000 test/iframe.io.ts",
+    "prepack": "yarn run compile"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
@@ -34,5 +36,22 @@
   },
   "workspaces": [
     "src/plugins/**/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "kenx",
+    "node",
+    "http",
+    "webserver",
+    "express",
+    "fastify",
+    "socket.io",
+    "mysql",
+    "mongodb",
+    "redis",
+    "webpack",
+    "vite"
   ]
 }

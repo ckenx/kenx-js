@@ -228,7 +228,7 @@ export const autoload = async (): Promise<void> => {
     }
 }
 
-async function toSingleton(){
+async function toSingleton( takeover?: string[] ){
   try {
     const
     entrypoint = await Setup.importModule('./')
@@ -238,7 +238,9 @@ async function toSingleton(){
     // Run plain script
     if( typeof entrypoint.default !== 'function' ) return
 
-    if( !Array.isArray( entrypoint.takeover ) )
+    takeover = takeover || entrypoint.takeover
+
+    if( !Array.isArray( takeover ) )
       throw new Error('No entrypoint <takeover> export')
     
     /**
@@ -248,7 +250,7 @@ async function toSingleton(){
      *  - Databases
      *  - ...
      */
-    const Args = Object.values( getResource( entrypoint.takeover ) )
+    const Args = Object.values( getResource( takeover ) )
 
     Setup.context.log('Takeover ...')
     entrypoint.default( ...Args )
@@ -259,7 +261,7 @@ async function toSingleton(){
   }
 }
 
-async function toMVC(){
+async function toMVC( takeover?: string[] ){
   try {
     /**
      * Load models
@@ -325,7 +327,7 @@ async function toMVC(){
  * @return {module} Defined setup `object` or `null` if not found
  * 
  */
-export const dispatch = async () => {
+export const dispatch = async ( takeover?: string [] ) => {
   // Assumed `autoload` method has resolved
   Setup ? 
     Setup.context.log('Ready')
@@ -341,13 +343,13 @@ export const dispatch = async () => {
      *  - views: `root/views`
      *  - controllers: `root/controllers`
      */
-    case 'mvc': toMVC(); break
+    case 'mvc': toMVC( takeover ); break
 
     /**
      * Single entrypoint project structure
      * 
      * path: `root/index.ts` or .js 
      */
-    default: toSingleton()
+    default: toSingleton( takeover )
   }
 }
