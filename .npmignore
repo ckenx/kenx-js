@@ -1,6 +1,6 @@
 node_modules
 .github
-demos
+demo
 docs
 test
 src

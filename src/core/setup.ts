@@ -144,7 +144,7 @@ export default class Setup {
    * @return {module} Defined setup `object` or `null` if not found
    * 
    */
-  async importModule( path: string ){
+  async importModule( path: string, throwError = false ){
     if( !this.Config )
       throw new Error('No setup configuration found')
 
@@ -162,7 +162,7 @@ export default class Setup {
      */
     let module
     try { module = await import( path ) }
-    catch( error: any ){}
+    catch( error: any ){ throwError && console.log(`import <${path}> failed: `, error ) }
     
     return module
   }
@@ -186,7 +186,7 @@ export default class Setup {
       throw new Error('Invalid plugin name')
 
     refname = /^@/.test( namespace ) ?
-                      `${namespace}/${name ? name : 'index'}` // Namespace plugin
+                      `${namespace}/${name ? name : 'main'}` // Namespace plugin
                       : namespace // Standalone plugin
 
     let plugin

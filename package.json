@@ -1,7 +1,6 @@
 {
   "name": "@ckenx/node",
   "version": "0.0.1",
-  "private": true,
   "description": "Kenx framework for NodeJS",
   "main": "dist/index.js",
   "repository": "https://github.com/ckenx/kenx-node",

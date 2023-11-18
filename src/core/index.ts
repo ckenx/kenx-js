@@ -231,7 +231,7 @@ export const autoload = async (): Promise<void> => {
 async function toSingleton( takeover?: string[] ){
   try {
     const
-    entrypoint = await Setup.importModule('./')
+    entrypoint = await Setup.importModule('./', true )
     if( !entrypoint )
       throw new Error('No entrypoint file found')
     
@@ -266,7 +266,7 @@ async function toMVC( takeover?: string[] ){
     /**
      * Load models
      */
-    const mFactory = await Setup.importModule('./models')
+    const mFactory = await Setup.importModule('./models', true )
     if( !mFactory || typeof mFactory.default !== 'function' )
       throw new Error('Invalid models index. Expected default export')
     
@@ -297,7 +297,7 @@ async function toMVC( takeover?: string[] ){
     /**
      * Load controllers
      */
-    const cFactory = await Setup.importModule('./controllers')
+    const cFactory = await Setup.importModule('./controllers', true )
     if( !cFactory || typeof cFactory.default !== 'function' )
       throw new Error('Invalid controllers index. Expected default export')
 
