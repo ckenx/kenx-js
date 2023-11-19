@@ -1,0 +1,15 @@
+{
+  "name": "kenx-app",
+  "version": "1.0.0",
+  "description": "Kenx web application for NodeJS",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ckenx build",
+    "dev": "ckenx run --dev",
+    "start": "ckenx run --prod"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@ckenx/node": "^0.0.2"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "name": "@ckenx/node",
+  "version": "0.0.4",
+  "description": "Kenx framework for NodeJS",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckenx/kenx-js.git",
+    "directory": "packages/node"
+  },
+  "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "compile": "rimraf ./dist && tsc && tsc-alias",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "test": "yarn compile && yarn test:types && yarn test:unit",
+    "test:types": "tsd",
+    "test:unit": "nyc mocha --require ts-node/register --reporter spec --slow 200 --bail --timeout 10000 test/iframe.io.ts",
+    "prepack": "yarn compile"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "execa": "5.0.0",
+    "fs-extra": "^11.1.1",
+    "shelljs": "^0.8.5",
+    "tsc-prog": "^2.3.0",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.9.0",
+    "eslint": "^8.53.0",
+    "rimraf": "^5.0.5",
+    "tsc-alias": "^1.8.8",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^0.0.1-alpha.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "kenx",
+    "node",
+    "http",
+    "webserver",
+    "express",
+    "fastify",
+    "socket.io",
+    "mysql",
+    "mongodb",
+    "redis",
+    "webpack",
+    "vite"
+  ]
+}

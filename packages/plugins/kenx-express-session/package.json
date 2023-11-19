@@ -1,0 +1,47 @@
+{
+  "name": "@ckenx/kenx-express-session",
+  "version": "0.0.1",
+  "description": "Kenx express framework session management plugin",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "rimraf ./dist && tsc",
+    "prepack": "yarn compile",
+    "test": "",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
+  },
+  "dependencies": {
+    "@ckenx/node": "^0.0.4",
+    "connect-redis": "^7.1.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "redis": "^4.6.10"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.5",
+    "@types/express-session": "^1.17.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckenx/kenx-js.git",
+    "directory": "packages/kenx-express-session"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "kenx",
+    "express",
+    "session",
+    "node",
+    "deno",
+    "bun"
+  ],
+  "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ckenx/kenx-js/issues"
+  },
+  "homepage": "https://github.com/ckenx/kenx-js#README"
+}

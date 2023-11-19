@@ -1,0 +1,35 @@
+{
+  "name": "@ckenx/kenx-mongodb-events",
+  "version": "0.0.1",
+  "description": "Kenx mongodb query events plugin",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "rimraf ./dist && tsc",
+    "prepack": "yarn compile",
+    "test": "",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckenx/kenx-js.git",
+    "directory": "packages/kenx-mongodb-events"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "kenx",
+    "mongodb",
+    "events",
+    "node",
+    "deno",
+    "bun"
+  ],
+  "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ckenx/kenx-js/issues"
+  },
+  "homepage": "https://github.com/ckenx/kenx-js#README"
+}

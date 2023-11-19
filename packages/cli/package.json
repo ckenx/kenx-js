@@ -1,0 +1,57 @@
+{
+  "name": "@ckenx/cli",
+  "version": "0.0.1",
+  "description": "Kenx Command Line Interface",
+  "main": "dist/index.js",
+  "directories": {
+    "bin": "bin/",
+    "dist": "dist/",
+    "test": "test/",
+    "templates": "templates/"
+  },
+  "bin": {
+    "@ckenx/cli": "bin/ckenx",
+    "ckenx": "bin/ckenx"
+  },
+  "scripts": {
+    "compile": "rimraf ./dist && tsc",
+    "prepack": "yarn compile",
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckenx/kenx-js.git",
+    "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "kenx",
+    "cli",
+    "node",
+    "deno",
+    "bun"
+  ],
+  "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ckenx/kenx-js/issues"
+  },
+  "homepage": "https://github.com/ckenx/kenx-js#README",
+  "dependencies": {
+    "arg": "^5.0.2",
+    "colors": "^1.4.0",
+    "enquirer": "^2.4.1",
+    "esm": "^3.2.25",
+    "listr": "^0.14.3",
+    "pkg-install": "^1.0.0",
+    "shelljs": "^0.8.5",
+    "simple-git": "^3.20.0"
+  },
+  "devDependencies": {
+    "@types/shelljs": "^0.8.15",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2"
+  }
+}

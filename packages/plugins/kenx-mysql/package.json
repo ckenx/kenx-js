@@ -1,0 +1,38 @@
+{
+  "name": "@ckenx/kenx-mysql",
+  "version": "0.0.1",
+  "description": "Kenx mysql client plugin",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "rimraf ./dist && tsc",
+    "prepack": "yarn compile",
+    "test": "",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
+  },
+  "dependencies": {
+    "@ckenx/node": "^0.0.4",
+    "mysql2": "^3.6.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckenx/kenx-js.git",
+    "directory": "packages/kenx-mysql"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "kenx",
+    "mysql",
+    "node",
+    "deno",
+    "bun"
+  ],
+  "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ckenx/kenx-js/issues"
+  },
+  "homepage": "https://github.com/ckenx/kenx-js#README"
+}

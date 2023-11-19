@@ -1,0 +1,29 @@
+# Application frameworks configuration
+frameworks:
+  # - type: 'express'
+  #   plugin: '@express'
+  #   key: 'express-app'
+  #   session: '[sessions]:default'
+  #   assets: '[assets]:default'
+  
+  # - type: 'fastify'
+  #   plugin: '@fastify'
+  #   key: 'fastify-app'
+  #   session: '[sessions]:default'
+  #   assets: '[assets]:default'
+  #   routing:
+  #     # Specify the plugin use to handle routing
+  #     #
+  #     # `@fastify/routing` plugin is used by default if 
+  #     # `plugin` value isn't specified in the application.routing 
+  #     # configuration
+  #     #
+  #     # plugin: '@fastify/routing'
+  #     # profile:
+  #     #   appname: '[env]:APPNAME'
+  #     #   version: '[env]:API_VERSION'
+  #     #   status: '[env]:API_STATUS'
+
+  #     # ratelimit:
+  #     #   enable: true
+  #     #   maxRPS: 60000

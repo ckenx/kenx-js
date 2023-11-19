@@ -1,56 +1,52 @@
 {
-  "name": "@ckenx/node",
-  "version": "0.0.2",
-  "description": "Kenx framework for NodeJS",
+  "name": "kenx-js",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Kenx framework for NodeJS, DenoJS and Bun applications",
   "main": "dist/index.js",
-  "repository": "https://github.com/ckenx/kenx-node",
+  "repository": "https://github.com/ckenx/kenx-js",
   "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "compile": "rimraf ./dist && tsc && tsc-alias",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "test": "yarn run compile && yarn run test:types && yarn run test:unit",
+    "test": "yarn test:e2e",
     "test:types": "tsd",
-    "test:unit": "nyc mocha --require ts-node/register --reporter spec --slow 200 --bail --timeout 10000 test/iframe.io.ts",
-    "prepack": "yarn run compile"
+    "test:packages": "lerna run test --stream --scope razzle-* --ignore razzle-examples-* -- --passWithNoTests --verbose --no-cache",
+    "test:e2e": "jest --config ./test/jest.e2e.config.json --verbose --no-cache",
+    "git-reset": "git reset --hard HEAD",
+    "git-clean": "git clean -d -x -e node_modules -e packages -f",
+    "clean": "lerna clean --yes",
+    "format": "prettier --write 'packages/*/*.+(js|jsx|json|yml|yaml|css|less|scss|ts|tsx|md|mdx)' 'packages/*/!(node_modules)/**/*.js'",
+    "publish-packages": "node ./scripts/publish-packages.js"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "fs-extra": "^11.1.1",
-    "tsc-prog": "^2.3.0",
-    "yaml": "^2.3.4"
+    "execa": "5.0.0",
+    "fs-extra": "^11.1.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.9.0",
-    "eslint": "^8.53.0",
-    "rimraf": "^5.0.5",
-    "ts-node": "^10.9.1",
-    "tsc": "^2.0.4",
-    "tsc-alias": "^1.8.8",
-    "tsconfig-paths": "^4.2.0",
-    "typescript-eslint": "^0.0.1-alpha.0",
-    "typescript": "^5.2.2"
+    "yargs": "^17.7.2"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/coverage/",
+      "<rootDir>/node_modules/",
+      "<rootDir>/examples/"
+    ],
+    "collectCoverageFrom": [
+      "**/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/packages/*/node_modules/",
+      "<rootDir>/examples/",
+      "<rootDir>/coverage/"
+    ]
   },
   "workspaces": [
-    "src/plugins/**/*"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "keywords": [
-    "kenx",
-    "node",
-    "http",
-    "webserver",
-    "express",
-    "fastify",
-    "socket.io",
-    "mysql",
-    "mongodb",
-    "redis",
-    "webpack",
-    "vite"
+    "packages/cli",
+    "packages/node",
+    "packages/plugins/kenx-*"
   ]
 }
