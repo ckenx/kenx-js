@@ -60,7 +60,7 @@ export const execute = async ( options: CreateAppOptions ): Promise<void> => {
     }
     
     // Create project template directory
-    await cp('-R', `../templates/create-${options.template}-app`, options.directory )
+    await cp('-R', path.join( __dirname, `../templates/create-${options.template}-app`), options.directory )
 
     // Clone Git repository to local
     // await git.clone(`https://github.com/ckenx/create-${options.template}-app.git`, options.directory as string )
