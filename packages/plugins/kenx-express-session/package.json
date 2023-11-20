@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.5",
-    "@types/express-session": "^1.17.9"
+    "@types/express-session": "^1.17.10"
   },
   "repository": {
     "type": "git",
