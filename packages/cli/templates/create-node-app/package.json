@@ -10,6 +10,6 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "@ckenx/node": "^0.0.5"
+    "@ckenx/node": "^0.0.6"
   }
 }

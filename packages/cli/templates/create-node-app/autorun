@@ -26,13 +26,13 @@ const takeover = [
    * Include started http server defined in
    * your .config/servers.yml
    */
-  // 'http'
+  // 'http',
   
   /**
    * Include a mounted database client defined in
    * your .config/databases.yml
    */
-  // 'database:primary'
+  // 'database:primary',
 ];
 
 ( async ({ autoload, dispatch }) => {
