@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-express",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Kenx express framework plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.4",
+    "@ckenx/node": "^0.0.6",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "helmet": "^7.1.0",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ckenx/kenx-js.git",
+    "url": "https://github.com:ckenx/kenx-js.git",
     "directory": "packages/kenx-express"
   },
   "publishConfig": {

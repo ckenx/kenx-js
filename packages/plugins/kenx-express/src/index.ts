@@ -1,5 +1,5 @@
-import type { Config, SessionConfig, AssetConfig, RoutingConfig } from './types'
 import type { Kenx } from '@ckenx/node'
+import type { Config, SessionConfig, AssetConfig, RoutingConfig } from './types'
 import type { NextFunction, Request, Response, Application } from 'express'
 import { Router } from 'express'
 import __init__ from './init'

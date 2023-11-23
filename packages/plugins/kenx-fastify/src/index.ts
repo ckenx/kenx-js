@@ -35,6 +35,8 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
   }
 
   constructor( Setup: Kenx.SetupManager, config: Config ){
+    // super( this )
+
     this.HOST = config.HOST
     this.PORT = config.PORT
 

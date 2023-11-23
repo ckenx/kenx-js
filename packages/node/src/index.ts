@@ -1,6 +1,7 @@
 import type { ResourceConfig, HTTPServerConfig, AuxiliaryServerConfig, DatabaseConfig, JSObject } from '#types/index'
 import dotenv from 'dotenv'
 import SManager from './setup'
+import { Wrapper } from '#lib/adapters/awrapper'
 import type { Server } from 'http'
 
 export namespace Kenx {
@@ -18,11 +19,7 @@ export namespace Kenx {
     onError: ( listener: ( error: Error, ...args: any[] ) => void ) => this
     serve: ( overhead?: boolean ) => Promise<ServerPlugin<Server>>
   }
-
-  interface AppConstructor<T> {
-    new( httpServerConfig: HTTPServerConfig ): ApplicationPlugin<T>
-  }
-
+  
   export type HTTPServer = Server
   export type ActiveServerInfo = {
     type: string

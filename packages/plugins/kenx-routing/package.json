@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-routing",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Kenx framework routing management plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ckenx/kenx-js.git",
+    "url": "https://github.com:ckenx/kenx-js.git",
     "directory": "packages/kenx-routing"
   },
   "publishConfig": {
@@ -31,6 +31,6 @@
   },
   "homepage": "https://github.com/ckenx/kenx-js#README",
   "dependencies": {
-    "@ckenx/node": "^0.0.4"
+    "@ckenx/node": "^0.0.6"
   }
 }

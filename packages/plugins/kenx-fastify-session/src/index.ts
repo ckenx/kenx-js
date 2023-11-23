@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
 import type { Kenx } from '@ckenx/node'
+import type { FastifyInstance } from 'fastify'
 import type { SessionConfig, SessionStore } from './types'
 import { createClient } from 'redis'
 import Cookie from '@fastify/cookie'

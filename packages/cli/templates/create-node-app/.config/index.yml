@@ -1,5 +1,5 @@
 # Enable typescript
-typescript: true
+typescript: false
 
 # Project directory
 directory:

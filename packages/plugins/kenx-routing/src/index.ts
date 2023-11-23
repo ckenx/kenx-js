@@ -37,6 +37,13 @@ export default class FastifyAPICompliancePlugin {
 
   }
 
+  private addWarner( core: FastifyInstance, config: any ){
+    const warning = require('process-warning')()
+
+    warning.create('FastifyDeprecation', 'FST_ERROR_CODE', 'message')
+    warning.emit('FST_ERROR_CODE')
+  }
+
   constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<FastifyInstance>, config: any ){
     /**
      * Publish public API profile endpoints
@@ -47,6 +54,12 @@ export default class FastifyAPICompliancePlugin {
      * Setup API rate-limit manager
      */
     config.ratelimit && this.addRateLimit( app.core, config )
+    
+    /**
+     * Warn the user about a deprecated API or a specific use case
+     * using process-warning module.
+     */
+    config.warning && this.addWarner( app.core, config )
 
     /**
      * TODO: Setup maintenance stage handler

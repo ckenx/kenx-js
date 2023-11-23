@@ -1,12 +1,12 @@
 {
   "name": "@ckenx/node",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Kenx framework for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ckenx/kenx-js.git",
+    "url": "https://github.com:ckenx/kenx-js.git",
     "directory": "packages/node"
   },
   "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
