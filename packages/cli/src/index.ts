@@ -18,7 +18,7 @@ function parseArgs( rawArgs: string[] ){
   },
   args = arg( options, { argv: rawArgs.slice(2) } )
 
-  switch( args._[0] ){
+  switch( args._[0] ) {
     // Create app
     case 'create': {
       const options: CreateAppOptions = {
@@ -66,7 +66,7 @@ function parseArgs( rawArgs: string[] ){
     case '-v': console.log('1.0.0'); break
 
     // Display help
-    case '-h': 
+    case '-h':
     default: {
         console.log(`
 Usage: ckenx <command> [options] [ -e script | script.ts ] [arguments]
@@ -115,10 +115,10 @@ Options:
 
 export async function cli( args: string[] ){
   let options = parseArgs( args )
-  // options = await promptMissingOptions( options )
+  // Options = await promptMissingOptions( options )
   if( !options ) return
 
-  switch( options.verb ){
+  switch( options.verb ) {
     case 'create': {
       options = await Create.checkOptions( options )
       Create.execute( options )

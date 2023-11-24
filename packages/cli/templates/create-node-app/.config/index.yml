@@ -3,7 +3,7 @@ typescript: false
 
 # Project directory
 directory:
-  root: './src'
+  base: './src'
   # Directory structure patterns (Optional)
   #
   # Default pattern: Developer have full control over the directory

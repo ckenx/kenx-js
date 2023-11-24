@@ -13,8 +13,10 @@ export const checkOptions = async ( options: InstallPluginOptions ): Promise<Ins
     })
 
   const { plugin }: InstallPluginOptions = await prompt( missings )
-  // Keep asking undefined options values
-  // if( !plugin ) return await checkInstallOptions( options )
+  /*
+   * Keep asking undefined options values
+   * if( !plugin ) return await checkInstallOptions( options )
+   */
 
   return {
     ...options,

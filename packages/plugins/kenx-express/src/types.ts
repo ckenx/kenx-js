@@ -3,9 +3,11 @@ export type JSObject<Type> = { [index: string]: Type }
 
 export type ApplicationConfig = {
   plugin: string
-  // session?: SessionConfig
-  // assets?: AssetConfig
-  // routing?: RoutingConfig
+  /*
+   * Session?: SessionConfig
+   * assets?: AssetConfig
+   * routing?: RoutingConfig
+   */
   [index: string]: any
 }
 export type Config = {

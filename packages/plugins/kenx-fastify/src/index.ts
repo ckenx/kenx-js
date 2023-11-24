@@ -12,7 +12,7 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
   private readonly Setup: Kenx.SetupManager
 
   private AUTO_HANDLE_ERROR = true
-  
+
   private async useSession( config?: SessionConfig ){
     if( !config ) return
 
@@ -35,7 +35,7 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
   }
 
   constructor( Setup: Kenx.SetupManager, config: Config ){
-    // super( this )
+    // Super( this )
 
     this.HOST = config.HOST
     this.PORT = config.PORT
@@ -52,17 +52,17 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
      * Initialize application
      */
     this.core = __init__()
-    
+
     /**
      * Initialize and manage application session
      */
     this.useSession( config.application?.session )
-    
+
     /**
      * Initialize and manage application assets
      */
     this.useAssets( config.application?.assets )
-    
+
     /**
      * Initialize routing features
      */
@@ -85,12 +85,14 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
   }
 
   addHandler( type: string, func: any ){
-    switch( type ){
-      // case 'ready':
-      // case 'after':
-      // case 'before': this.core.before( func ); break
+    switch( type ) {
+      /*
+       * Case 'ready':
+       * case 'after':
+       * case 'before': this.core.before( func ); break
+       */
       case 'onRequest':
-      case 'preHandler': 
+      case 'preHandler':
       default: this.core.addHook( type as ApplicationHook | LifecycleHook, func )
     }
 
@@ -117,7 +119,7 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
 
       statusCode = statusCode || rep.statusCode || 500
       message = message || `[API] Unknown Error - ${statusCode}`
-      
+
       typeof listener == 'function' ?
                   // Handover error to listener
                   listener( error, req, rep )
@@ -133,12 +135,12 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
     return this
   }
 
-  async serve( overhead?: boolean ): Promise<Kenx.ServerPlugin<Kenx.HTTPServer>> {
+  async serve( overhead?: boolean ): Promise<Kenx.ServerPlugin<Kenx.HTTPServer>>{
     // Automatically handle application errors occurence
     overhead
     && this.AUTO_HANDLE_ERROR
     && this.handleError()
-    
+
     if( !this.Setup )
       throw new Error('Undefined Kenx Utils object supply')
 

@@ -10,7 +10,7 @@ export default class HttpServer implements Kenx.ServerPlugin<Kenx.HTTPServer> {
   constructor( Setup: Kenx.SetupManager, app?: Kenx.ApplicationPlugin<any> ){
     this.app = app
     this.server = http.createServer( app?.core )
-  
+
     /**
      * Event listener for HTTPS server event.
      */
@@ -20,8 +20,8 @@ export default class HttpServer implements Kenx.ServerPlugin<Kenx.HTTPServer> {
     /* Listen on provided port, on all network interfaces. */
     this.server
     .on('error', ( error: any ) => {
-      // handle specific listen errors with friendly messages
-      switch( error.code ){
+      // Handle specific listen errors with friendly messages
+      switch( error.code ) {
         case 'EACCES': console.error('Requires elevated privileges'); break
         case 'EADDRINUSE': console.error('Server PORT is already in use'); break
         default: console.error( error )
@@ -29,7 +29,7 @@ export default class HttpServer implements Kenx.ServerPlugin<Kenx.HTTPServer> {
     } )
   }
 
-  listen({ PORT, HOST }: Config ): Promise<Kenx.ActiveServerInfo | null> {
+  listen({ PORT, HOST }: Config ): Promise<Kenx.ActiveServerInfo | null>{
     return new Promise( ( resolve, reject ) => {
       if( !this.server )
         return reject('No HTTP Server')
@@ -43,12 +43,12 @@ export default class HttpServer implements Kenx.ServerPlugin<Kenx.HTTPServer> {
     return new Promise( ( resolve, reject ) => {
       if( !this.server )
         return reject('No HTTP Server')
-    
+
       this.server.close( ( error?: Error ) => error ? reject( error ) : resolve( true ) )
     } )
   }
 
-  getInfo(): Kenx.ActiveServerInfo | null {
+  getInfo(): Kenx.ActiveServerInfo | null{
     if( !this.server )
       throw new Error('No HTTP Server')
 

@@ -15,48 +15,48 @@ export default ( port: number ) => {
   .set('x-powered-by', false )
   .set('env', process.env.NODE_ENV )
   .set('port', port )
-  
+
   /**
    * Server trust proxy configuration
-   * 
-   * TODO: 
+   *
+   * TODO:
    *  - Research and find all proxy strategies & implementations
    *  - Apply proxy configurations
-   * 
+   *
    */
   .enable('trust proxy')
 
   /**
    * Development logs
-   * 
+   *
    * TODO:
    *  - Provide to developer to set their favorate customization of logger
    *  - Apply logger customization configurations
    *  - Set default logger and recommandations as well
-   * 
+   *
    */
   .use( logger('dev') )
 
   /**
    * Security configuration
-   * 
+   *
    * TODO:
    *  - Apply security configuration
    *  - Include CORS handler & configurations as well
    *  - Propose best security practices configuration recommendation
-   * 
+   *
    */
   .use( helmet() )
 
   /**
    * Request Params, Query & Body parser
-   * 
-   * TODO: 
+   *
+   * TODO:
    *  - Apply parsing configuration
    *  - Add multi-part form-data handler
-   * 
+   *
    */
-  .use( express.json() ) // limit: '50mb', extended: true
+  .use( express.json() ) // Limit: '50mb', extended: true
   .use( express.urlencoded({ extended: true }) )
 
 

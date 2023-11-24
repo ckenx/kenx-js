@@ -1,4 +1,4 @@
-import type { Kenx } from "#root/index"
+import type { Kenx } from '#root/index'
 
 type RequestMethod = 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -29,7 +29,7 @@ class Route {
   }
 
   prehandle( arg: PreHandler | PreHandler[] ){
-    Array.isArray( arg ) ? 
+    Array.isArray( arg ) ?
             [ ...this.prehanders, ...arg ]
             : this.prehanders.push( arg )
 
@@ -37,7 +37,7 @@ class Route {
   }
 
   prevalidate( arg: PreValidation | PreValidation[] ){
-    Array.isArray( arg ) ? 
+    Array.isArray( arg ) ?
             [ ...this.prevalidations, ...arg ]
             : this.prevalidations.push( arg )
 

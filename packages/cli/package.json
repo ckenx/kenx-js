@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/cli",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Kenx Command Line Interface",
   "main": "dist/index.js",
   "directories": {
@@ -10,7 +10,6 @@
     "templates": "templates/"
   },
   "bin": {
-    "@ckenx/cli": "bin/ckenx",
     "ckenx": "bin/ckenx"
   },
   "scripts": {
@@ -47,7 +46,8 @@
     "listr": "^0.14.3",
     "pkg-install": "^1.0.0",
     "shelljs": "^0.8.5",
-    "simple-git": "^3.20.0"
+    "simple-git": "^3.20.0",
+    "tsc-prog": "^2.3.0"
   },
   "devDependencies": {
     "@types/shelljs": "^0.8.15",

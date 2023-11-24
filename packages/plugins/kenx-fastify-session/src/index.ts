@@ -18,7 +18,7 @@ export default class FastifySessionPlugin {
   }
 
   /**
-   * Initialize Redis-server connection to 
+   * Initialize Redis-server connection to
    * manage session store
    */
   private addRedisStore( storeConfig: SessionStore, options: FastifySessionOptions ){
@@ -26,7 +26,7 @@ export default class FastifySessionPlugin {
 
     // TODO: Connect to database
     const client = createClient()
-    
+
     client
     .connect()
     .catch( ( error : Error ) => console.log('[ERROR] Redis-Server Error: ', error ) )
@@ -39,10 +39,10 @@ export default class FastifySessionPlugin {
         ttl: 86400,
         ...storeConfig.options
       }),
-      // resave: false, // required: force lightweight session keep alive (touch)
-      saveUninitialized: false, // recommended: only save session when data exists
+      // Resave: false, // required: force lightweight session keep alive (touch)
+      saveUninitialized: false, // Recommended: only save session when data exists
     }
-    
+
     this.app.register( Session, options )
   }
 
@@ -70,15 +70,17 @@ export default class FastifySessionPlugin {
     /**
      * Use database store
      */
-    else if( config.type == 'store' ){
+    else if( config.type == 'store' ) {
       if( !config.store )
         throw new Error('Undefined express session store configuration')
 
-      switch( config.store.provider ){
+      switch( config.store.provider ) {
         case 'redis-store': this.addRedisStore( config.store, config.options as FastifySessionOptions ); break
-        // case 'mongo-store': break
-        // case 'mysql-store': break
-        // case 'postgress-store': break
+        /*
+         * Case 'mongo-store': break
+         * case 'mysql-store': break
+         * case 'postgress-store': break
+         */
       }
     }
   }

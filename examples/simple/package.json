@@ -6,7 +6,8 @@
   "scripts": {
     "build": "ckenx build",
     "dev": "ckenx run --dev",
-    "start": "ckenx run --prod"
+    "start": "ckenx run --prod",
+    "start:alt": "NODE_ENV=production node autorun"
   },
   "dependencies": {
     "@ckenx/kenx-express": "^0.0.1",

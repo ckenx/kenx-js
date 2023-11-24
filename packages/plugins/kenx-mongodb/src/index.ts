@@ -6,7 +6,7 @@ export default class MongodbPugin implements Kenx.DatabasePlugin<Db> {
   private client?: MongoClient
   private readonly config: string
   connection?: Db
-  
+
   constructor( Setup: Kenx.SetupManager, config: Config ){
     // TODO: Convert connection options object to connection string
 
@@ -14,7 +14,7 @@ export default class MongodbPugin implements Kenx.DatabasePlugin<Db> {
   }
 
   async connect(): Promise<Db>{
-    if( !this.client ){
+    if( !this.client ) {
       this.client = new MongoClient( this.config )
       await this.client.connect()
     }

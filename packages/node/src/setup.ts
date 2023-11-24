@@ -22,7 +22,7 @@ export default class Setup {
     try {
       let content = Yaml.parse( await this.Fs.readFile(`${filepath}.yml`, 'utf-8') )
       if( content.__extends__ )
-        for( const each of content.__extends__ ){
+        for( const each of content.__extends__ ) {
           content = {
             ...content,
             ...(await this.parseYaml(`${this.Path.dirname( filepath )}/${each}`))
@@ -33,23 +33,23 @@ export default class Setup {
 
       return content
     }
-    catch( error ){
+    catch( error ) {
       this.context.log(`Parsing <${filepath}.yml> file:`, error )
       return null
     }
   }
 
-  private comply( value: any ): any {
+  private comply( value: any ): any{
     if( !value ) return value
 
-    switch( typeof value ){
+    switch( typeof value ) {
       case 'string': return this.REFERENCE_MATCH_REGEX.test( value ) ? this.comply( this.resolveReference( value ) ) : value
       case 'number': return value
       default: {
         if( Array.isArray( value ) )
           return value.map( ( each: any ) => { return this.comply( each ) })
 
-        else {
+
           Object
           .entries( value )
           .map( ([ key, subValue ]) => {
@@ -67,18 +67,18 @@ export default class Setup {
             value[ key ] = this.comply( subValue )
           } )
           return value
-        }
+
       }
     }
   }
 
   async initialize(){
     this.Config = await this.loadConfig('index')
-    if( !this.Config ){
+    if( !this.Config ) {
       this.context.error('Setup configuration not found')
       process.exit(1)
     }
-    
+
     /**
      * Comply data by resolving all key references
      * throughout partials configurations
@@ -86,32 +86,43 @@ export default class Setup {
     this.comply( this.Config )
 
     /**
-     * Define project directory structure 
+     * Define project directory structure
      * and pattern
      */
     this.Config.directory = this.Config.directory || {}
-    
-    this.Config.directory.root = this.Path.resolve( process.cwd(), this.Config.directory.root || '/' )
+
+    this.Config.directory.base = this.Path.resolve( process.cwd(), this.Config.directory.base || '/' )
     this.Config.directory.pattern = this.Config.directory.pattern || '-'
+
+    /**
+     * Wheter come next is only for development
+     * mode environment.
+     *
+     * It assumes all dependencies and builds are
+     * created before production deployment.
+     */
+    if( process.env.NODE_ENV === 'production' ) return
 
     /**
      * Install plugin dependencies collected
      * from the configuration.
-     * 
+     *
      * TODO: Attach the compatible versions of each
      *       plugin to the project's Kenx setup version.
      */
-    if( this.Plugins.length ){
+    if( this.Plugins.length ) {
       console.log('Installing dependency plugins ...')
       await exec(`npm install ${this.Plugins.join(' ')}`)
     }
 
     /**
      * Automatically build typscript project
-     * 
+     *
      * Note: Must set `typescript` in `.config/index.yml`
      *       to true. Also add `tsconfig.json` to your
      *       project's root.
+     *
+     * TODO: Set up hot reload
      */
     if( this.Config?.typescript )
       try {
@@ -132,7 +143,7 @@ export default class Setup {
           exclude: ['**/*.test.ts', '**/*.spec.ts'],
         })
       }
-      catch( error: any ){
+      catch( error: any ) {
         console.error( error )
         process.exit(1)
       }
@@ -140,15 +151,15 @@ export default class Setup {
 
   /**
    * Load setup configurations
-   * 
+   *
    * @type {string} target: `index`, `native`
    * @return {object} Defined config `object` or `null` if not found
-   * 
+   *
    */
   async loadConfig( target: SetupTarget ){
     // Default target is .config index
     try { return await this.parseYaml(`${process.cwd()}/.config/${target}`) }
-    catch( error ){
+    catch( error ) {
       this.context.log(`<${target}> target: %o`, error )
       return null
     }
@@ -156,24 +167,24 @@ export default class Setup {
 
   /**
    * Return setup configurations
-   * 
+   *
    * @type {string} key
    * @return {object} unknow
-   * 
+   *
    */
-  getConfig( key?: keyof SetupConfig ): SetupConfig {
+  getConfig( key?: keyof SetupConfig ): SetupConfig{
     if( !this.Config )
       throw new Error('No setup configuration found')
-    
+
     return key ? this.Config[ key ] : this.Config
   }
 
   /**
    * Import module
-   * 
+   *
    * @type {string} module name
    * @return {module} Defined setup `object` or `null` if not found
-   * 
+   *
    */
   async importModule( path: string, throwError = false ){
     if( !this.Config )
@@ -185,25 +196,25 @@ export default class Setup {
     path = this.Config?.typescript ?
                       // Typescript build folder
                       this.Path.join(`${process.cwd()}/dist`, path )
-                      // Specified project root
-                      : this.Path.join( this.Config.directory.root, path )
+                      // Specified project directory base
+                      : this.Path.join( this.Config.directory.base, path )
 
     /**
      * Check project's current working directory
      */
     let module
     try { module = await import( path ) }
-    catch( error: any ){ throwError && console.log(`import <${path}> failed: `, error ) }
-    
+    catch( error: any ) { throwError && console.log(`import <${path}> failed: `, error ) }
+
     return module
   }
 
   /**
    * Import plugin
-   * 
+   *
    * @type {string} reference
    * @return {module} Defined setup `object` or `null` if not found
-   * 
+   *
    */
   async importPlugin( refname: string ){
     if( !this.Config )
@@ -215,16 +226,16 @@ export default class Setup {
     let plugin
 
     /**
-     * Check plugins in the project's current 
+     * Check plugins in the project's current
      * working directory
      */
     try { plugin = await this.importModule(`/plugins/${refname}`) }
-    catch( error: any ){}
+    catch( error: any ) {}
 
     // Check installed plugins in /node_modules folder
     if( !plugin )
       try { plugin = await import( refname ) }
-      catch( error: any ){}
+      catch( error: any ) {}
 
     if( !plugin?.default )
       throw new Error(`<${refname}> plugin not found`)
@@ -234,10 +245,10 @@ export default class Setup {
 
   /**
    * Resolve setup reference
-   * 
+   *
    * @type {string} reference
    * @return {any}
-   * 
+   *
    */
   resolveReference( reference: string ){
     if( !this.Config || typeof this.Config !== 'object' )
@@ -251,7 +262,7 @@ export default class Setup {
       return process.env[ key ]
 
     // Multi-configurations array
-    else if( Array.isArray( this.Config[ section ] ) ){
+    else if( Array.isArray( this.Config[ section ] ) ) {
       for( const config of this.Config[ section ] )
         if( ( !config.key && key == 'default' ) || config.key == key )
           return config
@@ -264,15 +275,15 @@ export default class Setup {
   /**
    * Resolve path with specified project
    * directory root as dirname
-   * 
+   *
    * @type {string} path
    * @return {string} path
-   * 
+   *
    */
   resolvePath( path: string ){
     if( !this.Config || typeof this.Config !== 'object' )
       throw new Error('No setup configuration found')
 
-    return this.Path.resolve( this.Config?.directory.root, path )
+    return this.Path.resolve( this.Config?.directory.base, path )
   }
 }

@@ -7,11 +7,11 @@ export default class Context {
   }
 
   log( ...args: any[] ){
-    process.env.NODE_ENV !== 'production' 
+    process.env.NODE_ENV !== 'production'
     && console.log(`[${this.namespace.toUpperCase()}] -`, ...args )
   }
   error( ...args: any[] ){
-    process.env.NODE_ENV !== 'production' 
+    process.env.NODE_ENV !== 'production'
     && console.error(`[${this.namespace.toUpperCase()}] -`, ...args )
   }
   warn( ...args: any[] ){

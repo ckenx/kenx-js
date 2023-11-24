@@ -6,12 +6,12 @@ export default class RedisPugin implements Kenx.DatabasePlugin<any> {
   private client?: RedisClientType
   private readonly config: RedisClientOptions
   connection?: any
-  
+
   constructor( Setup: Kenx.SetupManager, config: DatabaseConfig ){
     if( config.uri )
       this.config = { url: config.uri }
 
-    else if( typeof config.options == 'object' ){
+    else if( typeof config.options == 'object' ) {
       this.config = config.options as any
     }
 

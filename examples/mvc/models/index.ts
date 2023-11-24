@@ -11,8 +11,8 @@ async function getUser( collection: Collection, query: UserQuery ){
 
 export default ( databases: { [index: string]: Kenx.DatabasePlugin<any> } ) => {
   if( !databases ) return
-  
-  const 
+
+  const
   db = databases.default.getConnection(),
   userCol = db.collection('users')
 

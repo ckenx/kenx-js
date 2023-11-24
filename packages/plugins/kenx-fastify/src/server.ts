@@ -24,7 +24,7 @@ export default class Server implements Kenx.ServerPlugin<Kenx.HTTPServer> {
     await this.app.core.close()
     return this
   }
-  getInfo(): Kenx.ActiveServerInfo | null {
+  getInfo(): Kenx.ActiveServerInfo | null{
     if( !this.app )
       throw new Error('No HTTP Server')
 

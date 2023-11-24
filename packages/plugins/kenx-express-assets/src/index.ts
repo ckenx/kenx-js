@@ -16,18 +16,18 @@ export default class ExpressAssetsPlugin {
     configList.forEach( ({ root, options }) => {
       root = this.setup.resolvePath( root )
       if( !root ) return
-      
-      this.app.register( express.static( root, options || {} ) ) 
+
+      this.app.register( express.static( root, options || {} ) )
     })
   }
 
   private addMultipart( config: AssetUploadConfig ){
     /**
      * Multi-part form data parser with connect-multiparty
-     * 
+     *
      * Options are the same as multiparty takes.
-     * 
-     * NOTE: there is a new option `autoClean` to clean all 
+     *
+     * NOTE: there is a new option `autoClean` to clean all
      *       files in "uploadDir" folder after the response.
      *       By default, it is `false`.
      */
@@ -38,13 +38,13 @@ export default class ExpressAssetsPlugin {
      */
     .register( multipart.format() )
     /**
-     * Change the file objects to fs.ReadStream 
+     * Change the file objects to fs.ReadStream
      */
     .register( multipart.stream() )
   }
 
   private addStorage( config: AssetStorageConfig ){
-    switch( config.type ){
+    switch( config.type ) {
       case 'cloud': {
         const { client, spaces } = config
         if( !client )

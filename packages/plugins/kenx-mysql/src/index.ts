@@ -6,26 +6,26 @@ export default class MysqlPlugin implements Kenx.DatabasePlugin<Connection> {
   private readonly config?: string | ConnectionConfig
   private isPool = false
   connection?: Connection
-  
+
   constructor( Setup: Kenx.SetupManager, config: Config ){
     if( config.uri )
       this.config = config.uri
 
-    else if( typeof config.options == 'object' ){
+    else if( typeof config.options == 'object' ) {
       const { pool, ...rest } = config.options
       this.config = {
         ...rest,
         ...pool,
         /**
          * REVIEW:
-         * If you have two columns with the same name, you might 
-         * want to get results as an array rather than an object 
+         * If you have two columns with the same name, you might
+         * want to get results as an array rather than an object
          * to prevent them from clashing.
          */
         rowsAsArray: true
       } as ConnectionConfig
 
-      if( pool ){
+      if( pool ) {
         this.isPool = true
         this.config = { ...this.config, ...pool }
       }
@@ -40,7 +40,7 @@ export default class MysqlPlugin implements Kenx.DatabasePlugin<Connection> {
 
     if( this.connection )
       return this.getConnection()
-    
+
     this.connection = typeof this.config == 'string'
                       || !this.isPool ?
                                 await createConnection( this.config as any )
@@ -52,7 +52,7 @@ export default class MysqlPlugin implements Kenx.DatabasePlugin<Connection> {
   getConnection( dbname?: string ){
     if( !this.connection )
       throw new Error('No database connection client found')
-    
+
     return this.connection
   }
 

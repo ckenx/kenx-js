@@ -7,7 +7,7 @@ declare global {
 
 // Add direct prototype to native array
 Array.prototype.pmap = async function( fn ){
-  if( !Array.isArray( this ) || !this.length ) 
+  if( !Array.isArray( this ) || !this.length )
     return []
 
   let counter = 0
@@ -39,9 +39,11 @@ export type ResourceConfig = {
 
 export type ApplicationConfig = {
   plugin: string
-  // session?: ApplicationSessionConfig
-  // assets?: ApplicationAssetConfig
-  // routing?: ApplicationRoutingConfig
+  /*
+   * Session?: ApplicationSessionConfig
+   * assets?: ApplicationAssetConfig
+   * routing?: ApplicationRoutingConfig
+   */
   [index: string]: any
 }
 export type HTTPServerConfig = ResourceConfig & {
@@ -68,13 +70,13 @@ export type DatabaseConfig = ResourceConfig & {
 }
 
 export type DirectoryConfig = {
-  root: string
+  base: string
   pattern: string
 }
 export type SetupConfig = {
   typescript?: boolean
   directory: DirectoryConfig
-  // servers?: (HTTPServerConfig | AuxiliaryServerConfig)[]
+  // Servers?: (HTTPServerConfig | AuxiliaryServerConfig)[]
 
   [index: string]: any
 }

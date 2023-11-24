@@ -12,7 +12,7 @@ export default ({ app }: Kenx.ServerPlugin<http.Server>, io: io.Server, models: 
   .decorate('io', io )
   // Decorate application with models
   .decorate('models', models )
-  
+
   // Decorate application with views
   views && app.decorate('views', views )
 

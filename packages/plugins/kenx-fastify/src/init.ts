@@ -15,12 +15,12 @@ export default () => {
     trustProxy: true,
     /**
      * Development logs
-     * 
+     *
      * TODO:
      *  - Provide to developer to set their favorate customization of logger
      *  - Apply logger customization configurations
      *  - Set default logger and recommandations as well
-     * 
+     *
      */
     logger: { level: 'trace' },
     caseSensitive: true
@@ -33,9 +33,11 @@ export default () => {
     contentSecurityPolicy: false
   } )
 
-  // Application/form-multipart content type parser
-  // .register( FormMultipart )
-  // Register application/x-www-form-urlencoded content type parser
+  /*
+   * Application/form-multipart content type parser
+   * .register( FormMultipart )
+   * Register application/x-www-form-urlencoded content type parser
+   */
   .register( FormBody )
 
   return App
