@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-mysql",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "Kenx mysql client plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "*",
+    "@ckenx/node": "^0.0.1",
     "mysql2": "^3.6.3"
   },
   "repository": {

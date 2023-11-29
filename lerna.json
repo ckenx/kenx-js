@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "npmClient": "yarn",
   "command": {
     "bootstrap": {
@@ -8,11 +8,7 @@
     },
     "publish": {
       "npmClient": "npm",
-      "allowBranch": [
-        "master",
-        "canary",
-        "finch"
-      ],
+      "allowBranch": ["master", "canary", "finch"],
       "registry": "https://registry.npmjs.org/"
     }
   },

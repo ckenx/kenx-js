@@ -1,12 +1,14 @@
 {
   "name": "@ckenx/node",
-  "version": "0.0.7",
+  "version": "0.0.1",
   "description": "Kenx framework for NodeJS",
   "main": "dist/index.js",
   "typings": "dist/types/index.d.ts",
   "typesVersions": {
     "*": {
-      "types/*": [ "dist/types/*" ]
+      "types/*": [
+        "dist/types/*"
+      ]
     }
   },
   "repository": {

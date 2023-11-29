@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-fastify",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "Kenx fastify framework plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "*",
+    "@ckenx/node": "^0.0.1",
     "@fastify/formbody": "^7.4.0",
     "@fastify/helmet": "^11.1.1",
     "fastify": "^4.24.3"
