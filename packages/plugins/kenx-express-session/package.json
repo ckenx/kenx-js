@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-express-session",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Kenx express framework session management plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,6 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.1",
     "connect-redis": "^7.1.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
@@ -19,6 +18,7 @@
     "redis": "^4.6.10"
   },
   "devDependencies": {
+    "@ckenx/node": "*",
     "@types/cookie-parser": "^1.4.5",
     "@types/express-session": "^1.17.10"
   },

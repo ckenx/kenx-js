@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-mongodb",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Kenx mongodb client plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -11,8 +11,10 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.1",
     "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "@ckenx/node": "*"
   },
   "repository": {
     "type": "git",

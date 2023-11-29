@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-socketio",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "Kenx socket.io server plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -11,9 +11,11 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.1",
     "@socket.io/redis-adapter": "^8.2.1",
     "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "@ckenx/node": "*"
   },
   "repository": {
     "type": "git",

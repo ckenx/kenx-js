@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-http",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Kenx socket.io server plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "url": "https://github.com/ckenx/kenx-js/issues"
   },
   "homepage": "https://github.com/ckenx/kenx-js#README",
-  "dependencies": {
-    "@ckenx/node": "^0.0.1"
+  "devDependencies": {
+    "@ckenx/node": "*"
   }
 }

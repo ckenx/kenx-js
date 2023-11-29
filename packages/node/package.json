@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/node",
-  "version": "0.0.1",
+  "version": "0.0.8",
   "description": "Kenx framework for NodeJS",
   "main": "dist/index.js",
   "typings": "dist/types/index.d.ts",

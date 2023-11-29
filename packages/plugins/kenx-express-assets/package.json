@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-express-assets",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Kenx express framework assets management plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -11,11 +11,11 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.1",
     "express-form-data": "^2.0.22",
     "globe-sdk": "^1.1.5"
   },
   "devDependencies": {
+    "@ckenx/node": "*",
     "@types/express-form-data": "^2.0.5"
   },
   "repository": {
