@@ -1,66 +1,29 @@
-import type { ResourceConfig, HTTPServerConfig, AuxiliaryServerConfig, DatabaseConfig, JSObject } from '#types/index'
+import type {
+  JSObject,
+  Resources,
+  HTTPServer,
+  ServerPlugin,
+  DatabaseConfig,
+  ResourceConfig,
+  HTTPServerConfig,
+  ApplicationPlugin,
+  AuxiliaryServerConfig
+} from '#types/index'
 import dotenv from 'dotenv'
-import SManager from './setup'
-import { Wrapper } from '#lib/adapters/awrapper'
-import type { Server } from 'http'
-
-export namespace Kenx {
-
-  export interface SetupManager extends SManager {}
-
-  export interface ApplicationPlugin<T> {
-    readonly core: T
-    readonly HOST: string
-    readonly PORT: number
-    register: ( fn: any, options?: any ) => this
-    decorate: ( attribute: string, value: any ) => this
-    addRouter: ( prefix: string, router: any ) => this
-    addHandler: ( type: string, func: any ) => this
-    onError: ( listener: ( error: Error, ...args: any[] ) => void ) => this
-    serve: ( overhead?: boolean ) => Promise<ServerPlugin<Server>>
-  }
-
-  export type HTTPServer = Server
-  export type ActiveServerInfo = {
-    type: string
-    port?: number
-  }
-  export interface ServerPlugin<T> {
-    readonly server: T
-    readonly app?: ApplicationPlugin<any>
-    getInfo: () => ActiveServerInfo | null
-    listen: ( arg: any ) => Promise<ActiveServerInfo | null>
-    close: () => Promise<unknown>
-  }
-  export interface DatabasePlugin<T> {
-    readonly connection?: T
-    connect: () => Promise<T>
-    disconnect: () => Promise<void>
-    getConnection: ( dbname?: string ) => T
-  }
-
-  export type Resources = {
-    [index: string]: ServerPlugin<any>
-    // [index: string]: DatabasePlugin<any>
-  }
-  export type Takeover<ServerType, DBType> = {
-    http?: ServerPlugin<ServerType>
-    database?: DatabasePlugin<DBType>
-  }
-}
+import SetupManager from './setup'
 
 /**
  * Kenx setup configuration
  *
  */
 const
-Setup = new SManager(),
+Setup = new SetupManager(),
 
 /**
  * Auto-loaded resources
  *
  */
-RESOURCES: Kenx.Resources = {}
+RESOURCES: Resources = {}
 
 async function createHTTPServer( config: HTTPServerConfig ){
   const { HOST, PORT } = config
@@ -79,7 +42,7 @@ async function createHTTPServer( config: HTTPServerConfig ){
     try {
       const
       App = await Setup.importPlugin( config.application.plugin || `@${config.application?.type}` ),
-      instance: Kenx.ApplicationPlugin<Kenx.HTTPServer> = new App( Setup, config )
+      instance: ApplicationPlugin<HTTPServer> = new App( Setup, config )
 
       return await instance.serve()
     }
@@ -96,7 +59,7 @@ async function createHTTPServer( config: HTTPServerConfig ){
 
     const
     HttpServer = await Setup.importPlugin( config.plugin ),
-    instance: Kenx.ServerPlugin<Kenx.HTTPServer> = new HttpServer( Setup )
+    instance: ServerPlugin<HTTPServer> = new HttpServer( Setup )
 
     await instance.listen( config )
     return instance
@@ -117,7 +80,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
 
     const
     AuxServer = await Setup.importPlugin( plugin ),
-    instance: Kenx.ServerPlugin<any> = new AuxServer( Setup, options )
+    instance: ServerPlugin<any> = new AuxServer( Setup, options )
 
     /**
      * Bind server
@@ -168,7 +131,8 @@ function getResource( arg: string | string[] ){
 
   const resources: any = {}
 
-  Object.entries( group )
+  Object
+  .entries( group )
   .map( ([ section, array ]) => {
     if( !array.length ) {
       resources[ section ] = undefined
@@ -181,24 +145,24 @@ function getResource( arg: string | string[] ){
       // Return resource group
       if( key == '*' ) {
         resources[ section ] = {}
-        Object.entries( RESOURCES )
-              .map( ([ attribute, value ]) => {
-                const [ _section, _key ] = attribute.split(':')
-                if( _section && _key && _section == section ) resources[ section ][ _key ] = value
-              })
+        Object
+        .entries( RESOURCES )
+        .map( ([ attribute, value ]) => {
+          const [ _section, _key ] = attribute.split(':')
+          if( _section && _key && _section == section ) resources[ section ][ _key ] = value
+        })
       }
       else resources[ section ] = RESOURCES[`${section}:${key}`]
-
-
     }
     else {
       resources[ section ] = {}
-      array.forEach( key => {
-        Object.entries( RESOURCES )
-            .map( ([ attribute, value ]) => {
-              const [ _section, key ] = attribute.split(':')
-              if( attribute == `${section}:${key}` ) resources[ section ][ key ] = value
-            })
+      array.forEach( ( key: string ) => {
+        Object
+        .entries( RESOURCES )
+        .map( ([ attribute, value ]) => {
+          // Const [ _, _key ] = attribute.split(':')
+          if( attribute == `${section}:${key}` ) resources[ section ][ key ] = value
+        })
       } )
     }
   } )
@@ -239,7 +203,7 @@ async function toSingleton( takeover?: string[] ){
   }
 }
 
-async function toMVC( takeover?: string[] ){
+async function toMVC(){
   try {
     /**
      * Load models
@@ -407,7 +371,7 @@ export default class Core {
        *  - views: `<base>/views`
        *  - controllers: `<base>/controllers`
        */
-      case 'mvc': toMVC( takeover ); break
+      case 'mvc': toMVC(); break
 
       /**
        * Single entrypoint project structure
@@ -418,5 +382,3 @@ export default class Core {
     }
   }
 }
-
-declare var Kenx: Core

@@ -1,13 +1,13 @@
 import type { Config } from './types'
-import type { Kenx } from '@ckenx/node'
-import { MongoClient, MongoClientOptions, Db } from 'mongodb'
+import type { DatabasePlugin, SetupManager } from '@ckenx/node'
+import { MongoClient, Db } from 'mongodb'
 
-export default class MongodbPugin implements Kenx.DatabasePlugin<Db> {
+export default class MongodbPugin implements DatabasePlugin<Db> {
   private client?: MongoClient
   private readonly config: string
   connection?: Db
 
-  constructor( Setup: Kenx.SetupManager, config: Config ){
+  constructor( Setup: SetupManager, config: Config ){
     // TODO: Convert connection options object to connection string
 
     this.config = config.uri || ''

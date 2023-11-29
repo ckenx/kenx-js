@@ -2,5 +2,6 @@ node_modules
 .github
 docs
 test
+etc
 src
 tsconfig.json

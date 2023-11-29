@@ -1,4 +1,4 @@
-import type { Kenx } from '@ckenx/node'
+import type { ApplicationPlugin, SetupManager } from '@ckenx/node'
 import type { FastifyInstance } from 'fastify'
 
 export default class FastifyAPICompliancePlugin {
@@ -46,7 +46,7 @@ export default class FastifyAPICompliancePlugin {
     warning.emit('FST_ERROR_CODE')
   }
 
-  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<FastifyInstance>, config: any ){
+  constructor( Setup: SetupManager, app: ApplicationPlugin<FastifyInstance>, config: any ){
     /**
      * Publish public API profile endpoints
      */

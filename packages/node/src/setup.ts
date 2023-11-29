@@ -110,10 +110,22 @@ export default class Setup {
      * TODO: Attach the compatible versions of each
      *       plugin to the project's Kenx setup version.
      */
-    if( this.Plugins.length ) {
-      console.log('Installing dependency plugins ...')
-      await exec(`npm install ${this.Plugins.join(' ')}`)
-    }
+    if( this.Plugins.length )
+      try {
+        console.log('Installing dependency plugins ...')
+
+        const packageJson = await this.Fs.readJSON('package.json')
+        if( !packageJson )
+          throw new Error('Project package.json file not found')
+
+        // Install missing dependency packages
+        const deps = this.Plugins.filter( each => { return !packageJson.dependencies[ each ] } )
+        deps.length && await exec(`npm install ${deps.join(' ')}`)
+      }
+      catch( error ) {
+        console.error( error )
+        process.exit(1)
+      }
 
     /**
      * Automatically build typscript project
@@ -151,10 +163,6 @@ export default class Setup {
 
   /**
    * Load setup configurations
-   *
-   * @type {string} target: `index`, `native`
-   * @return {object} Defined config `object` or `null` if not found
-   *
    */
   async loadConfig( target: SetupTarget ){
     // Default target is .config index
@@ -167,10 +175,6 @@ export default class Setup {
 
   /**
    * Return setup configurations
-   *
-   * @type {string} key
-   * @return {object} unknow
-   *
    */
   getConfig( key?: keyof SetupConfig ): SetupConfig{
     if( !this.Config )
@@ -181,10 +185,6 @@ export default class Setup {
 
   /**
    * Import module
-   *
-   * @type {string} module name
-   * @return {module} Defined setup `object` or `null` if not found
-   *
    */
   async importModule( path: string, throwError = false ){
     if( !this.Config )
@@ -211,10 +211,6 @@ export default class Setup {
 
   /**
    * Import plugin
-   *
-   * @type {string} reference
-   * @return {module} Defined setup `object` or `null` if not found
-   *
    */
   async importPlugin( refname: string ){
     if( !this.Config )
@@ -245,10 +241,6 @@ export default class Setup {
 
   /**
    * Resolve setup reference
-   *
-   * @type {string} reference
-   * @return {any}
-   *
    */
   resolveReference( reference: string ){
     if( !this.Config || typeof this.Config !== 'object' )
@@ -275,10 +267,6 @@ export default class Setup {
   /**
    * Resolve path with specified project
    * directory root as dirname
-   *
-   * @type {string} path
-   * @return {string} path
-   *
    */
   resolvePath( path: string ){
     if( !this.Config || typeof this.Config !== 'object' )

@@ -1,4 +1,4 @@
-import type { Kenx } from '@ckenx/node'
+import type { ApplicationPlugin, SetupManager } from '@ckenx/node'
 import type { FastifyInstance } from 'fastify'
 import type { SessionConfig, SessionStore } from './types'
 import { createClient } from 'redis'
@@ -7,8 +7,8 @@ import Session, { FastifySessionOptions } from '@fastify/session'
 import RedisStore from 'connect-redis'
 
 export default class FastifySessionPlugin {
-  private readonly setup: Kenx.SetupManager
-  private readonly app: Kenx.ApplicationPlugin<FastifyInstance>
+  private readonly setup: SetupManager
+  private readonly app: ApplicationPlugin<FastifyInstance>
 
   private addInMemory( options: FastifySessionOptions ){
     // Cookie-parser is required in development mode
@@ -46,7 +46,7 @@ export default class FastifySessionPlugin {
     this.app.register( Session, options )
   }
 
-  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<FastifyInstance>, sessionConfig: SessionConfig ){
+  constructor( Setup: SetupManager, app: ApplicationPlugin<FastifyInstance>, sessionConfig: SessionConfig ){
     this.setup = Setup
     this.app = app
 

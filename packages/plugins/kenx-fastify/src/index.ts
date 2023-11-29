@@ -1,15 +1,15 @@
-import type { Kenx } from '@ckenx/node'
-import type { FastifyInstance } from 'fastify'
-import type { ApplicationHook, LifecycleHook } from 'fastify/types/hooks'
-import type { Config, RoutingConfig, SessionConfig, AssetConfig } from './types'
+import type { ServerPlugin, ApplicationPlugin, SetupManager, HTTPServer } from '@ckenx/node'
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
+import type { Config, RoutingConfig, SessionConfig, AssetConfig, JSObject } from './types'
+import EventEmitter from 'events'
 import __init__ from './init'
 import FServer from './server'
 
-export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInstance> {
+export default class FastifyPlugin extends EventEmitter implements ApplicationPlugin<FastifyInstance> {
   readonly HOST: string
   readonly PORT: number
   readonly core: FastifyInstance
-  private readonly Setup: Kenx.SetupManager
+  private readonly Setup: SetupManager
 
   private AUTO_HANDLE_ERROR = true
 
@@ -34,11 +34,17 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
     new Plugin( this.Setup, this, config )
   }
 
-  constructor( Setup: Kenx.SetupManager, config: Config ){
-    // Super( this )
+  private eventListeners(){
+    this.core
+    .addHook('onRequest', ( ...args ) => this.emit('request', ...args ) )
+    .addHook('onReady', ( ...args ) => this.emit('ready', ...args ) )
+  }
+
+  constructor( Setup: SetupManager, config: Config ){
+    super()
 
     this.HOST = config.HOST
-    this.PORT = config.PORT
+    this.PORT = Number( config.PORT )
 
     if( !this.HOST || !this.PORT )
       throw new Error('Invalid configuration. Expecting <HOST>, <PORT>, <application>, ...')
@@ -67,35 +73,41 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
      * Initialize routing features
      */
     this.useRouting( config.application?.routing )
+
+    /**
+     * Setup on-* event listener & trigger
+     */
+    this.eventListeners()
   }
 
-  register( plugin: any, options?: any ){
+  register( plugin: FastifyPluginAsync, options?: JSObject<unknown> ){
     this.core.register( plugin, options )
     return this
   }
 
-  decorate( attribute: string, value: any ){
-    this.core.decorate( attribute, value )
-    return this
-  }
-
-  addRouter( prefix: string, route: ( app: FastifyInstance ) => Promise<void> ){
-    this.core.register( route, { prefix } )
-    return this
-  }
-
-  addHandler( type: string, func: any ){
+  use( fn: any, type?: string ){
     switch( type ) {
       /*
        * Case 'ready':
        * case 'after':
        * case 'before': this.core.before( func ); break
        */
-      case 'onRequest':
-      case 'preHandler':
-      default: this.core.addHook( type as ApplicationHook | LifecycleHook, func )
+      case 'prehandler': this.core.addHook('preHandler', fn ); break
+      case 'prevalidation': this.core.addHook('preValidation', fn ); break
+      case 'middleware':
+      default: this.core.addHook('onRequest', fn )
     }
 
+    return this
+  }
+
+  attach( attribute: string, value: unknown ){
+    this.core.decorate( attribute, value )
+    return this
+  }
+
+  router( prefix: string, route: ( app: FastifyInstance ) => Promise<void> ){
+    this.core.register( route, { prefix } )
     return this
   }
 
@@ -135,7 +147,7 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
     return this
   }
 
-  async serve( overhead?: boolean ): Promise<Kenx.ServerPlugin<Kenx.HTTPServer>>{
+  async serve( overhead?: boolean ): Promise<ServerPlugin<HTTPServer>>{
     // Automatically handle application errors occurence
     overhead
     && this.AUTO_HANDLE_ERROR
@@ -144,7 +156,6 @@ export default class FastifyPlugin implements Kenx.ApplicationPlugin<FastifyInst
     if( !this.Setup )
       throw new Error('Undefined Kenx Utils object supply')
 
-    const server = new FServer( this, { port: this.PORT, host: this.HOST })
-    return server
+    return new FServer( this, { port: this.PORT, host: this.HOST })
   }
 }

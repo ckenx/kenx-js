@@ -1,21 +1,21 @@
-import type { Kenx } from '../../../packages/node/src/types/resource'
+import type { ServerPlugin, DatabasePlugin } from '../../../packages/node/dist/types'
 import type http from 'http'
 import type io from 'socket.io'
 import routes from './routes'
 
 // Export const takeover = ['http', 'socketio', 'database:*']
 
-export default ( http: Kenx.ServerPlugin<http.Server>, io: io.Server, databases: { [index: string]: Kenx.DatabasePlugin<any> } ) => {
+export default ( http: ServerPlugin<http.Server>, io: io.Server, databases: { [index: string]: DatabasePlugin<any> } ) => {
   if( !http ) return
 
   const { app } = http
   if( !app ) return
 
   app
-  // Decorate application with socket.io server interface
-  .decorate('io', io )
-  // Decorate application with default database
-  .decorate('mongodb', databases.default.getConnection() )
+  // Attach socket.io server interface to application
+  .attach('io', io )
+  // Attach database to application
+  .attach('db', databases.default.getConnection() )
 
   /*
    * Add express middleware
@@ -34,7 +34,7 @@ export default ( http: Kenx.ServerPlugin<http.Server>, io: io.Server, databases:
    */
 
   // Add fastify middleware
-  .addHandler('onRequest', async ( req: any, res: any ) => {
+  .use( async ( req: any, res: any ) => {
     console.log('-- Middleware --')
 
     // Test session
@@ -42,10 +42,10 @@ export default ( http: Kenx.ServerPlugin<http.Server>, io: io.Server, databases:
   })
 
   // Register express routes
-  .addRouter('/', routes )
+  .router('/', routes )
 
   // Handle application exception errors
-  .onError( ( error: Error, req, res, next ) => {
+  .onError( ( error: Error, req, res ) => {
     console.log( error )
     res.status(500).send( error )
   })

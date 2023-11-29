@@ -1,13 +1,13 @@
 import type { Config } from './types'
-import type { Kenx } from '@ckenx/node'
+import type { DatabasePlugin, SetupManager } from '@ckenx/node'
 import { type Connection, createConnection, createPool, ConnectionConfig } from 'mysql2/promise'
 
-export default class MysqlPlugin implements Kenx.DatabasePlugin<Connection> {
+export default class MysqlPlugin implements DatabasePlugin<Connection> {
   private readonly config?: string | ConnectionConfig
   private isPool = false
   connection?: Connection
 
-  constructor( Setup: Kenx.SetupManager, config: Config ){
+  constructor( Setup: SetupManager, config: Config ){
     if( config.uri )
       this.config = config.uri
 

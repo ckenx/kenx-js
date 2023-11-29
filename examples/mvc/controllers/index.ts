@@ -1,26 +1,24 @@
-import type { Kenx } from '#types/resource'
+import type { ServerPlugin } from '../../../packages/node/dist/types'
 import type http from 'http'
 import type io from 'socket.io'
 import users from './users'
 
 export const takeover = ['http', 'socketio']
-export default ({ app }: Kenx.ServerPlugin<http.Server>, io: io.Server, models: any, views?: any ) => {
+export default ({ app }: ServerPlugin<http.Server>, io: io.Server, models: any, views?: any ) => {
   if( !app ) return
 
   app
-  // Decorate application with socket.io server interface
-  .decorate('io', io )
-  // Decorate application with models
-  .decorate('models', models )
+  .attach('io', io )
+  .attach('models', models )
 
-  // Decorate application with views
-  views && app.decorate('views', views )
+  // Attach views handler to application
+  views && app.attach('views', views )
 
   app
   // Register express routes
-  .addRouter('/', users )
+  .router('/', users )
   // Handle application exception errors
-  .onError( ( error: Error, req, res, next ) => {
+  .onError( ( error: Error, req, res ) => {
     console.log( error )
     res.status(500).send( error )
   })

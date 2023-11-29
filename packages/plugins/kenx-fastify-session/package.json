@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.6",
+    "@ckenx/node": "*",
     "@fastify/cookie": "^9.2.0",
     "@fastify/session": "^10.5.0",
     "fastify": "^4.24.3",

@@ -31,6 +31,6 @@
   },
   "homepage": "https://github.com/ckenx/kenx-js#README",
   "dependencies": {
-    "@ckenx/node": "^0.0.6"
+    "@ckenx/node": "*"
   }
 }

@@ -1,13 +1,13 @@
-import type { Kenx } from '@ckenx/node'
+import type { HTTPServer, ServerPlugin, ApplicationPlugin, ActiveServerInfo } from '@ckenx/node'
 import type { ServerConfig } from './types'
 import type { FastifyInstance } from 'fastify'
 
-export default class Server implements Kenx.ServerPlugin<Kenx.HTTPServer> {
-  readonly app: Kenx.ApplicationPlugin<FastifyInstance>
-  readonly server: Kenx.HTTPServer
+export default class Server implements ServerPlugin<HTTPServer> {
+  readonly app: ApplicationPlugin<FastifyInstance>
+  readonly server: HTTPServer
   private readonly config: ServerConfig
 
-  constructor( app: Kenx.ApplicationPlugin<FastifyInstance>, config: ServerConfig ){
+  constructor( app: ApplicationPlugin<FastifyInstance>, config: ServerConfig ){
     this.app = app
     this.config = config
     this.server = app.core.server
@@ -24,7 +24,7 @@ export default class Server implements Kenx.ServerPlugin<Kenx.HTTPServer> {
     await this.app.core.close()
     return this
   }
-  getInfo(): Kenx.ActiveServerInfo | null{
+  getInfo(): ActiveServerInfo | null{
     if( !this.app )
       throw new Error('No HTTP Server')
 

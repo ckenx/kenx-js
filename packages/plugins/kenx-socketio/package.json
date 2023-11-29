@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.6",
+    "@ckenx/node": "*",
     "@socket.io/redis-adapter": "^8.2.1",
     "socket.io": "^4.7.2"
   },

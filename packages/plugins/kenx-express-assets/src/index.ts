@@ -1,4 +1,4 @@
-import type { Kenx } from '@ckenx/node'
+import type { ApplicationPlugin, SetupManager } from '@ckenx/node'
 import type { StaticAssetConfig, AssetConfig, AssetStorageConfig, AssetUploadConfig } from './types'
 import os from 'os'
 import { CAS } from 'globe-sdk'
@@ -6,8 +6,8 @@ import express, { Application } from 'express'
 import multipart from 'express-form-data'
 
 export default class ExpressAssetsPlugin {
-  private readonly setup: Kenx.SetupManager
-  private readonly app: Kenx.ApplicationPlugin<Application>
+  private readonly setup: SetupManager
+  private readonly app: ApplicationPlugin<Application>
 
   private addStatic( configList: StaticAssetConfig[] ){
     if( !Array.isArray( configList ) || !configList.length ) return
@@ -17,7 +17,7 @@ export default class ExpressAssetsPlugin {
       root = this.setup.resolvePath( root )
       if( !root ) return
 
-      this.app.register( express.static( root, options || {} ) )
+      this.app.use( express.static( root, options || {} ) )
     })
   }
 
@@ -32,15 +32,15 @@ export default class ExpressAssetsPlugin {
      *       By default, it is `false`.
      */
     this.app
-    .register( multipart.parse({ ...config, uploadDir: os.tmpdir(), autoClean: true }) )
+    .use( multipart.parse({ ...config, uploadDir: os.tmpdir(), autoClean: true }) )
     /**
      * Delete from the request all empty files (size == 0)
      */
-    .register( multipart.format() )
+    .use( multipart.format() )
     /**
      * Change the file objects to fs.ReadStream
      */
-    .register( multipart.stream() )
+    .use( multipart.stream() )
   }
 
   private addStorage( config: AssetStorageConfig ){
@@ -67,7 +67,7 @@ export default class ExpressAssetsPlugin {
           })
         })
 
-        this.app.decorate('storage', storage.Space )
+        this.app.attach('storage', storage.Space )
       } break
       case 'local':
       default: {
@@ -76,7 +76,7 @@ export default class ExpressAssetsPlugin {
     }
   }
 
-  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<Application>, assetConfig: AssetConfig ){
+  constructor( Setup: SetupManager, app: ApplicationPlugin<Application>, assetConfig: AssetConfig ){
     this.setup = Setup
     this.app = app
 

@@ -1,4 +1,4 @@
-import type { Kenx } from '@ckenx/node'
+import type { ApplicationPlugin, SetupManager } from '@ckenx/node'
 import type { StaticAssetConfig, AssetConfig, AssetStorageConfig, AssetUploadConfig } from './types'
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import { CAS } from 'globe-sdk'
@@ -15,8 +15,8 @@ declare module 'fastify' {
 }
 
 export default class FastifyAssetsPlugin {
-  private readonly setup: Kenx.SetupManager
-  private readonly app: Kenx.ApplicationPlugin<FastifyInstance>
+  private readonly setup: SetupManager
+  private readonly app: ApplicationPlugin<FastifyInstance>
 
   private addStatic( configList: StaticAssetConfig[] ){
     if( !Array.isArray( configList ) || !configList.length ) return
@@ -50,7 +50,7 @@ export default class FastifyAssetsPlugin {
     const
     pump = util.promisify( pipeline ),
     plugin: FastifyPluginAsync = Plugin( async ( app: FastifyInstance ) => {
-      app.addHook( 'onRequest', async req => {
+      app.addHook('onRequest', async req => {
         req.pumpStream = async ( input, output ) => { await pump( input as any, output as any ) }
       } )
     } )
@@ -82,7 +82,7 @@ export default class FastifyAssetsPlugin {
           })
         })
 
-        this.app.decorate('storage', storage.Space )
+        this.app.attach('storage', storage.Space )
       } break
       case 'local':
       default: {
@@ -91,7 +91,7 @@ export default class FastifyAssetsPlugin {
     }
   }
 
-  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<FastifyInstance>, assetConfig: AssetConfig ){
+  constructor( Setup: SetupManager, app: ApplicationPlugin<FastifyInstance>, assetConfig: AssetConfig ){
     this.setup = Setup
     this.app = app
 

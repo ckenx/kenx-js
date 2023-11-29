@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.6",
+    "@ckenx/node": "*",
     "connect-redis": "^7.1.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",

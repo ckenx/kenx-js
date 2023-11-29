@@ -2,7 +2,7 @@ import type { Db } from 'mongodb'
 
 declare module Express {
   interface Application {
-    mongodb: Db
+    db: Db
   }
   interface Request {
     files: any
@@ -12,7 +12,7 @@ declare module Express {
 
 declare module 'fastify' {
   interface FastifyInstance {
-    mongodb: Db
+    db: Db
     storage: any
   }
   interface FastifyRequest {

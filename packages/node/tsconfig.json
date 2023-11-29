@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "declaration": true,
+    "declarationMap": true,
     "baseUrl": "src",
     "paths": {
       "#types/*": ["types/*"],

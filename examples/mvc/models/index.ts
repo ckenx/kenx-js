@@ -1,5 +1,5 @@
 import type { Collection } from 'mongodb'
-import type { Kenx } from '#types/resource'
+import type { DatabasePlugin } from '../../../packages/node/dist/types'
 
 type UserQuery = {
   email: string
@@ -9,7 +9,7 @@ async function getUser( collection: Collection, query: UserQuery ){
   return await collection.findOne( query, { projection: { _id: 0 } })
 }
 
-export default ( databases: { [index: string]: Kenx.DatabasePlugin<any> } ) => {
+export default ( databases: { [index: string]: DatabasePlugin<any> } ) => {
   if( !databases ) return
 
   const

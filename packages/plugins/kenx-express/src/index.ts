@@ -1,14 +1,15 @@
-import type { Kenx } from '@ckenx/node'
+import type { ServerPlugin, ApplicationPlugin, SetupManager, HTTPServer } from '@ckenx/node'
 import type { Config, SessionConfig, AssetConfig, RoutingConfig } from './types'
 import type { NextFunction, Request, Response, Application } from 'express'
+import EventEmitter from 'events'
 import { Router } from 'express'
 import __init__ from './init'
 
-export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application> {
+export default class ExpressPlugin extends EventEmitter implements ApplicationPlugin<Application> {
   readonly HOST: string
   readonly PORT: number
   readonly core: Application
-  private readonly Setup: Kenx.SetupManager
+  private readonly Setup: SetupManager
 
   private AUTO_HANDLE_ERROR = true
 
@@ -33,7 +34,14 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
     new Plugin( this.Setup, this, config )
   }
 
-  constructor( Setup: Kenx.SetupManager, config: Config ){
+  private eventListeners(){
+    this.core
+    .use( ( ...args ) => this.emit('request', ...args ) )
+  }
+
+  constructor( Setup: SetupManager, config: Config ){
+    super()
+
     this.HOST = config.HOST
     this.PORT = config.PORT
 
@@ -64,34 +72,37 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
      * Initialize routing features
      */
     this.useRoute( config.application?.routing )
+
+    /**
+     * Setup on-* event listener & trigger
+     */
+    this.eventListeners()
   }
 
-  register( middleware: any ){
-    this.core.use( middleware )
+  register( fn: any, options?: unknown ){
+    // This.core.use( middleware )
     return this
   }
 
-  decorate( attribute: string, value: any ){
+  use( fn: any, type?: string ){
+    switch( type ) {
+      case 'middleware':
+      default: this.core.use( fn )
+    }
+
+    return this
+  }
+
+  attach( attribute: string, value: any ){
     this.core[ attribute ] = value
     return this
   }
 
-  addRouter( prefix: string, fn: any ){
+  router( prefix: string, fn: any ){
     const router = Router()
     fn( router )
 
     this.core.use( prefix, router )
-    return this
-  }
-
-  addHandler( type: string, func: any ){
-    /*
-     * Switch( type ){
-     *   case 'middleware':
-     *   default: this.core.use( func )
-     * }
-     */
-
     return this
   }
 
@@ -128,7 +139,7 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
     return this
   }
 
-  async serve( overhead?: boolean ): Promise<Kenx.ServerPlugin<Kenx.HTTPServer>>{
+  async serve( overhead?: boolean ): Promise<ServerPlugin<HTTPServer>>{
     // Automatically handle application errors occurence
     overhead
     && this.AUTO_HANDLE_ERROR
@@ -139,9 +150,11 @@ export default class ExpressPlugin implements Kenx.ApplicationPlugin<Application
 
     const
     HttpServer = await this.Setup.importPlugin('server:http'),
-    server: Kenx.ServerPlugin<Kenx.HTTPServer> = new HttpServer( this.Setup, this )
+    server: ServerPlugin<HTTPServer> = new HttpServer( this.Setup, this )
 
     await server.listen({ PORT: this.PORT, HOST: this.HOST })
+    this.emit('ready', server )
+
     return server
   }
 }

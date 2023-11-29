@@ -1,13 +1,12 @@
-import type { DatabaseConfig } from '../../../../../packages/node/src/types'
-import type { Kenx } from '../../../../../packages/node/src/types/resource'
+import type { DatabasePlugin, SetupManager, DatabaseConfig } from '../../../../../packages/node/src/types'
 import { RedisClientOptions, RedisClientType, createClient } from 'redis'
 
-export default class RedisPugin implements Kenx.DatabasePlugin<any> {
+export default class RedisPugin implements DatabasePlugin<any> {
   private client?: RedisClientType
   private readonly config: RedisClientOptions
   connection?: any
 
-  constructor( Setup: Kenx.SetupManager, config: DatabaseConfig ){
+  constructor( Setup: SetupManager, config: DatabaseConfig ){
     if( config.uri )
       this.config = { url: config.uri }
 

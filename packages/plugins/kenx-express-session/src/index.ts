@@ -1,4 +1,4 @@
-import type { Kenx } from '@ckenx/node'
+import type { ApplicationPlugin, SetupManager } from '@ckenx/node'
 import type { Application } from 'express'
 import type { SessionConfig, SessionStore } from './types'
 import { createClient } from 'redis'
@@ -7,14 +7,14 @@ import RedisStore from 'connect-redis'
 import Session, { SessionOptions } from 'express-session'
 
 export default class ExpressSessionPlugin {
-  private readonly setup: Kenx.SetupManager
-  private readonly app: Kenx.ApplicationPlugin<Application>
+  private readonly setup: SetupManager
+  private readonly app: ApplicationPlugin<Application>
 
   private addInMemory( options: SessionOptions ){
     // Cookie-parser is required in development mode
     this.app
-    .register( Cookie(`${options.secret}-<TEMPFIX>`) )
-    .register( Session( options ) )
+    .use( Cookie(`${options.secret}-<TEMPFIX>`) )
+    .use( Session( options ) )
   }
 
   /**
@@ -43,10 +43,10 @@ export default class ExpressSessionPlugin {
       saveUninitialized: false, // Recommended: only save session when data exists
     })
 
-    this.app.register( handler )
+    this.app.use( handler )
   }
 
-  constructor( Setup: Kenx.SetupManager, app: Kenx.ApplicationPlugin<Application>, sessionConfig: SessionConfig ){
+  constructor( Setup: SetupManager, app: ApplicationPlugin<Application>, sessionConfig: SessionConfig ){
     this.setup = Setup
     this.app = app
 

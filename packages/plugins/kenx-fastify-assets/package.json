@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
-    "@ckenx/node": "^0.0.6",
+    "@ckenx/node": "*",
     "@fastify/multipart": "^8.0.0",
     "globe-sdk": "^1.1.5"
   },

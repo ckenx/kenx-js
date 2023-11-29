@@ -1,4 +1,3 @@
-import hpp from 'hpp'
 import Fastify from 'fastify'
 import Helmet from '@fastify/helmet'
 import FormBody from '@fastify/formbody'
@@ -29,8 +28,10 @@ export default () => {
 
   // Set basic security headers.
   .register( Helmet, {
-    // Example disables the `contentSecurityPolicy` middleware but keeps the rest.
-    contentSecurityPolicy: false
+    /*
+     * Example disables the `contentSecurityPolicy` middleware but keeps the rest.
+     * contentSecurityPolicy: false
+     */
   } )
 
   /*

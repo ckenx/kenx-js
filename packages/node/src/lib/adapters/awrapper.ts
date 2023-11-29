@@ -1,4 +1,4 @@
-import type { Kenx } from '#root/index'
+import type { ApplicationPlugin } from '#types/index'
 
 type RequestMethod = 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE' | 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -55,9 +55,9 @@ class Route {
 }
 
 export class Wrapper {
-  private app: Kenx.ApplicationPlugin<any>
+  private app: ApplicationPlugin<any>
 
-  constructor( app: Kenx.ApplicationPlugin<any> ){
+  constructor( app: ApplicationPlugin<any> ){
     this.app = app
   }
 

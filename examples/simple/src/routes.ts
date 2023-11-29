@@ -1,4 +1,3 @@
-import { Router } from 'express'
 import { FastifyInstance } from 'fastify'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -14,7 +13,7 @@ export default async ( app: FastifyInstance ) => {
   .get('/user/:email', async ( req, res ) => {
     const
     { email }: any = req.params,
-    users = app.mongodb.collection('users'),
+    users = app.db.collection('users'),
     user = await users.findOne({ email }, { projection: { _id: 0 } })
 
     res.send( user )

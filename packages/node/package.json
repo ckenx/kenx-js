@@ -3,16 +3,24 @@
   "version": "0.0.7",
   "description": "Kenx framework for NodeJS",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "typings": "dist/types/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "types/*": [ "dist/types/*" ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com:ckenx/kenx-js.git",
     "directory": "packages/node"
   },
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "compile": "rimraf ./dist && tsc && tsc-alias",
+    "compile": "rimraf ./dist && tsc && tsc-alias && api-extractor run --local --verbose",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "test": "yarn compile && yarn test:types && yarn test:unit",
