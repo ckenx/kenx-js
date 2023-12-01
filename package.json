@@ -27,7 +27,7 @@
     "test:examples:complex": "cross-env COMPLEX=true jest --config ./test/jest.examples.config.js --verbose --no-cache -t complex"
   },
   "dependencies": {
-    "execa": "5.0.0",
+    "execa": "8.0.1",
     "fs-extra": "^11.1.1"
   },
   "devDependencies": {
