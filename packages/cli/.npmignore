@@ -1,6 +1,5 @@
 node_modules
 test
-src
 yarn-error.log
 tsconfig.json
 mediafile.*

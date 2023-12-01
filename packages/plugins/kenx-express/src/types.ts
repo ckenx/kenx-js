@@ -13,6 +13,7 @@ export type ApplicationConfig = {
 export type Config = {
   HOST: string
   PORT: number
+  plugin?: string
   application?: ApplicationConfig
 }
 

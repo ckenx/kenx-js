@@ -36,8 +36,8 @@ export default class FastifyPlugin extends EventEmitter implements ApplicationPl
 
   private eventListeners(){
     this.core
-    .addHook('onRequest', ( ...args ) => this.emit('request', ...args ) )
-    .addHook('onReady', ( ...args ) => this.emit('ready', ...args ) )
+    .addHook('onRequest', async ( req, rep ) => this.emit('request', req, rep ) )
+    .addHook('onReady', async () => this.emit('ready') )
   }
 
   constructor( Setup: SetupManager, config: Config ){

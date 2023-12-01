@@ -5,7 +5,7 @@ import routes from './routes'
 
 // Export const takeover = ['http', 'socketio', 'database:*']
 
-export default ( http: ServerPlugin<http.Server>, io: io.Server, databases: { [index: string]: DatabasePlugin<any> } ) => {
+export default async ( http: ServerPlugin<http.Server>, io: io.Server, databases: { [index: string]: DatabasePlugin<any> } ) => {
   if( !http ) return
 
   const { app } = http
@@ -50,5 +50,5 @@ export default ( http: ServerPlugin<http.Server>, io: io.Server, databases: { [i
     res.status(500).send( error )
   })
 
-  http.listen( true )
+  await http.listen( true )
 }

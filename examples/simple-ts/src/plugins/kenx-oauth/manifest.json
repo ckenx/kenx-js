@@ -1,0 +1,13 @@
+{
+  "extensible": true,
+  "config": [
+    {
+      "file": "./.config/security.yml",
+      "namespace": "security"
+    },
+    {
+      "file": "./.config/oauth.yml"
+    }
+  ],
+  "dir": "./package"
+}

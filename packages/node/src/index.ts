@@ -172,15 +172,21 @@ function getResource( arg: string | string[] ){
 
 async function toSingleton( takeover?: string[] ){
   try {
-    const
-    entrypoint = await Setup.importModule('./', true )
+    let entrypoint = await Setup.importModule('./', true )
     if( !entrypoint )
       throw new Error('No entrypoint file found')
+
+    // Regular JS import module object structure
+    if( typeof entrypoint.default === 'object' )
+      entrypoint = entrypoint.default
 
     // Run plain script
     if( typeof entrypoint.default !== 'function' ) return
 
-    takeover = takeover || entrypoint.takeover
+    takeover = Array.isArray( entrypoint.takeover )
+                && entrypoint.takeover.length ?
+                                  entrypoint.takeover // First option: Entrypoint takeover
+                                  : takeover // Second option: Autorun takeover
 
     if( !Array.isArray( takeover ) )
       throw new Error('No entrypoint <takeover> export')

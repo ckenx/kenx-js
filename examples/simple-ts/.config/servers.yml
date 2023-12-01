@@ -1,0 +1,32 @@
+# Application servers configuration
+servers:
+  # HTTP server configurations
+  - type: 'http'
+    plugin: '@ckenx/kenx-http'
+    key: 'default' # Optional value
+    HOST: 0.0.0.0
+    PORT: '[env]:PORT'
+    application: '[frameworks]:fastify-app'
+  
+  # Socket.io server configurations
+  - type: 'socketio'
+    plugin: '@ckenx/kenx-socketio'
+    bindTo: 'http:default'
+    adapter: '[databases]:redis-db'
+    options:
+      cookie: false
+      allowEIO3: true
+      serveClient: true
+      connectTimeout: 15000
+  
+  # Vite server configurations
+  - type: 'vite'
+    plugin: '@ckenx/kenx-vite'
+    PORT: 8000
+    # bindTo: 'http:default'
+    # adapter: '[databases]:redis-db'
+    # options:
+    #   cookie: false
+    #   allowEIO3: true
+    #   serveClient: true
+    #   connectTimeout: 15000

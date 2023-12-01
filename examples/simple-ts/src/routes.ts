@@ -77,27 +77,21 @@ export default async ( app: FastifyInstance ) => {
       </html>
     `)
   })
-  /*
-   * Test handle upload and storage of assets
-   * .post('/upload/to', async ( req, res ) => {
-   *   if ( !req.isMultipart() )
-   *     return res.code(400).send( new Error('Request is not multipart') )
-   */
 
-  //   Const files = await req.files()
+  // Test handle upload and storage of assets
+  .post('/upload/to', async ( req, res ) => {
+      if ( !req.isMultipart() )
+        return res.code(400).send( new Error('Request is not multipart') )
 
-  /*
-   *   For await ( const each of files ){
-   *     console.log( each.filename )
-   *     // Store file in ./public folder
-   *     await req.pumpStream( each.file, fs.createWriteStream( path.resolve( __dirname, `./public/${each.filename}` )) )
-   *     // Or Store file on cloud space storage
-   *     await req.pumpStream( each.file, await app.storage().stream.to(`chenx/${each.filename}`) )
-   *   }
-   */
+    const files = await req.files()
+    for await ( const each of files ) {
+      console.log( each.filename )
+      // Store file in ./public folder
+      await req.pumpStream( each.file, fs.createWriteStream( path.resolve( __dirname, `./public/${each.filename}` )) )
+      // Or Store file on cloud space storage
+      await req.pumpStream( each.file, await app.storage().stream.to(`chenx/${each.filename}`) )
+    }
 
-  /*
-   *   Return res.send('Uploaded successfully!')
-   * })
-   */
+    return res.send('Uploaded successfully!')
+  })
 }

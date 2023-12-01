@@ -11,7 +11,7 @@ databases:
 
   # Or user connection parameters
   - type: 'mysql'
-    plugin: '@mysql'
+    plugin: 'mysql-orm'
     key: 'mysql-db'
     options:
       host: 'localhost'

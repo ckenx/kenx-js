@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.takeover = void 0;
+
 /**
  * List of resources to takeover.
  *
@@ -11,7 +9,8 @@ exports.takeover = void 0;
  * takeover resource definition.
  *
  */
-exports.takeover = [ /* Resources list in String */];
+exports.takeover = [/* Resources list in String */]
+
 /**
  * Primary entrypoint function.
  *
@@ -19,6 +18,6 @@ exports.takeover = [ /* Resources list in String */];
  * in the `.config` are mounted and/or started
  *
  */
-exports.default = (function ( /* Takeover resources arguments respectively listed */) {
-    // Now, do whatever you wish
-});
+exports.default = (/* Takeover resources arguments respectively listed */) => {
+  // Now, do whatever you wish
+}

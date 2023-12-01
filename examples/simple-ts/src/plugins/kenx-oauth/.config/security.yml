@@ -1,0 +1,6 @@
+
+- type: 'auth'
+  method: 'SSO'
+  key: 'sso-auth'
+  plugin: '@oauth'
+  enable: true

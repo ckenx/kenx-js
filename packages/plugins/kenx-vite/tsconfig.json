@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "outDir": "build",
+    "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "allowJs": true,
@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "declaration": true
   }
 }

@@ -1,4 +1,4 @@
-import type { DatabasePlugin, SetupManager, DatabaseConfig } from '../../../../../packages/node/src/types'
+import type { DatabasePlugin, SetupManager, DatabaseConfig } from '@ckenx/node'
 import { RedisClientOptions, RedisClientType, createClient } from 'redis'
 
 export default class RedisPugin implements DatabasePlugin<any> {

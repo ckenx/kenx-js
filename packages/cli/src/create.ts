@@ -62,6 +62,7 @@ export const execute = async ( options: CreateAppOptions ): Promise<void> => {
     }
 
     // Create project template directory
+    console.log( clc.gray('-- Creating project ...') )
     await cp('-R', path.join( __dirname, `../templates/create-${options.template}-app`), options.directory )
 
     /*
@@ -72,6 +73,7 @@ export const execute = async ( options: CreateAppOptions ): Promise<void> => {
      */
 
     // Install package dependencies
+    console.log( clc.gray('-- Installing dependency packages ...') )
     await exec('npm install', { cwd: options.directory })
 
     // Create app completed

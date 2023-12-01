@@ -1,0 +1,23 @@
+{
+  "name": "kenx-app",
+  "version": "1.0.0",
+  "description": "Kenx web application for NodeJS",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ckenx build",
+    "dev": "ckenx run --dev",
+    "start": "ckenx run --prod",
+    "start:alt": "NODE_ENV=production node autorun"
+  },
+  "dependencies": {
+    "@ckenx/kenx-express": "*",
+    "@ckenx/kenx-fastify": "*",
+    "@ckenx/kenx-fastify-assets": "*",
+    "@ckenx/kenx-fastify-session": "*",
+    "@ckenx/kenx-http": "*",
+    "@ckenx/kenx-mongodb": "*",
+    "@ckenx/kenx-mysql": "*",
+    "@ckenx/kenx-routing": "*",
+    "@ckenx/kenx-socketio": "*"
+  }
+}

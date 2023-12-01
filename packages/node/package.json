@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/node",
-  "version": "0.0.8",
+  "version": "0.0.11",
   "description": "Kenx framework for NodeJS",
   "main": "dist/index.js",
   "typings": "dist/types/index.d.ts",
@@ -22,7 +22,8 @@
   "author": "Fabrice Marlboro <fabrice.xyclone@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "compile": "rimraf ./dist && tsc && tsc-alias && api-extractor run --local --verbose",
+    "compile": "rimraf ./dist && tsc && tsc-alias",
+    "compile:types": "api-extractor run --local --verbose",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "test": "yarn compile && yarn test:types && yarn test:unit",

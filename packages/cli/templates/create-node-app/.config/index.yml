@@ -13,7 +13,7 @@ directory:
   # - `mvc`: Model View Controller
   pattern: '-'
 
-# Automatically injects dependencies in your resources
+# Automatically injects dependencies in your services
 autowire: true
 
 # Additional configurations

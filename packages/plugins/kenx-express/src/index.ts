@@ -10,6 +10,7 @@ export default class ExpressPlugin extends EventEmitter implements ApplicationPl
   readonly PORT: number
   readonly core: Application
   private readonly Setup: SetupManager
+  private readonly HTTPServerPlugin: string
 
   private AUTO_HANDLE_ERROR = true
 
@@ -36,7 +37,10 @@ export default class ExpressPlugin extends EventEmitter implements ApplicationPl
 
   private eventListeners(){
     this.core
-    .use( ( ...args ) => this.emit('request', ...args ) )
+    .use( ( req, res, next ) => {
+      this.emit('request', req, res )
+      next()
+    } )
   }
 
   constructor( Setup: SetupManager, config: Config ){
@@ -44,6 +48,7 @@ export default class ExpressPlugin extends EventEmitter implements ApplicationPl
 
     this.HOST = config.HOST
     this.PORT = config.PORT
+    this.HTTPServerPlugin = config.plugin || '@ckenx/kenx-http'
 
     if( !this.HOST || !this.PORT )
       throw new Error('Invalid configuration. Expecting <HOST>, <PORT>, <application>, ...')
@@ -149,7 +154,7 @@ export default class ExpressPlugin extends EventEmitter implements ApplicationPl
       throw new Error('Undefined Kenx Utils object supply')
 
     const
-    HttpServer = await this.Setup.importPlugin('server:http'),
+    HttpServer = await this.Setup.importPlugin( this.HTTPServerPlugin ),
     server: ServerPlugin<HTTPServer> = new HttpServer( this.Setup, this )
 
     await server.listen({ PORT: this.PORT, HOST: this.HOST })

@@ -15,3 +15,9 @@ To create a project called my-app, run this command:
 ```bash
 npx ckenx create --node my-app
 ```
+
+To use the latest `ckenx` cli run the command with `@latest` tag
+
+```bash
+npx ckenx@latest create --node my-app
+```

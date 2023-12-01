@@ -1,5 +1,5 @@
 {
-  "name": "kenx-app",
+  "name": "kenx-node-app",
   "version": "1.0.0",
   "description": "Kenx web application for NodeJS",
   "main": "dist/index.js",
@@ -9,8 +9,10 @@
     "start": "ckenx run --prod",
     "start:alt": "NODE_ENV=production node autorun"
   },
-  "devDependencies": {},
   "dependencies": {
-    "@ckenx/node": "^0.0.6"
+    "@ckenx/node": "*"
+  },
+  "devDependencies": {
+    "ckenx": "*"
   }
 }

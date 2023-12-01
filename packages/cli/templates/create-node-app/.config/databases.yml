@@ -1,17 +1,17 @@
 # Databases configuration
 databases:
-  # Use on a connection string
+  # # Use on a connection string
   # - type: 'mongodb'
-  #   plugin: '@mongodb'
+  #   plugin: '@ckenx/kenx-mongodb'
   #   key: 'default'
   #   # Automatically connect the database during 
   #   # the project deployment.
   #   autoconnect: true
   #   uri: 'mongodb://127.0.0.1:27017/Temp'
 
-  # Or user connection parameters
+  # # Or user connection parameters
   # - type: 'mysql'
-  #   plugin: '@mysql'
+  #   plugin: '@ckenx/kenx-mysql'
   #   key: 'mysql-db'
   #   options:
   #     host: 'localhost'
@@ -41,8 +41,8 @@ databases:
   #       enableKeepAlive: true
   #       keepAliveInitialDelay: 0
       
-  # Use on a connection string
+  # # Use on a connection string
   # - type: 'redis'
-  #   plugin: '@redis'
+  #   plugin: '@ckenx/kenx-redis'
   #   key: 'redis-db'
   #   uri: 'redis://121.0.0.1:25061'
