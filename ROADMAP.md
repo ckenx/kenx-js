@@ -1,20 +1,20 @@
 
 ### Development roadmap
 
-- [ ] Project
-  - [ ] Architecture & Components
-  - [ ] Command line Interface
-  - [ ] Generate project commands
+- [x] Project
+  - [x] Architecture & Components
+  - [x] Command line Interface
+  - [x] Generate project commands
 - [ ] Environment
   - [x] `.env` file strategy
   - [ ] `package.json` addon fields
   - [ ] Linting configuration
   - [x] Runtime dependencies
   - [x] Programming language support
+    - [x] Javascript support
     - [x] Typescript support
       - [x] `tsconfig.json` configuration
       - [x] Alias directory path & import support
-      - [x] Kenx namespace
       - [x] Kenx @types
   - [ ] Debugger
 - [x] Setup Configuration
@@ -28,11 +28,11 @@
     - [x] Singleton - Single entrypoint
     - [x] Model View Controller (MVC) pattern
   - [x] Import plugin handler
-- [ ] Core
-  - [ ] Boilerplate creator
-    - [ ] Runtime based dependencies loader
+- [x] Core
+  - [x] Boilerplate creator
+    - [x] Runtime based dependencies loader
     - [x] Services autoloader
-    - [x] Services dispatcher
+    - [x] Resources dispatcher
 - [ ] Adapters
   - [ ] SRIB - Singular Runtime Interface Bridge
     - [ ] Global properties
@@ -94,8 +94,8 @@
     - [ ] Design framework integration
     - [ ] UI component & flow Testor
 - [ ] Plugins
-  - [x] In-build directory structure, grouping rules & guidelines - From `./src/plugins` folder
-  - [ ] External installation from NPM - from `./node_modules` folder
+  - [x] Grouping rules & guidelines - From project's base folder: Eg. `./src/plugins`
+  - [x] External installation from NPM - from `./node_modules` folder
   - [x] Import strategy
   - [ ] In-Build
     - [x] HTTP Server
@@ -124,7 +124,7 @@
 - [ ] UI Development Kit
   - [ ] Plugin support
   - [ ] Error Profiler
-  - [ ] UI Builder Sandbox
+  - [ ] UI Builder Sandbox: Modela
     - [ ] Custom styles, Fonts & theme generator
     - [ ] UI components & pages designer
     - [ ] Reusable widgets/view & templates
