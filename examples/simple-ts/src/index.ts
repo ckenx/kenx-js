@@ -1,7 +1,7 @@
 import type { ServerPlugin, DatabasePlugin } from '../../../packages/node/dist/types'
 import type http from 'http'
 import type io from 'socket.io'
-import routes from './routes'
+import routes from '#routes/index'
 
 // Export const takeover = ['http', 'socketio', 'database:*']
 
@@ -36,7 +36,6 @@ export default async ( http: ServerPlugin<http.Server>, io: io.Server, databases
   // Add fastify middleware
   .use( async ( req: any, res: any ) => {
     console.log('-- Middleware --')
-
     // Test session
     req.session.name = 'Bob'
   })

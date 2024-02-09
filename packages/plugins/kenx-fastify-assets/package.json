@@ -1,6 +1,6 @@
 {
   "name": "@ckenx/kenx-fastify-assets",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Kenx fastify framework assets management plugin",
   "main": "dist/index.js",
   "scripts": {
@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@fastify/multipart": "^8.0.0",
+    "@fastify/static": "^7.0.1",
+    "fastify-plugin": "^4.5.1",
     "globe-sdk": "^1.1.5"
   },
   "devDependencies": {

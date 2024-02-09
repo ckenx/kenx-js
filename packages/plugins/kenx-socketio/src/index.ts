@@ -1,5 +1,6 @@
 
 import type { ServerPlugin, HTTPServer, SetupManager, ActiveServerInfo } from '@ckenx/node'
+import type { Config } from './types'
 import { Server, ServerOptions } from 'socket.io'
 
 export default class SocketIOServer implements ServerPlugin<Server> {
@@ -38,16 +39,19 @@ export default class SocketIOServer implements ServerPlugin<Server> {
      */
   }
 
-  listen( arg: number | HTTPServer ): Promise<ActiveServerInfo | null>{
+  listen( arg: ServerPlugin<HTTPServer> | any ): Promise<ActiveServerInfo | null>{
     return new Promise( ( resolve, reject ) => {
       if( !this.server )
         return reject('No Socket.io Server')
 
-      this.server.attach( arg )
-
-      if( typeof arg == 'number' ) this.info.port = arg
+      if( typeof arg == 'object' && arg.PORT ) {
+        this.server.attach( Number( arg.PORT as number ) )
+        this.info.port = arg.PORT
+      }
       else {
-        const address = arg.address()
+        this.server.attach( arg.server as HTTPServer )
+
+        const address = arg.server.address()
         typeof address !== 'string' ?
                   this.info = { ...this.info, ...address }
                   : this.info.port = Number( address )

@@ -5,8 +5,8 @@ servers:
     plugin: '@ckenx/kenx-http'
     key: 'default' # Optional value
     HOST: 0.0.0.0
-    PORT: '[env]:PORT'
-    application: '[frameworks]:fastify-app'
+    PORT: '[env]:HTTP_PORT'
+    application: '[frameworks]:express-app'
   
   # Socket.io server configurations
   - type: 'socketio'
@@ -22,11 +22,10 @@ servers:
   # Vite server configurations
   - type: 'vite'
     plugin: '@ckenx/kenx-vite'
-    PORT: 8000
+    HOST: 0.0.0.0
+    PORT: '[env]:VITE_PORT'
     # bindTo: 'http:default'
-    # adapter: '[databases]:redis-db'
-    # options:
-    #   cookie: false
-    #   allowEIO3: true
-    #   serveClient: true
-    #   connectTimeout: 15000
+    builder: true
+    options:
+      root: './src/views'
+      appType: 'custom' # spa, mpa, custom

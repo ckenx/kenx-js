@@ -819,7 +819,7 @@
     morgan "^1.10.0"
 
 "@ckenx/kenx-fastify-assets@file:/Users/fabricemarlboro/dev-pro/Scorex/Ckenx/kenx-js/packages/plugins/kenx-fastify-assets":
-  version "0.0.4"
+  version "0.0.5"
   resolved "file:packages/plugins/kenx-fastify-assets"
   dependencies:
     "@fastify/multipart" "^8.0.0"
@@ -867,7 +867,7 @@
   resolved "file:packages/plugins/kenx-routing"
 
 "@ckenx/kenx-socketio@file:/Users/fabricemarlboro/dev-pro/Scorex/Ckenx/kenx-js/packages/plugins/kenx-socketio":
-  version "0.0.5"
+  version "0.0.6"
   resolved "file:packages/plugins/kenx-socketio"
   dependencies:
     "@socket.io/redis-adapter" "^8.2.1"
@@ -880,13 +880,14 @@
     vite "^5.0.4"
 
 "@ckenx/node@*", "@ckenx/node@file:/Users/fabricemarlboro/dev-pro/Scorex/Ckenx/kenx-js/packages/node":
-  version "0.0.11"
+  version "0.0.15"
   resolved "file:packages/node"
   dependencies:
     dotenv "^16.3.1"
     execa "5.0.0"
     fs-extra "^11.1.1"
     shelljs "^0.8.5"
+    tsc-alias "^1.8.8"
     tsc-prog "^2.3.0"
     yaml "^2.3.4"
 
@@ -1033,6 +1034,18 @@
     fastify-plugin "^4.0.0"
     glob "^8.0.1"
     p-limit "^3.1.0"
+
+"@fastify/static@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.npmjs.org/@fastify/static/-/static-7.0.1.tgz"
+  integrity sha512-i1p/nELMknAisNfnjo7yhfoUOdKzA+n92QaMirv2NkZrJ1Wl12v2nyTYlDwPN8XoStMBAnRK/Kx6zKmfrXUPXw==
+  dependencies:
+    "@fastify/accept-negotiator" "^1.0.0"
+    "@fastify/send" "^2.0.0"
+    content-disposition "^0.5.3"
+    fastify-plugin "^4.0.0"
+    fastq "^1.17.0"
+    glob "^10.3.4"
 
 "@fastify/swagger-ui@^1.8.0":
   version "1.10.1"
@@ -4460,7 +4473,7 @@ fast-xml-parser@4.2.5:
   dependencies:
     strnum "^1.0.5"
 
-fastify-plugin@^4.0.0, fastify-plugin@^4.2.0, fastify-plugin@^4.2.1:
+fastify-plugin@^4.0.0, fastify-plugin@^4.2.0, fastify-plugin@^4.2.1, fastify-plugin@^4.5.1:
   version "4.5.1"
   resolved "https://registry.npmjs.org/fastify-plugin/-/fastify-plugin-4.5.1.tgz"
   integrity sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==
@@ -4487,10 +4500,10 @@ fastify@^4.24.3, fastify@^4.5.2:
     semver "^7.5.4"
     toad-cache "^3.3.0"
 
-fastq@^1.6.0, fastq@^1.6.1:
-  version "1.15.0"
-  resolved "https://registry.npmjs.org/fastq/-/fastq-1.15.0.tgz"
-  integrity sha512-wBrocU2LCXXa+lWBt8RoIRD89Fi8OdABODa/kEnyeyjS5aZO5/GNvI5sEINADqP/h8M29UHTHUb53sUu5Ihqdw==
+fastq@^1.17.0, fastq@^1.6.0, fastq@^1.6.1:
+  version "1.17.1"
+  resolved "https://registry.npmjs.org/fastq/-/fastq-1.17.1.tgz"
+  integrity sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==
   dependencies:
     reusify "^1.0.4"
 
@@ -4866,6 +4879,17 @@ glob-parent@^6.0.2:
     is-glob "^4.0.3"
 
 glob@^10.2.2:
+  version "10.3.10"
+  resolved "https://registry.npmjs.org/glob/-/glob-10.3.10.tgz"
+  integrity sha512-fa46+tv1Ak0UPK1TOy/pZrIybNNt4HCv7SDzwyfiOZkvZLEbjsZkJBPtDHVshZjbecAoAGSC20MjLDG/qr679g==
+  dependencies:
+    foreground-child "^3.1.0"
+    jackspeak "^2.3.5"
+    minimatch "^9.0.1"
+    minipass "^5.0.0 || ^6.0.2 || ^7.0.0"
+    path-scurry "^1.10.1"
+
+glob@^10.3.4:
   version "10.3.10"
   resolved "https://registry.npmjs.org/glob/-/glob-10.3.10.tgz"
   integrity sha512-fa46+tv1Ak0UPK1TOy/pZrIybNNt4HCv7SDzwyfiOZkvZLEbjsZkJBPtDHVshZjbecAoAGSC20MjLDG/qr679g==

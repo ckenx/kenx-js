@@ -3,6 +3,7 @@ import Yaml from 'yaml'
 import nodeFs from 'fs-extra'
 import { exec } from 'shelljs'
 import * as tsc from 'tsc-prog'
+import { replaceTscAliasPaths } from 'tsc-alias'
 import nodePath from 'node:path'
 import Context from '#lib/context'
 
@@ -49,25 +50,24 @@ export default class Setup {
         if( Array.isArray( value ) )
           return value.map( ( each: any ) => { return this.comply( each ) })
 
+        Object
+        .entries( value )
+        .map( ([ key, subValue ]) => {
+          /**
+           * Auto-collect plugin dependencies from
+           * the configuration, to be install before
+           * project build or run.
+           */
+          key == 'plugin'
+          && typeof subValue == 'string'
+          && !this.Plugins.includes( subValue )
+          && this.Plugins.push( subValue )
 
-          Object
-          .entries( value )
-          .map( ([ key, subValue ]) => {
-            /**
-             * Auto-collect plugin dependencies from
-             * the configuration, to be install before
-             * project build or run.
-             */
-            key == 'plugin'
-            && typeof subValue == 'string'
-            && !this.Plugins.includes( subValue )
-            && this.Plugins.push( subValue )
+          // Resolve references
+          value[ key ] = this.comply( subValue )
+        })
 
-            // Resolve references
-            value[ key ] = this.comply( subValue )
-          } )
-          return value
-
+        return value
       }
     }
   }
@@ -84,6 +84,7 @@ export default class Setup {
      * throughout partials configurations
      */
     this.comply( this.Config )
+    // console.log( JSON.stringify( this.Config, null, '\t' ) )
 
     /**
      * Define project directory structure
@@ -112,7 +113,7 @@ export default class Setup {
      */
     if( this.Plugins.length )
       try {
-        console.log('Installing dependency plugins ...')
+        console.log('Checking dependency plugins ...')
 
         const packageJson = await this.Fs.readJSON('package.json')
         if( !packageJson )
@@ -120,7 +121,10 @@ export default class Setup {
 
         // Install missing dependency packages
         const deps = this.Plugins.filter( each => { return !packageJson.dependencies[ each ] } )
-        deps.length && await exec(`npm install ${deps.join(' ')}`)
+        if( deps.length ) {
+          console.log('Installing dependency plugins ...')
+          await exec(`npm install ${deps.join(' ')}`)
+        }
       }
       catch( error ) {
         console.error( error )
@@ -138,6 +142,12 @@ export default class Setup {
      */
     if( this.Config?.typescript )
       try {
+        /**
+         * Build TypeScript activated projects programmatically.
+         *
+         * IMPORTANT: Less suited for development builds so look out
+         * for an alternative in the next versions.
+         */
         tsc.build({
           basePath: process.cwd(),
           configFilePath: 'tsconfig.json', // Inherited config (optional)
@@ -153,6 +163,20 @@ export default class Setup {
           },
           include: ['src/**/*'],
           exclude: ['**/*.test.ts', '**/*.spec.ts'],
+        })
+
+        /**
+         * Replace alias paths with relative paths after
+         * typescript compilation.
+         *
+         * Note:
+         * Usefull when you add aliases that reference
+         * other projects outside your tsconfig.json project
+         * by providing a relative path to the baseUrl.
+         */
+        await replaceTscAliasPaths({
+          configFile: 'tsconfig.json',
+          verbose: true
         })
       }
       catch( error: any ) {

@@ -41,7 +41,7 @@ async function createHTTPServer( config: HTTPServerConfig ){
   if( config.application?.type ) {
     try {
       const
-      App = await Setup.importPlugin( config.application.plugin || `@${config.application?.type}` ),
+      App = await Setup.importPlugin( config.application.plugin ),
       instance: ApplicationPlugin<HTTPServer> = new App( Setup, config )
 
       return await instance.serve()
@@ -88,7 +88,7 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
      * - To HTTP Server with a given `key` or default
      * - To PORT
      */
-    const binder = bindTo ? RESOURCES[ bindTo ].server : config.PORT
+    const binder = bindTo ? RESOURCES[ bindTo ] : config
     if( !binder )
       throw new Error('Undefined BIND_TO or PORT configuration')
 
@@ -288,11 +288,11 @@ export default class Core {
 
   async autoload(): Promise<void>{
     /**
-     * Load Environment Variabales
+     * Load Environment Variables
      *
      */
     process.env.NODE_ENV == 'development' ?
-            dotenv.config({ path: `${process.cwd()}/.env.dev` }) // Load development specific environment variables
+            dotenv.config({ path: `${process.cwd()}/.env.local` }) // Load local environment variables
             : dotenv.config() // Load default .env variables
 
     /**
@@ -308,19 +308,18 @@ export default class Core {
      */
     if( Array.isArray( databases ) )
       for await ( const config of databases ) {
-        const { type, key } = config
         const database = await createResource( config as DatabaseConfig )
         if( !database ) {
-          console.error(`<${type} database> is not supported`)
+          console.error(`<${config.type} database> is not supported`)
           process.exit(1)
         }
 
-        RESOURCES[`database:${key || 'default'}`] = database
+        RESOURCES[`database:${config.key || 'default'}`] = database
 
         // Establish connection to the database during deployement
         config.autoconnect && await database.connect()
 
-        console.log(`<${type} database> ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
+        console.log(`<${config.type} database> ${config.autoconnect ? 'connected' : 'mounted'} \t[${config.uri || config.options?.host}]`)
       }
 
     /**

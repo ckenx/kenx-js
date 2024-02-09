@@ -1,9 +1,10 @@
-import type { CreateAppOptions, InstallPluginOptions, BuildAppOptions, RunAppOptions } from './types'
+import type { CreateAppOptions, InstallPluginOptions, UnInstallPluginOptions, BuildAppOptions, RunAppOptions } from './types'
 import arg from 'arg'
 import * as Run from './run'
 import * as Build from './build'
 import * as Create from './create'
 import * as Install from './install'
+import * as Uninstall from './uninstall'
 
 function parseArgs( rawArgs: string[] ){
   const
@@ -37,6 +38,16 @@ function parseArgs( rawArgs: string[] ){
     case 'install': {
       const options: InstallPluginOptions = {
         verb: 'install',
+        plugin: args._[1]
+      }
+
+      return options
+    }
+
+    // Uninstall plugin
+    case 'uninstall': {
+      const options: UnInstallPluginOptions = {
+        verb: 'uninstall',
         plugin: args._[1]
       }
 
@@ -127,6 +138,11 @@ export async function cli( args: string[] ){
     case 'install': {
       options = await Install.checkOptions( options )
       Install.execute( options )
+    } break
+
+    case 'uninstall': {
+      options = await Uninstall.checkOptions( options )
+      Uninstall.execute( options )
     } break
 
     case 'build': Build.execute( options ); break

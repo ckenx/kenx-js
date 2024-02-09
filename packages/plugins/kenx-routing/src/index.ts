@@ -19,7 +19,7 @@ export default class FastifyAPICompliancePlugin {
     .get('/health', async ( req, rep ) => rep.status(200).send('') )
     // Status
     .get('/status', async () => { return status || 'Unknown' } )
-    // Metrics by User-Agent
+    // Metrics by User-Agent & IP Address
     .get('/metrics', async () => {
       const { maxRPS } = config.ratelimit
 
@@ -76,6 +76,14 @@ export default class FastifyAPICompliancePlugin {
      * - Maintainer go to `/maintenance` page where an iframe version
      *   of the site is mounted, allowing them to operate with the site
      *   like in production mode but with development tools.
+     */
+
+    /**
+     * TODO: Live on site translation handler
+     *
+     * - Record current content of the current website page
+     * - Translate those to different supported languages & variants
+     * - Test the changes by switching between supported languages
      */
   }
 }

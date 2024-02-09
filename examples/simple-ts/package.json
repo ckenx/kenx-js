@@ -18,6 +18,7 @@
     "@ckenx/kenx-mongodb": "*",
     "@ckenx/kenx-mysql": "*",
     "@ckenx/kenx-routing": "*",
-    "@ckenx/kenx-socketio": "*"
+    "@ckenx/kenx-socketio": "*",
+    "@ckenx/kenx-vite": "*"
   }
 }

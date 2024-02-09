@@ -10,6 +10,11 @@ export type InstallPluginOptions = {
   plugin?: string
 }
 
+export type UnInstallPluginOptions = {
+  verb: 'uninstall'
+  plugin?: string
+}
+
 export type BuildAppOptions = {
   verb: 'build'
 }
