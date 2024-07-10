@@ -61,6 +61,6 @@
 		"space-in-parens": 0,
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "never"],
-		"space-before-blocks": ["error", { "functions": "never", "keywords": "always", "classes": "always" }]
+		// "space-before-blocks": ["error", { "functions": "never", "keywords": "always", "classes": "always" }]
 	}
 }

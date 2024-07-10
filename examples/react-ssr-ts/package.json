@@ -19,7 +19,13 @@
     "@ckenx/kenx-mysql": "*",
     "@ckenx/kenx-routing": "*",
     "@ckenx/kenx-socketio": "*",
-    "@ckenx/kenx-vite": "*"
+    "@ckenx/kenx-vite": "*",
+    "@vitejs/plugin-react": "^4.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0"
+  }
 }

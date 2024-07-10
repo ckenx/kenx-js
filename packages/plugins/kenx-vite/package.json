@@ -33,7 +33,11 @@
   },
   "homepage": "https://github.com/ckenx/kenx-js#README",
   "devDependencies": {
-    "@ckenx/node": "*"
+    "@ckenx/node": "*",
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^16.0.0",
+    "jsdom": "^24.1.0",
+    "vitest": "^2.0.1"
   },
   "dependencies": {
     "vite": "^5.0.4"

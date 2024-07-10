@@ -46,7 +46,18 @@ export default ( port: number ) => {
    *  - Propose best security practices configuration recommendation
    *
    */
-  .use( helmet() )
+  .use( helmet({
+    contentSecurityPolicy: {
+        directives: {
+            connectSrc: ["'self'", "'unsafe-inline'"],
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+            styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+            baseUri: ["'self'"],
+            fontSrc: ["'self'", 'https:', 'data:']
+        }
+    }
+  }) )
 
   /**
    * Request Params, Query & Body parser

@@ -45,38 +45,6 @@ servers:
         # 'happy-dom' or 'jsdom' for a DOM-like environment
         environment: 'jsdom'
         setupFiles:
-          - '../test/ui.test.ts'
-      # plugins:
-      #   # Provide support for legacy browsers the official 
-      #   # dependency is @vitejs/plugin-legacy
-      #   - imports:
-      #       legacy: @vitejs/plugin-legacy
-      #     script: |
-      #       legacy({
-      #         targets: ['defaults', 'not IE 11'],
-      #       })
-      #   # For compatibility with some Rollup plugins, it may be needed 
-      #   # to enforce the order of the plugin or only apply at build time. 
-      #   # This should be an implementation detail for Vite plugins. 
-      #   # You can enforce the position of a plugin with the enforce modifier:
-      #   #
-      #   # pre: invoke plugin before Vite core plugins
-      #   # default: invoke plugin after Vite core plugins
-      #   # post: invoke plugin after Vite build plugins
-      #   - imports:
-      #       legacy: @rollup/plugin-image
-      #     script: |
-      #       {
-      #         ...image(),
-      #         enforce: 'pre'
-      #       }
-      #   # In cases where a plugin needs to be conditionally applied 
-      #   # only during serve or build, use the apply property to only 
-      #   # invoke them during 'build' or 'serve'
-      #   - imports:
-      #       typescript2: 'rollup-plugin-typescript2'
-      #     script: |
-      #       {
-      #         ...typescript2(),
-      #         apply: 'build'
-      #       }
+          - ../test/ui.test.ts
+      plugins:
+        - vite.plugins

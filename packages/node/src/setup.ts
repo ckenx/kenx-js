@@ -40,7 +40,7 @@ export default class Setup {
     }
   }
 
-  private comply( value: any ): any{
+  private comply( value: any ): any {
     if( !value ) return value
 
     switch( typeof value ) {
@@ -142,6 +142,10 @@ export default class Setup {
      */
     if( this.Config?.typescript )
       try {
+        let hasTsConfig = false
+        try { hasTsConfig = (await this.Fs.readJSON('tsconfig.json')) !== null }
+        catch( error ) { console.warn('No custom `tsconfig.json`: Using default configuration') }
+
         /**
          * Build TypeScript activated projects programmatically.
          *
@@ -150,7 +154,7 @@ export default class Setup {
          */
         tsc.build({
           basePath: process.cwd(),
-          configFilePath: 'tsconfig.json', // Inherited config (optional)
+          configFilePath: hasTsConfig ? 'tsconfig.json' : undefined, // Inherited config (optional)
           clean: {
             outDir: true,
             declarationDir: true
@@ -173,8 +177,10 @@ export default class Setup {
          * Usefull when you add aliases that reference
          * other projects outside your tsconfig.json project
          * by providing a relative path to the baseUrl.
+         *
+         * Applies only when custom `tsconfig.json` defined
          */
-        await replaceTscAliasPaths({
+        hasTsConfig && await replaceTscAliasPaths({
           configFile: 'tsconfig.json',
           verbose: true
         })
