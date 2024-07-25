@@ -1,20 +1,65 @@
 import type { ServerPlugin, SetupManager, ActiveServerInfo, HTTPServer } from '@ckenx/node'
-import type { ServerOptions, UserConfig } from 'vite'
+import type { InlineConfig, PluginOption, ServerOptions, UserConfig } from 'vite'
 
 import dns from 'dns'
-import path from 'path'
+import path from 'node:path'
 import { spawn } from 'child_process'
-import { readFileSync } from 'fs-extra'
+import { copy, copyFile, cp, cpSync, readFileSync } from 'fs-extra'
+// import { fileURLToPath } from 'node:url'
 import { createServer, build, ViteDevServer } from 'vite'
+// import express from 'express'
+
+type ViteOptions = {
+  default?: UserConfig
+  development?: UserConfig
+  production?: UserConfig
+}
+type EnvMode = 'development' | 'production'
 
 export default class ViteServer implements ServerPlugin<ViteDevServer> {
   private readonly Setup: SetupManager
-  private readonly options: UserConfig
+  private readonly options: ViteOptions
+  private readonly userconfig: UserConfig
+  private plugins: PluginOption[] = []
   public server: any
 
-  constructor( Setup: SetupManager, options: UserConfig ){
+  constructor( Setup: SetupManager, options: ViteOptions ){
     this.Setup = Setup
     this.options = options
+
+    this.userconfig = this.getConfig()
+  }
+
+  /**
+   * Return vite configuration by environment mode
+   *
+   * - development
+   * - production
+   */
+  getConfig( mode?: EnvMode ){
+    /**
+     * Assemble `UserConfig` by environment mode configs
+     */
+    if( !mode )
+      mode = (process.env.NODE_ENV || 'development') as EnvMode
+
+    return { ...this.options.default, ...this.options[ mode ] }
+  }
+
+  /**
+   * Resolve vite's defined plugins
+   */
+  private async plugin( path: string | string[] ){
+    const load = async ( module: string ) => {
+      const list = (await this.Setup.importModule( module )).default
+      this.plugins = [ ...this.plugins, ...list ]
+    }
+
+    Array.isArray( path ) ?
+              await Promise.all( path.map( load ) )
+              : await load( path )
+
+    this.userconfig.plugins = this.plugins
   }
 
   async listen( arg: HTTPServer | any ): Promise<ActiveServerInfo | null>{
@@ -55,27 +100,15 @@ export default class ViteServer implements ServerPlugin<ViteDevServer> {
      */
     dns.setDefaultResultOrder('verbatim')
 
-    /**
-     * Resolve vite's defined plugins
-     */
-    const plugins = this.options.plugins as unknown as string[]
-    if( Array.isArray( plugins ) ) {
-      let resolvedPlugins: any[] = []
+    // Load plugins
+    await this.plugin( this.userconfig.plugins as unknown as string[] )
 
-      await Promise.all( plugins.map( async module => {
-        const list = (await this.Setup.importModule( module )).default
-        resolvedPlugins = [ ...resolvedPlugins, ...list ]
-      } ) )
-
-      this.options.plugins = resolvedPlugins
-    }
-
-    const serverOptions = {
+    const serverOptions: InlineConfig = {
       base: '/static/',
       root: '/src',
       publicDir: 'static',
       mode: process.env.NODE_ENV || 'development',
-      ...this.options,
+      ...this.userconfig,
       server: serverConfig,
 
       /**
@@ -87,22 +120,25 @@ export default class ViteServer implements ServerPlugin<ViteDevServer> {
        *  document.getElementById('foo').className = applyColor
        *  ```
        */
-      // css: {
-      //   modules: {
-      //     localsConvention: 'camelCase'
-      //   }
-      // }
+      css: {
+        modules: {
+          localsConvention: 'camelCase'
+        }
+      }
     }
     this.server = await createServer( serverOptions ) as ViteDevServer
 
-    // console.log('Server-config:', process.cwd(), this.options, serverConfig )
+    // console.log('Server-config:', process.cwd(), this.userconfig, serverConfig )
 
     // Use vite's connect instance as middleware
     if( isBound ) {
       arg.app.use( this.server.middlewares )
+      // arg.app.use( express.static( path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), 'dist/client' ), { index: false } ) )
       arg.app.use( ( req: any, res: any, next: any ) => {
         req.render = async ( url: string ) => {
           try {
+            const root = serverOptions.root || process.cwd()
+
             /**
              * 1. Read index.html
              *
@@ -126,15 +162,26 @@ export default class ViteServer implements ServerPlugin<ViteDevServer> {
              *
              * 5. Inject the app-rendered HTML into the template.
              */
+
+            // Production setup
+            if( process.env.NODE_ENV === 'production' ) {
+              const
+              template = readFileSync( path.resolve( root, 'index.html'), 'utf-8'),
+              { render } = await import(`${root}/server`)
+
+              return template.replace('<!--outlet-->', await render( url ) )
+            }
+
+            // Development mode
             const
-            template = await this.server.transformIndexHtml( url, readFileSync( path.resolve( serverOptions.root, 'index.html'), 'utf-8') ),
-            { render } = await this.server.ssrLoadModule(`${serverOptions.root}/server.tsx`)
+            template = await this.server.transformIndexHtml( url, readFileSync( path.resolve( root, 'index.html'), 'utf-8') ),
+            { render } = await this.server.ssrLoadModule(`${root}/server`)
 
             return template.replace('<!--outlet-->', await render( url ) )
           }
           catch( error ) {
             /**
-             * If an error is caught, let Vite fix the stack 
+             * If an error is caught, let Vite fix the stack
              * trace so it maps back to your actual source code.
              */
             this.server.ssrFixStacktrace( error )
@@ -164,12 +211,46 @@ export default class ViteServer implements ServerPlugin<ViteDevServer> {
   }
 
   async build(){
-    await build({
-      base: '/',
-      root: '/src',
+    // Build root folder
+    const
+    prodRoot = this.getConfig('production').root || '/dist',
+    devRoot = this.getConfig('development').root
+
+    console.log( path.resolve( devRoot as string ), path.resolve( prodRoot ) )
+    // Copy index.html to dist
+    devRoot && await copy( path.resolve( devRoot ), path.resolve( prodRoot ) )
+
+    // Load plugins
+    await this.plugin( this.userconfig.plugins as unknown as string[] )
+
+    const buildOptions: InlineConfig = {
+      root: prodRoot,
+      base: '/static/',
       publicDir: 'static',
-      ...this.options
-    })
+      ...this.userconfig,
+      build: {
+        outDir: path.resolve( process.cwd(), prodRoot ),
+        /**
+         * By default, Vite will empty the outDir on build if it is
+         * inside project root. It will emit a warning if outDir
+         * is outside of root to avoid accidentally removing important files.
+         */
+        emptyOutDir: true,
+        /**
+         * Produce SSR-oriented build. The value can be a string to
+         * directly specify the SSR entry, or true, which requires
+         * specifying the SSR entry via rollupOptions.input.
+         */
+        // ssr: path.resolve( root, 'index.html'),
+
+        // rollupOptions: {},
+      }
+    }
+
+    console.log( buildOptions )
+
+    try { await build( buildOptions ) }
+    catch( error ) { console.log('-- Build error: ', error ) }
   }
 
   /**

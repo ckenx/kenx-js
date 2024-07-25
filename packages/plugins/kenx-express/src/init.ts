@@ -48,14 +48,14 @@ export default ( port: number ) => {
    */
   .use( helmet({
     contentSecurityPolicy: {
-        directives: {
-            connectSrc: ["'self'", "'unsafe-inline'"],
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
-            baseUri: ["'self'"],
-            fontSrc: ["'self'", 'https:', 'data:']
-        }
+      directives: {
+        connectSrc: ["'self'", "'unsafe-inline'"],
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+        baseUri: ["'self'"],
+        fontSrc: ["'self'", 'https:', 'data:']
+      }
     }
   }) )
 
@@ -69,7 +69,6 @@ export default ( port: number ) => {
    */
   .use( express.json() ) // Limit: '50mb', extended: true
   .use( express.urlencoded({ extended: true }) )
-
 
   /**
    * Protect from HTTP parameter pollution attacks

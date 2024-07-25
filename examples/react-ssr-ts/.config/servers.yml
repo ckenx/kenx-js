@@ -25,26 +25,37 @@ servers:
     # HOST: 0.0.0.0
     # PORT: '[env]:VITE_PORT'
     bindTo: 'http:default'
-    builder: true
+    build: true
     options:
-      root: './src/views'
-      # Whether your application is a Single Page Application (SPA), a Multi 
-      # Page Application (MPA), or Custom Application (SSR and frameworks with 
-      # custom HTML handling):
-      #
-      # 'spa': Include HTML middlewares and use SPA fallback. 
-      #        Configure `sirv` with single: true in preview
-      # 'mpa': Include HTML middlewares
-      # 'custom': Disable Vite's own HTML serving logic so parent 
-      #            server can take control. This requires creating 
-      #            Vite server in middleware mode by setting
-      #            `server: { middlewareMode: true }`
-      appType: 'custom' # spa, mpa, custom
-      test:
-        globals: true
-        # 'happy-dom' or 'jsdom' for a DOM-like environment
-        environment: 'jsdom'
-        setupFiles:
-          - ../test/ui.test.ts
-      plugins:
-        - vite.plugins
+      # Custom Vite server configuration in any
+      # environment mode.
+      default:
+        # Whether your application is a Single Page Application (SPA), a Multi 
+        # Page Application (MPA), or Custom Application (SSR and frameworks with 
+        # custom HTML handling):
+        #
+        # 'spa': Include HTML middlewares and use SPA fallback. 
+        #        Configure `sirv` with single: true in preview
+        # 'mpa': Include HTML middlewares
+        # 'custom': Disable Vite's own HTML serving logic so parent 
+        #            server can take control. This requires creating 
+        #            Vite server in middleware mode by setting
+        #            `server: { middlewareMode: true }`
+        appType: 'custom' # spa, mpa, custom
+        plugins:
+          - vite.plugins
+      # Custom Vite server configuration in development
+      # mode only.
+      development:
+        root: './src/views'
+        test:
+          globals: true
+          # 'happy-dom' or 'jsdom' for a DOM-like environment
+          environment: 'jsdom'
+          setupFiles:
+            - ../test/ui.test.ts
+      # Custom Vite server configuration in production
+      # mode only.
+      production:
+        root: './dist/views'
+      

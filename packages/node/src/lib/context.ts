@@ -6,15 +6,15 @@ export default class Context {
     this.namespace = namespace
   }
 
-  log( ...args: any[] ){
+  debug( ...args: unknown[] ){
     process.env.NODE_ENV !== 'production'
-    && console.log(`[${this.namespace.toUpperCase()}] -`, ...args )
+    && console.debug(`[${this.namespace.toUpperCase()}] -`, ...args )
   }
-  error( ...args: any[] ){
+  error( ...args: unknown[] ){
     process.env.NODE_ENV !== 'production'
     && console.error(`[${this.namespace.toUpperCase()}] -`, ...args )
   }
-  warn( ...args: any[] ){
+  warn( ...args: unknown[] ){
     process.env.NODE_ENV !== 'production'
     && console.warn(`[${this.namespace.toUpperCase()}] -`, ...args )
   }

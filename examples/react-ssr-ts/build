@@ -1,0 +1,15 @@
+const Kenx = require('../../packages/node/dist/index.js').default
+
+if( !Kenx ) {
+  console.error('Kenx-node is not available')
+  process.exit(1)
+}
+
+( async ({ build }) => {
+  /**
+   * Build for production
+   */
+  await build()
+
+  process.exit(0)
+} )( new Kenx() )

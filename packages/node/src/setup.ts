@@ -3,6 +3,7 @@ import Yaml from 'yaml'
 import nodeFs from 'fs-extra'
 import { exec } from 'shelljs'
 import * as tsc from 'tsc-prog'
+import { rimraf } from 'rimraf'
 import { replaceTscAliasPaths } from 'tsc-alias'
 import nodePath from 'node:path'
 import Context from '#lib/context'
@@ -35,12 +36,12 @@ export default class Setup {
       return content
     }
     catch( error ) {
-      this.context.log(`Parsing <${filepath}.yml> file:`, error )
+      this.context.debug(`Parsing <${filepath}.yml> file:`, error )
       return null
     }
   }
 
-  private comply( value: any ): any {
+  private comply( value: SetupConfig ): any {
     if( !value ) return value
 
     switch( typeof value ) {
@@ -48,7 +49,7 @@ export default class Setup {
       case 'number': return value
       default: {
         if( Array.isArray( value ) )
-          return value.map( ( each: any ) => { return this.comply( each ) })
+          return value.map( ( each: any ) => (this.comply( each ) ) )
 
         Object
         .entries( value )
@@ -72,28 +73,12 @@ export default class Setup {
     }
   }
 
-  async initialize(){
+  async dev(){
     this.Config = await this.loadConfig('index')
     if( !this.Config ) {
       this.context.error('Setup configuration not found')
       process.exit(1)
     }
-
-    /**
-     * Comply data by resolving all key references
-     * throughout partials configurations
-     */
-    this.comply( this.Config )
-    // console.log( JSON.stringify( this.Config, null, '\t' ) )
-
-    /**
-     * Define project directory structure
-     * and pattern
-     */
-    this.Config.directory = this.Config.directory || {}
-
-    this.Config.directory.base = this.Path.resolve( process.cwd(), this.Config.directory.base || '/' )
-    this.Config.directory.pattern = this.Config.directory.pattern || '-'
 
     /**
      * Wheter come next is only for development
@@ -138,7 +123,79 @@ export default class Setup {
      *       to true. Also add `tsconfig.json` to your
      *       project's root.
      *
-     * TODO: Set up hot reload
+     */
+    if( this.Config?.typescript )
+      try {
+        let hasTsConfig = false
+        try { hasTsConfig = (await this.Fs.readJSON('tsconfig.json')) !== null }
+        catch( error ) { console.warn('No custom `tsconfig.json`: Using default configuration') }
+
+        /**
+         * Build TypeScript activated projects programmatically.
+         *
+         * IMPORTANT: Less suited for development builds so look out
+         * for an alternative in the next versions.
+         */
+        tsc.build({
+          basePath: process.cwd(),
+          configFilePath: hasTsConfig ? 'tsconfig.json' : undefined, // Inherited config (optional)
+          clean: {
+            outDir: true,
+            declarationDir: true
+          },
+          compilerOptions: {
+            rootDir: 'src',
+            outDir: 'dist',
+            declaration: true,
+            skipLibCheck: true,
+          },
+          include: ['src/**/*'],
+          exclude: ['**/*.test.ts', '**/*.spec.ts'],
+        })
+
+        /**
+         * TODO: Setup TS hot module reload
+         */
+
+
+        /**
+         * Replace alias paths with relative paths after
+         * typescript compilation.
+         *
+         * Note:
+         * Usefull when you add aliases that reference
+         * other projects outside your tsconfig.json project
+         * by providing a relative path to the baseUrl.
+         *
+         * Applies only when custom `tsconfig.json` defined
+         */
+        hasTsConfig && await replaceTscAliasPaths({
+          configFile: 'tsconfig.json',
+          verbose: true
+        })
+      }
+      catch( error: unknown ) {
+        console.error( error )
+        process.exit(1)
+      }
+  }
+
+  async build(){
+    this.Config = await this.loadConfig('index')
+    if( !this.Config ) {
+      this.context.error('Setup configuration not found')
+      process.exit(1)
+    }
+
+    // Remove git completely from a directory
+    await rimraf( this.Path.resolve( process.cwd(), './dist' ) )
+
+    /**
+     * Automatically build typscript project
+     *
+     * Note: Must set `typescript` in `.config/index.yml`
+     *       to true. Also add `tsconfig.json` to your
+     *       project's root.
      */
     if( this.Config?.typescript )
       try {
@@ -185,10 +242,12 @@ export default class Setup {
           verbose: true
         })
       }
-      catch( error: any ) {
+      catch( error: unknown ) {
         console.error( error )
         process.exit(1)
       }
+
+    // TODO: Generate config file bundle as js/json
   }
 
   /**
@@ -196,10 +255,34 @@ export default class Setup {
    */
   async loadConfig( target: SetupTarget ){
     // Default target is .config index
-    try { return await this.parseYaml(`${process.cwd()}/.config/${target}`) }
+    try {
+      this.Config = await this.parseYaml(`${process.cwd()}/.config/${target}`)
+      if( !this.Config ) {
+        this.context.error('Setup configuration not found')
+        process.exit(1)
+      }
+
+      /**
+       * Comply data by resolving all key references
+       * throughout partials configurations
+       */
+      this.comply( this.Config )
+      // console.log( JSON.stringify( this.Config, null, '\t' ) )
+
+      /**
+       * Define project directory structure
+       * and pattern
+       */
+      this.Config.directory = this.Config.directory || {}
+
+      this.Config.directory.base = this.Path.resolve( process.cwd(), this.Config.directory.base || '/' )
+      this.Config.directory.pattern = this.Config.directory.pattern || '-'
+
+      return this.Config
+    }
     catch( error ) {
-      this.context.log(`<${target}> target: %o`, error )
-      return null
+      this.context.debug(`<${target}> target: %o`, error )
+      return undefined
     }
   }
 
@@ -234,7 +317,7 @@ export default class Setup {
      */
     let module
     try { module = await import( path ) }
-    catch( error: any ) { throwError && console.log(`import <${path}> failed: `, error ) }
+    catch( error: unknown ) { throwError && console.log(`import <${path}> failed: `, error ) }
 
     return module
   }
@@ -256,12 +339,12 @@ export default class Setup {
      * working directory
      */
     try { plugin = await this.importModule(`/plugins/${refname}`) }
-    catch( error: any ) {}
+    catch( error: unknown ) {}
 
     // Check installed plugins in /node_modules folder
     if( !plugin )
       try { plugin = await import( refname ) }
-      catch( error: any ) {}
+      catch( error: unknown ) {}
 
     if( !plugin?.default )
       throw new Error(`<${refname}> plugin not found`)

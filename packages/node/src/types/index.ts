@@ -123,6 +123,7 @@ export interface ServerPlugin<T> {
   readonly app?: ApplicationPlugin<any>
   getInfo: () => ActiveServerInfo | null
   listen: ( arg: any ) => Promise<ActiveServerInfo | null>
+  build?: () => Promise<void>
   close: () => Promise<unknown>
 }
 /**

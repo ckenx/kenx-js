@@ -101,6 +101,24 @@ async function createAuxiliaryServer( config: AuxiliaryServerConfig ){
   }
 }
 
+async function createBuild( config: AuxiliaryServerConfig ){
+  try {
+    if( !config.plugin )
+      throw new Error(`Undefined <${config.type}> server plugin`)
+
+    const
+    { plugin, options } = config,
+    Builder = await Setup.importPlugin( plugin ),
+    instance: ServerPlugin<unknown> = new Builder( Setup, options )
+
+    typeof instance.build == 'function' && await instance.build()
+  }
+  catch( error ) {
+    Setup.context.error('Auxiliary server:', error )
+    process.exit(1)
+  }
+}
+
 async function createResource( config: ResourceConfig ){
   try {
     const Resource = await Setup.importPlugin( config.plugin )
@@ -200,7 +218,7 @@ async function toSingleton( takeover?: string[] ){
      */
     const Args = Object.values( getResource( takeover ) )
 
-    Setup.context.log('Takeover ...')
+    Setup.context.debug('Takeover ...')
     entrypoint.default( ...Args )
   }
   catch( error ) {
@@ -259,7 +277,7 @@ async function toMVC(){
     if( !models ) Setup.context.warn('No models available for <controllers>')
     if( !views ) Setup.context.warn('No views available for <controllers>')
 
-    Setup.context.log('Takeover ...')
+    Setup.context.debug('Takeover ...')
     cFactory.default( ...Object.values( cFactoryDeps ), models, views )
   }
   catch( error ) {
@@ -299,7 +317,7 @@ export default class Core {
      * Load setup configuration
      *
      */
-    await Setup.initialize()
+    await Setup.dev()
     const { servers, databases } = Setup.getConfig()
 
     /**
@@ -363,7 +381,7 @@ export default class Core {
   async dispatch( takeover?: string [] ){
     // Assumed `autoload` method has resolved
     Setup ?
-      Setup.context.log('Ready')
+      Setup.context.debug('Ready')
       : process.exit(1)
 
     const { directory } = Setup.getConfig()
@@ -385,5 +403,37 @@ export default class Core {
        */
       default: toSingleton( takeover )
     }
+  }
+
+  async build(){
+    /**
+     * Load Environment Variables
+     */
+    // dotenv.config() // Load default .env variables
+
+    /**
+     * Build application
+     */
+    await Setup.build()
+
+    const
+    { servers } = Setup.getConfig(),
+    builders = servers.filter( ({ build }: any ) => (build === true) )
+
+    /**
+     * Run builders: Server that must build
+     * their own assets. Eg. UI bundlers, ...
+     */
+    if( Array.isArray( builders ) )
+      for await ( const config of builders ) {
+        const { type } = config
+
+        switch( type ) {
+          case 'http': break
+          default: await createBuild( config as AuxiliaryServerConfig ); break
+        }
+
+        console.log(`<${type.toUpperCase()}> - build completed`)
+      }
   }
 }
