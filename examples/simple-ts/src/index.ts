@@ -1,12 +1,13 @@
 import type { ServerPlugin, DatabasePlugin } from '../../../packages/node/dist/types'
 import type http from 'http'
 import type io from 'socket.io'
+import type { ViteDevServer } from 'vite'
 import UI from '#routes/ui'
 import routes from '#routes/index'
 
-// Export const takeover = ['http', 'socketio', 'database:*']
+export const takeover = ['http', 'vite', 'socketio', 'database:*']
 
-export default async ( http: ServerPlugin<http.Server>, io: io.Server, databases: { [index: string]: DatabasePlugin<any> } ) => {
+export default async ( http: ServerPlugin<http.Server>, vite: ServerPlugin<ViteDevServer>, io: io.Server, databases: { [index: string]: DatabasePlugin<any> } ) => {
   if( !http ) return
 
   const { app } = http
@@ -17,6 +18,8 @@ export default async ( http: ServerPlugin<http.Server>, io: io.Server, databases
   .attach('io', io )
   // Attach database to application
   .attach('db', databases.default.getConnection() )
+  // Attach vite server to application
+  .attach('vite', vite.server )
 
   /*
    * Add express middleware
