@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "rimraf ./dist && tsc",
     "prepack": "yarn compile",
-    "test": "",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
@@ -15,7 +16,8 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
-    "@ckenx/node": "*"
+    "@ckenx/node": "*",
+    "vitest": "^1.2.0"
   },
   "peerDependencies": {
     "@ckenx/node": "*"

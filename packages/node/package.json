@@ -26,9 +26,9 @@
     "compile:types": "api-extractor run --local --verbose",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "test": "yarn compile && yarn test:types && yarn test:unit",
+    "test": "vitest run",
     "test:types": "tsd",
-    "test:unit": "nyc mocha --require ts-node/register --reporter spec --slow 200 --bail --timeout 10000 test/iframe.io.ts",
+    "test:watch": "vitest watch",
     "prepack": "yarn compile"
   },
   "dependencies": {
@@ -46,7 +46,8 @@
     "eslint": "^8.53.0",
     "rimraf": "^5.0.5",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "vitest": "^1.2.0"
   },
   "publishConfig": {
     "access": "public"

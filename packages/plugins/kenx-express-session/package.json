@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "rimraf ./dist && tsc",
     "prepack": "yarn compile",
-    "test": "",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
@@ -20,7 +21,8 @@
   "devDependencies": {
     "@ckenx/node": "*",
     "@types/cookie-parser": "^1.4.5",
-    "@types/express-session": "^1.17.10"
+    "@types/express-session": "^1.17.10",
+    "vitest": "^1.2.0"
   },
   "repository": {
     "type": "git",

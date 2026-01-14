@@ -13,5 +13,6 @@
     "moduleResolution": "node",
     "declaration": true
   },
-  "exclude": ["vitest.config.ts", "**/*.test.ts", "**/*.spec.ts", "dist", "node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["test", "dist", "node_modules"]
 }

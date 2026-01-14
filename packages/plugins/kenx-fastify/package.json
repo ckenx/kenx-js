@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "rimraf ./dist && tsc",
     "prepack": "yarn compile",
-    "test": "",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
@@ -16,7 +17,8 @@
     "fastify": "^4.24.3"
   },
   "devDependencies": {
-    "@ckenx/node": "*"
+    "@ckenx/node": "*",
+    "vitest": "^1.2.0"
   },
   "repository": {
     "type": "git",

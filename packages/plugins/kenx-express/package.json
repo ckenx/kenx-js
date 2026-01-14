@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "rimraf ./dist && tsc",
     "prepack": "yarn compile",
-    "test": "",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
@@ -22,7 +23,8 @@
     "@types/cors": "^2.8.15",
     "@types/express": "^4.17.21",
     "@types/hpp": "^0.2.5",
-    "@types/morgan": "^1.9.9"
+    "@types/morgan": "^1.9.9",
+    "vitest": "^1.2.0"
   },
   "repository": {
     "type": "git",

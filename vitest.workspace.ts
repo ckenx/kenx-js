@@ -1,11 +1,6 @@
 import { defineWorkspace } from 'vitest/config'
 
 export default defineWorkspace([
-  'packages/*/vitest.config.ts',
-  {
-    test: {
-      name: 'kenx-workspace',
-      include: ['test/**/*.test.ts']
-    }
-  }
+  'packages/node/vitest.config.ts',
+  'packages/plugins/*/vitest.config.ts'
 ])
