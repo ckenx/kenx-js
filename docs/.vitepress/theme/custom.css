@@ -1,0 +1,44 @@
+/* Custom styles for documentation guide page */
+
+.doc-section {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+  border-left: 3px solid var(--vp-c-brand-1);
+}
+
+.doc-section ul {
+  margin-top: 0.75rem;
+}
+
+.doc-section li {
+  margin: 0.5rem 0;
+}
+
+.doc-section strong {
+  color: var(--vp-c-brand-1);
+}
+
+/* Better spacing for the guide page */
+.vp-doc h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+  padding-bottom: 0.5rem;
+}
+
+/* Custom info boxes styling */
+.custom-block.info {
+  border-left-color: var(--vp-c-brand-1);
+}
+
+/* Enhance the tip boxes */
+.custom-block.tip {
+  background-color: var(--vp-c-green-soft);
+  border-left-color: var(--vp-c-green-1);
+}
+
+.custom-block.tip .custom-block-title {
+  color: var(--vp-c-green-1);
+}

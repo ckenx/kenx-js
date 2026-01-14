@@ -12,7 +12,7 @@ Kenx uses environment variables for configuration values that change between env
 
 Used automatically when `NODE_ENV=development`. This file should be **gitignored** and contain local development settings.
 
-```env
+```bash
 NODE_ENV=development
 
 # Server
@@ -36,7 +36,7 @@ DEBUG=kenx:*
 
 Used in production environments. Commit this with **placeholder values only**.
 
-```env
+```bash
 NODE_ENV=production
 
 # Server
@@ -499,7 +499,7 @@ DEBUG=kenx:* node -r @ckenx/node
 ```
 
 Or in `.env.local`:
-```env
+```bash
 DEBUG=kenx:*
 ```
 
@@ -635,7 +635,7 @@ Verify `.env.local` exists and `NODE_ENV` is set correctly.
 ### Port Already in Use
 
 Change port in `.env.local`:
-```env
+```bash
 HTTP_PORT=8001
 ```
 

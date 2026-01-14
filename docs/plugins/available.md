@@ -47,7 +47,7 @@ servers:
 - View engine support
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-express](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-express)
+**Repository:** [kenx-js/packages/plugins/kenx-express](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-express)
 
 ---
 
@@ -76,7 +76,7 @@ servers:
 - Lifecycle hooks
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-fastify](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-fastify)
+**Repository:** [kenx-js/packages/plugins/kenx-fastify](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-fastify)
 
 ---
 
@@ -104,7 +104,7 @@ servers:
 - Custom request handling
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-http](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-http)
+**Repository:** [kenx-js/packages/plugins/kenx-http](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-http)
 
 ---
 
@@ -143,7 +143,7 @@ databases:
 - Promise-based API
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-mysql](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-mysql)
+**Repository:** [kenx-js/packages/plugins/kenx-mysql](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-mysql)
 
 ---
 
@@ -176,7 +176,7 @@ databases:
 - Change streams
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-mongodb](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-mongodb)
+**Repository:** [kenx-js/packages/plugins/kenx-mongodb](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-mongodb)
 
 ---
 
@@ -206,7 +206,7 @@ auxiliaries:
 - Auto-reconnection
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-socketio](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-socketio)
+**Repository:** [kenx-js/packages/plugins/kenx-socketio](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-socketio)
 
 ---
 
@@ -241,7 +241,7 @@ servers:
 - Secure cookies
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-express-session](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-express-session)
+**Repository:** [kenx-js/packages/plugins/kenx-express-session](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-express-session)
 
 ---
 
@@ -271,7 +271,7 @@ servers:
 - Directory listing
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-express-assets](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-express-assets)
+**Repository:** [kenx-js/packages/plugins/kenx-express-assets](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-express-assets)
 
 ---
 
@@ -301,7 +301,7 @@ servers:
 - Secure cookie handling
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-fastify-session](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-fastify-session)
+**Repository:** [kenx-js/packages/plugins/kenx-fastify-session](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-fastify-session)
 
 ---
 
@@ -329,7 +329,7 @@ servers:
 - Cache headers
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-fastify-assets](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-fastify-assets)
+**Repository:** [kenx-js/packages/plugins/kenx-fastify-assets](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-fastify-assets)
 
 ---
 
@@ -361,7 +361,7 @@ servers:
 - Route validation
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-routing](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-routing)
+**Repository:** [kenx-js/packages/plugins/kenx-routing](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-routing)
 
 ---
 
@@ -391,7 +391,7 @@ build:
 - Plugin ecosystem
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-vite](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-vite)
+**Repository:** [kenx-js/packages/plugins/kenx-vite](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-vite)
 
 ---
 
@@ -422,7 +422,7 @@ databases:
 - Custom handlers
 
 **Version:** ^0.0.16  
-**Repository:** [kenx-js/packages/plugins/kenx-mongodb-events](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-mongodb-events)
+**Repository:** [kenx-js/packages/plugins/kenx-mongodb-events](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-mongodb-events)
 
 ---
 
@@ -506,7 +506,7 @@ topic:kenx-plugin
 Interested in creating your own plugin? See:
 - **[Creating Plugins Guide](./creating.md)** - Detailed development guide
 - **[Plugin System Overview](./index.md)** - Architecture and concepts
-- **[Example Plugins](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins)** - Official plugin source code
+- **[Example Plugins](https://github.com/ckenx/kenx-js/tree/main/packages/plugins)** - Official plugin source code
 
 ---
 
@@ -555,7 +555,7 @@ Check the [roadmap](../../ROADMAP.md) for updates.
 
 - **[Plugin System](./index.md)** - Plugin concepts and usage
 - **[Creating Plugins](./creating.md)** - Development guide
-- **[GitHub Repository](https://github.com/codewithdark/kenx-js)** - Source code
+- **[GitHub Repository](https://github.com/ckenx/kenx-js)** - Source code
 - **[npm Registry](https://www.npmjs.com/search?q=keywords:kenx-plugin)** - Browse all plugins
 
 ---

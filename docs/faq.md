@@ -50,8 +50,8 @@ Kenx is actively developed and used in production applications. However:
 ### Where can I get help?
 
 - **Documentation:** This documentation site
-- **GitHub Issues:** [Report bugs or request features](https://github.com/codewithdark/kenx-js/issues)
-- **GitHub Discussions:** [Ask questions](https://github.com/codewithdark/kenx-js/discussions)
+- **GitHub Issues:** [Report bugs or request features](https://github.com/ckenx/kenx-js/issues)
+- **GitHub Discussions:** [Ask questions](https://github.com/ckenx/kenx-js/discussions)
 - **Examples:** Check the `examples/` directory
 
 ---
@@ -582,15 +582,15 @@ npm install @ckenx/kenx-express
 
 ### How can I contribute to Kenx?
 
-- **Report bugs:** [GitHub Issues](https://github.com/codewithdark/kenx-js/issues)
-- **Suggest features:** [GitHub Discussions](https://github.com/codewithdark/kenx-js/discussions)
+- **Report bugs:** [GitHub Issues](https://github.com/ckenx/kenx-js/issues)
+- **Suggest features:** [GitHub Discussions](https://github.com/ckenx/kenx-js/discussions)
 - **Submit PRs:** Fork and submit pull requests
 - **Improve docs:** Documentation PRs welcome
 - **Create plugins:** Share your plugins with the community
 
 ### Where is the source code?
 
-GitHub repository: [codewithdark/kenx-js](https://github.com/codewithdark/kenx-js)
+GitHub repository: [codewithdark/kenx-js](https://github.com/ckenx/kenx-js)
 
 ### What's the license?
 
@@ -679,8 +679,8 @@ No specific timeline yet. Version 1.0 will be released when:
 ## Still Have Questions?
 
 - **Documentation:** Explore the full documentation
-- **GitHub Issues:** [Search existing issues](https://github.com/codewithdark/kenx-js/issues)
-- **GitHub Discussions:** [Ask the community](https://github.com/codewithdark/kenx-js/discussions)
+- **GitHub Issues:** [Search existing issues](https://github.com/ckenx/kenx-js/issues)
+- **GitHub Discussions:** [Ask the community](https://github.com/ckenx/kenx-js/discussions)
 - **Examples:** Check `examples/` directory in the repo
 
 ---

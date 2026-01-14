@@ -24,7 +24,10 @@
     "publish:all": "node ./scripts/publish-packages.js",
     "test:examples": "jest --config ./test/jest.examples.config.js --verbose --no-cache",
     "test:examples:simple": "jest --config ./test/jest.examples.config.js --verbose --no-cache -t simple",
-    "test:examples:complex": "cross-env COMPLEX=true jest --config ./test/jest.examples.config.js --verbose --no-cache -t complex"
+    "test:examples:complex": "cross-env COMPLEX=true jest --config ./test/jest.examples.config.js --verbose --no-cache -t complex",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "execa": "5.0.0",
@@ -39,6 +42,7 @@
     "prettier": "^3.1.0",
     "tsd": "^0.29.0",
     "typescript-eslint": "^0.0.1-alpha.0",
+    "vitepress": "^1.6.4",
     "yargs": "^17.7.2"
   },
   "jest": {

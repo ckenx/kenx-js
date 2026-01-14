@@ -725,7 +725,7 @@ Development mode recompiles on every start. For faster startup:
 
 ### Enable Debug Logging
 
-```env
+```bash
 DEBUG=kenx:*
 ```
 

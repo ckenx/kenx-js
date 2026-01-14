@@ -280,7 +280,7 @@ assets:
 Configuration works seamlessly with environment variables:
 
 **`.env.local` (Development):**
-```env
+```bash
 NODE_ENV=development
 HTTP_HOST=0.0.0.0
 HTTP_PORT=8000
@@ -294,7 +294,7 @@ SESSION_SECRET=dev-secret-key
 ```
 
 **`.env` (Production):**
-```env
+```bash
 NODE_ENV=production
 HTTP_HOST=0.0.0.0
 HTTP_PORT=3000

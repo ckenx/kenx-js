@@ -892,7 +892,7 @@ export default async (server, db) => {
 ### Before Asking for Help
 
 1. **Check this troubleshooting guide**
-2. **Search existing issues:** [GitHub Issues](https://github.com/codewithdark/kenx-js/issues)
+2. **Search existing issues:** [GitHub Issues](https://github.com/ckenx/kenx-js/issues)
 3. **Enable debug mode** and check logs
 4. **Create minimal reproduction** of the issue
 5. **Check your versions:**
@@ -925,7 +925,7 @@ Include this information:
 
 ### Community Resources
 
-- **GitHub Discussions:** [kenx-js/discussions](https://github.com/codewithdark/kenx-js/discussions)
+- **GitHub Discussions:** [kenx-js/discussions](https://github.com/ckenx/kenx-js/discussions)
 - **Discord:** (if available)
 - **Stack Overflow:** Tag with `kenx-js`
 

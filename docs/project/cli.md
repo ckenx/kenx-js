@@ -437,7 +437,7 @@ node -r @ckenx/node
 
 Change the port in `.env.local`:
 
-```env
+```bash
 HTTP_PORT=8001
 ```
 

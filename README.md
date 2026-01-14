@@ -61,7 +61,8 @@ export default async (server) => {
 
 ## Documentation
 
-📚 **[Complete Documentation](./docs/index.md)** | 🌐 **[Online Documentation](https://kenx.webmicros.com/kenx-js)**
+📚 **[Documentation Guide](./docs/guide.md)** - Complete overview of all documentation  
+🌐 **[Online Documentation](https://kenx.webmicros.com/kenx-js)** - Browse online
 
 ### Getting Started
 - **[Installation & Setup](./docs/getting-started.md)** - Get up and running quickly

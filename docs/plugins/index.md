@@ -658,7 +658,7 @@ export default class LoggerPlugin {
 ### Finding Plugins
 
 **Official Plugins:**
-- Browse at `https://github.com/codewithdark/kenx-js/tree/main/packages/plugins`
+- Browse at `https://github.com/ckenx/kenx-js/tree/main/packages/plugins`
 
 **Community Plugins:**
 - Search npm for `kenx-` prefix

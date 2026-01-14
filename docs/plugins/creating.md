@@ -711,16 +711,16 @@ git push --tags
 
 - **[Plugin System Overview](./index.md)** - Plugin concepts
 - **[Available Plugins](./available.md)** - Official plugins list
-- **[TypeScript Types](https://github.com/codewithdark/kenx-js/tree/main/packages/node/src/types)** - Type definitions
+- **[TypeScript Types](https://github.com/ckenx/kenx-js/tree/main/packages/node/src/types)** - Type definitions
 
 ---
 
 ## Examples
 
 Check the official plugins for reference:
-- [`@ckenx/kenx-express`](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-express)
-- [`@ckenx/kenx-fastify`](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-fastify)
-- [`@ckenx/kenx-mysql`](https://github.com/codewithdark/kenx-js/tree/main/packages/plugins/kenx-mysql)
+- [`@ckenx/kenx-express`](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-express)
+- [`@ckenx/kenx-fastify`](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-fastify)
+- [`@ckenx/kenx-mysql`](https://github.com/ckenx/kenx-js/tree/main/packages/plugins/kenx-mysql)
 
 ---
 

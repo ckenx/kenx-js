@@ -253,7 +253,7 @@ export default (httpServers: any, models: any, views: any) => {
 #### `.env` (Production)
 Production environment variables.
 
-```env
+```bash
 NODE_ENV=production
 HTTP_HOST=0.0.0.0
 HTTP_PORT=3000
@@ -267,7 +267,7 @@ DB_PASSWORD=***
 #### `.env.local` (Development)
 Development environment variables (gitignored).
 
-```env
+```bash
 NODE_ENV=development
 HTTP_HOST=0.0.0.0
 HTTP_PORT=8000
@@ -351,7 +351,7 @@ yarn install
 
 Edit `.env.local` with your development settings:
 
-```env
+```bash
 HTTP_PORT=8000
 DB_HOST=localhost
 ```

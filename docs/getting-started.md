@@ -234,7 +234,7 @@ Configure environment-specific values in `.env` files:
 
 **`.env.local`** (Development)
 
-```env
+```bash
 NODE_ENV=development
 HTTP_HOST=0.0.0.0
 HTTP_PORT=8000
@@ -244,7 +244,7 @@ DB_NAME=myapp_dev
 
 **`.env`** (Production)
 
-```env
+```bash
 NODE_ENV=production
 HTTP_HOST=0.0.0.0
 HTTP_PORT=3000
@@ -296,7 +296,7 @@ Now that you have your first Kenx application running, explore these topics:
 
 If you see an error about port 8000 being in use, change the port in `.env.local`:
 
-```env
+```bash
 HTTP_PORT=8001
 ```
 

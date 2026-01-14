@@ -61,7 +61,7 @@ databases:
 ```
 
 ### `.env.local`
-```env
+```bash
 HTTP_HOST=0.0.0.0
 HTTP_PORT=8000
 
@@ -145,7 +145,7 @@ security:
 ```
 
 ### `.env.local`
-```env
+```bash
 API_HOST=0.0.0.0
 API_PORT=8000
 VITE_PORT=3000
@@ -213,7 +213,7 @@ sessions:
 ```
 
 ### `.env.local`
-```env
+```bash
 HTTP_HOST=0.0.0.0
 HTTP_PORT=8000
 
@@ -285,7 +285,7 @@ databases:
 ```
 
 ### Shared `.env.local`
-```env
+```bash
 SERVICE_HOST=0.0.0.0
 
 USER_SERVICE_PORT=8001
@@ -515,7 +515,7 @@ sessions:
 ```
 
 ### `.env` (Production)
-```env
+```bash
 NODE_ENV=production
 
 HTTP_HOST=0.0.0.0
@@ -621,7 +621,7 @@ security:
 Environment-specific configurations.
 
 ### Development (`.env.local`)
-```env
+```bash
 NODE_ENV=development
 HTTP_PORT=8000
 DB_HOST=localhost
@@ -630,7 +630,7 @@ LOG_LEVEL=debug
 ```
 
 ### Production (`.env`)
-```env
+```bash
 NODE_ENV=production
 HTTP_PORT=3000
 DB_HOST=prod-db.example.com
