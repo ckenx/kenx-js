@@ -68,18 +68,132 @@ or
 yarn install
 ```
 
-4. Run the project
+4. Build the project
 
 ```bash
-npm run dev
+yarn build
 ```
-or
+
+This will compile all packages using Turborepo with caching enabled.
+
+## Available Commands
+
+We use **Turborepo** for build orchestration and **Changesets** for versioning. Here are the key commands:
+
+### Development
 
 ```bash
+# Build all packages (uses Turborepo cache)
+yarn build
+
+# Build in watch mode
 yarn dev
+
+# Build specific package
+turbo run compile --filter=@ckenx/kenx-vite
+
+# Clean build artifacts and cache
+yarn clean
 ```
 
-…and open <http://localhost:8008> in your web browser. You can customize the default port by setting `PORT` in your environment variables
+### Testing
+
+```bash
+# Run all tests
+yarn test
+
+# Run tests in watch mode
+yarn test:watch
+
+# Run tests with coverage
+yarn test:coverage
+
+# Test specific package
+yarn workspace @ckenx/kenx-vite test
+```
+
+### Code Quality
+
+```bash
+# Lint all packages
+yarn lint
+
+# Auto-fix linting issues
+yarn lint:fix
+
+# Format code
+yarn format
+```
+
+### Versioning & Publishing
+
+We use **Changesets** for version management. When you make changes:
+
+```bash
+# 1. Create a changeset (describes your changes)
+yarn changeset
+
+# 2. Follow the prompts to select packages and version bump type
+
+# 3. Commit the changeset file
+git add .changeset/*.md
+git commit -m "feat: your feature description"
+
+# 4. Push your branch and create a PR
+```
+
+When your PR is merged, GitHub Actions will:
+- Create a "Version Packages" PR with version bumps
+- When that PR is merged, automatically publish to npm
+
+### Creating a New Plugin
+
+```bash
+# Use the generator script
+./scripts/create-plugin.sh kenx-your-plugin
+
+# This creates a complete plugin structure with:
+# - package.json with correct dependencies
+# - TypeScript configuration
+# - Vitest test setup
+# - README template
+```
+
+## Development Workflow
+
+1. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+2. **Make your changes** to one or more packages
+
+3. **Build and test locally**
+   ```bash
+   yarn build
+   yarn test
+   ```
+
+4. **Create a changeset** (if you modified packages)
+   ```bash
+   yarn changeset
+   ```
+
+5. **Commit and push**
+   ```bash
+   git add .
+   git commit -m "feat: description"
+   git push origin feature/your-feature
+   ```
+
+6. **Create a Pull Request** on GitHub
+
+## Turborepo Benefits
+
+- **Fast Builds**: Incremental builds with intelligent caching (~371ms cached vs 9s cold)
+- **Parallel Execution**: Runs tasks across packages in parallel
+- **Dependency Awareness**: Only rebuilds what changed and its dependents
+- **Remote Caching**: Share cache across team (when enabled)
 
 ## Community
 

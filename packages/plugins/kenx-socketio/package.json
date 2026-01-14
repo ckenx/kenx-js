@@ -14,7 +14,12 @@
     "@socket.io/redis-adapter": "^8.2.1",
     "socket.io": "^4.7.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@ckenx/node": "*"
+  },
+  "peerDependencies": {
+    "@ckenx/node": "*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com:ckenx/kenx-js.git",

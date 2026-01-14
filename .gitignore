@@ -132,3 +132,7 @@ docs/.vitepress/cache
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Turborepo
+.turbo
+node_modules/.cache/turbo

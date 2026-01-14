@@ -162,17 +162,49 @@ Feedback is always welcome! Please report any issues in our [Issue Tracker](http
 
 ## Contributing
 
-We welcome contributions! To get started:
+We welcome contributions! This is a **monorepo** managed with **Turborepo** and **Changesets**.
+
+### Quick Start for Contributors
+
+```bash
+# Clone and install
+git clone https://github.com/ckenx/kenx-js
+cd kenx-js
+yarn install
+
+# Build all packages (with caching)
+yarn build
+
+# Run tests
+yarn test
+
+# Make changes and create a changeset
+yarn changeset
+```
+
+### Key Commands
+
+| Command | Description |
+|---------|-------------|
+| `yarn build` | Build all packages (Turborepo, cached) |
+| `yarn test` | Run all tests in parallel |
+| `yarn lint` | Lint all packages |
+| `yarn changeset` | Create version bump changeset |
+| `yarn dev` | Watch mode for development |
+
+### Development Workflow
 
 1. Fork the repository
 2. Create your feature branch
 3. Make your changes
-4. Submit a pull request
+4. Create a changeset: `yarn changeset`
+5. Submit a pull request
 
 Please review our:
-- **[Contributing Guidelines](./CONTRIBUTING.md)**
-- **[Code of Conduct](./CODE_OF_CONDUCT.md)**
-- **[Project Roadmap](./ROADMAP.md)**
+- **[Contributing Guidelines](./CONTRIBUTING.md)** - Detailed development guide
+- **[Code of Conduct](./CODE_OF_CONDUCT.md)** - Community standards
+- **[Project Roadmap](./ROADMAP.md)** - Future plans
+- **[Migration Guide](./TURBOREPO_MIGRATION.md)** - Turborepo setup details
 
 ## Community
 

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".eslintrc", "tsconfig.json"],
+  "globalEnv": ["NODE_ENV"],
+  "pipeline": {
+    "compile": {
+      "dependsOn": ["^compile"],
+      "outputs": ["dist/**"],
+      "cache": true
+    },
+    "build": {
+      "dependsOn": ["^build", "compile"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["compile"],
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:unit": {
+      "dependsOn": ["compile"],
+      "cache": true
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "cache": true,
+      "outputs": []
+    },
+    "lint:fix": {
+      "cache": false,
+      "outputs": []
+    },
+    "format": {
+      "cache": false,
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
